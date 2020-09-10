@@ -51,6 +51,10 @@ const App = ({ Component, pageProps }) => {
         }
         /*SLICK-SLIDE*/
 
+        .text-tridatu{
+          color: #d63031;
+        }
+
         /*CUSTOM BUTTON*/
         .btn-tridatu{
           color: #fff;

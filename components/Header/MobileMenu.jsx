@@ -1,4 +1,5 @@
 import { Drawer } from 'antd';
+import Link from 'next/link';
 import Nav from 'react-bootstrap/Nav'
 
 const MobileMenu  = ({ visible, close, register, login }) => {
@@ -16,7 +17,11 @@ const MobileMenu  = ({ visible, close, register, login }) => {
         <Nav className="flex-column mobile-menu">
           <Nav.Link onClick={login}>Login</Nav.Link>
           <Nav.Link onClick={register}>Daftar</Nav.Link>
-          <Nav.Link>Promo</Nav.Link>
+          <Link href="/promo" as="/promo">
+            <Nav.Link as="a">
+              Promo
+            </Nav.Link>
+          </Link>
           <Nav.Link>Semua Produk</Nav.Link>
         </Nav>
       </Drawer>

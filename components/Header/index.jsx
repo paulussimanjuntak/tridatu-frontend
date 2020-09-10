@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input, Badge, Menu, Dropdown, Avatar } from "antd";
 import { UserOutlined } from '@ant-design/icons';
 
+import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -171,9 +172,12 @@ const Header = () => {
               >
                 {render_category(category_data)}
               </NavDropdown>
-              <Nav.Link href="#promo" className="text-dark">
-                Promo
-              </Nav.Link>
+
+              <Link href="/promo" as="/promo">
+                <Nav.Link as="a" className="text-dark">
+                  Promo
+                </Nav.Link>
+              </Link>
               
               <Form inline className="mx-lg-2 w-100">
                 <div className="w-100 nav-search">
