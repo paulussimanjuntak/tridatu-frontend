@@ -8,7 +8,7 @@ const Footer = () => {
     <>
       <footer>
         <hr className="mx-0 px-0" />
-        <div className="row justify-content-around mb-0 pt-2 pb-0 ">
+        <div className="row justify-content-around mb-0 pt-2 pb-0 mx-0">
           <div className="col-11">
             <Container>
               <div className="row justify-content-center">
