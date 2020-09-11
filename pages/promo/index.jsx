@@ -1,8 +1,10 @@
-import { Tabs } from 'antd';
+import { useState } from 'react';
+import { Tabs, Input, Select } from 'antd';
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import Form from "react-bootstrap/Form";
 
 import CardPromo from "components/Card/Promo";
 import EmptyPromo from "components/Card/Empty/Promo";
@@ -14,63 +16,79 @@ const TabPane = Tabs.TabPane ;
 
 let promos = ['https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-600x328-4.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/01/Thumbnail_600x3282.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-600x328.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/06/Thumbnail-23.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/08/REALME-THUMBNAIL.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-6.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/07/Thumbnail-Interior.png', 'https://ecs7.tokopedia.net/img/blog/promo/2019/09/ZHIYUN-THUMBNAIL.jpg']
 
+const ALL_PROMO = 'ALL_PROMO'
+const TRIDATU_PROMO = 'TRIDATU_PROMO'
+const MONTHLY_PROMO = 'MONTHLY_PROMO'
+
 const Promo = () => {
+  const [activeTab, setActiveTab] = useState()
 
   const callback = (key) => {
-    console.log(key);
+    setActiveTab(key);
+  }
+
+  function handleChange(value) {
+    console.log(`selected ${value}`);
   }
 
   return(
     <>
       <div className="slider-container">
         <div className="slider-wrapper">
-          <img src="https://ecs7.tokopedia.net/img/blog/promo/2019/08/Hotel_Launching_Digital-Hompage.jpg" className="slider-image" alt="Tridatu Bali ID" />
+          <img src="https://ecs7.tokopedia.net/img/blog/promo/2019/08/Hotel_Launching_Digital-Hompage.jpg" 
+            className="slider-image" alt="Tridatu Bali ID" />
         </div>
       </div>
 
-      <Tabs defaultActiveKey="1" onChange={callback} centered>
-        <TabPane tab="Semua Promo (12)" key="1">
-          <Container>
-            <section>
-              <Row>
-                {promos.map((data, i) => (
-                  <Col md={4} sm={6} key={i}>
-                    <CardPromoMemo image={data} />
-                  </Col>
-                ))}
-              </Row>
-            </section>
-          </Container>
+      <Tabs activeKey={activeTab} onChange={callback} centered>
+        <TabPane tab="Semua Promo (12)" key={ALL_PROMO}>
         </TabPane>
 
-        <TabPane tab="Promo Tridatu (4)" key="2">
-          <Container>
-            <section>
-              <Row>
-                {promos.map((data, i) => (
-                  <Col md={4} sm={6} key={i}>
-                    <CardPromoMemo image={data} />
-                  </Col>
-                ))}
-              </Row>
-            </section>
-          </Container>
+        <TabPane tab="Promo Tridatu (4)" key={TRIDATU_PROMO}>
         </TabPane>
 
-        <TabPane tab="Promo Bulan Ini (0)" key="3">
-          <Container>
-            <section>
-              <EmptyPromoMemo />
-            </section>
-          </Container>
+        <TabPane tab="Promo Bulan Ini (0)" key={MONTHLY_PROMO}>
         </TabPane>
       </Tabs>
 
+      <Container>
+
+        <section className="mt-4">
+          <Row>
+            <Col sm={12} md={6}>
+              <Form inline className="w-100 mb-3">
+                <div className="w-100 promo-search">
+                  <Input.Search size="large" placeholder="Cari promo" />
+                </div>
+              </Form>
+            </Col>
+            <Col sm={12} md={6}>
+              <Select 
+                size="large" 
+                className="w-100" 
+                placeholder="Urutkan"
+                onChange={handleChange}
+              >
+                <Select.Option value="1">Promo terpopuler</Select.Option>
+                <Select.Option value="2">Promo terbaru</Select.Option>
+              </Select>
+            </Col>
+          </Row>
+        </section>
+
+        <section>
+          <Row>
+            {promos.reverse().map((data, i) => (
+              <Col md={4} sm={6} key={i}>
+                <CardPromoMemo image={data} />
+              </Col>
+            ))}
+          </Row>
+        </section>
+      </Container>
+
 
       <style jsx>{`
-        :global(body){
-          padding-top: 68px;
-        }
         .slider-container{
           width: 100%;
           height: 240px;
@@ -89,10 +107,8 @@ const Promo = () => {
           height: 100%;
           object-fit: cover;
         }
-        @media only screen and (max-width: 425px){
-          :global(body){
-            padding-top: 58px;
-          }
+        :global(.promo-search .ant-input-affix-wrapper > .ant-input-suffix > .ant-input-search-icon::before){
+          border-left: 0;
         }
         @media only screen and (max-width: 480px){
           .slider-container{

@@ -18,8 +18,8 @@ const CardPromo = ({ image }) => {
         </div>
         <Card.Body className="p-3">
           <Card.Text className="text-dark truncate-2 fs-14-s">
-            <a href="#" className="text-reset">
-              Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit
+            <a href="/promo/123" className="text-reset">
+              Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit
             </a>
           </Card.Text>
           <div className="promotion-date">
@@ -33,7 +33,7 @@ const CardPromo = ({ image }) => {
               <div className="promotion-box-label">Kode Promo</div>
               <div className="promotion-box__value">
                 <Paragraph copyable className="copy-code">
-                  HAHAHAFREE
+                  BRINUF4BRINUF4
                 </Paragraph>
               </div>
             </div>

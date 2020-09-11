@@ -30,7 +30,7 @@ const App = ({ Component, pageProps }) => {
         body {
           font-size: 1rem;
           line-height: 1.5;
-          padding-top: 90px;
+          padding-top: 68px;
         }
         section {
           margin-bottom: 1.5rem;
@@ -127,11 +127,12 @@ const App = ({ Component, pageProps }) => {
           -webkit-box-orient: vertical;
         }
 
-        @media only screen and (max-width: 600px){
-          body {
-            padding-top: 80px;
+        @media only screen and (max-width: 425px){
+          body{
+            padding-top: 58px;
           }
         }
+
       `}</style>
     </>
   );

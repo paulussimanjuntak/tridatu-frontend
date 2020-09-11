@@ -22,7 +22,7 @@ let banners = ['https://ecs7-p.tokopedia.net/img/cache/750/NsjrJu/2020/9/5/53863
 const Home = () => {
   return (
     <>
-      <Container>
+      <Container className="pt-4">
         <section className="banner-section d-lg-none">
           <Form inline className="mx-lg-2 w-100">
             <div className="w-100 nav-search home-search">
