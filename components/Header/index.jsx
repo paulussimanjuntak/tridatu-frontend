@@ -18,9 +18,11 @@ const category_data = [ "Aksesoris", "Baju", "Celana", "Jaket", "Tas Selempang"]
 
 const render_category = data => {
   const list_category = [];
-  data.forEach(x =>
+  data.forEach((x, i) =>
     list_category.push(
-      <NavDropdown.Item key={x + Math.random()}>{x}</NavDropdown.Item>
+      <Link href="/products" as="/products" key={i}>
+          <NavDropdown.Item as="a">{x}</NavDropdown.Item>
+      </Link>
     )
   );
   return list_category;

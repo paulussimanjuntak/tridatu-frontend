@@ -68,12 +68,6 @@ const CardProduct = () => {
           font-size: 12px;
           line-height: 16px;
         }
-        :global(.ant-rate){
-          color: #fbbc04;
-        }
-        :global(.ant-rate-star:not(:last-child)){
-          margin-right: 4px;
-        }
       `}</style>
     </>
   );
