@@ -78,23 +78,6 @@ const text = () => (
         Bank&nbsp;UOB&nbsp;Indonesia berhak menentukan siapa nasabah yang berhak
         mendapatkan hadiah dimana keputusan tersebut tidak dapat diganggu gugat.
       </li>
-      <li>
-        Bank&nbsp;UOB&nbsp;Indonesia berhak membatalkan pemberian hadiah apabila
-        ditemukan kecurangan yang melanggar syarat dan ketentuan ini dan/atau
-        syarat dan ketentuan Bank&nbsp;UOB&nbsp;Indonesia.
-      </li>
-      <li>
-        Bank&nbsp;UOB&nbsp;Indonesia berhak meninjau dan mengubah syarat dan
-        ketentuan program apabila dianggap perlu dan ketentuan tersebut tidak
-        dapat diganggu gugat.
-      </li>
-      <li>
-        Syarat dan Ketentuan Program ini merupakan satu kesatuan dan bagian yang
-        tidak terpisahkan dari program yang berlaku.&nbsp;Untuk informasi lebih
-        lanjut, hubungi&nbsp;<a href="mailto:kpr@uob.co.id">kpr@uob.co.id</a>.
-        Bank&nbsp;UOB&nbsp;Indonesia terdaftar dan diawasi oleh Otoritas Jasa
-        Keuangan (OJK).
-      </li>
     </ol>
     <p />
   </div>

@@ -36,6 +36,52 @@ const App = ({ Component, pageProps }) => {
           margin-bottom: 1.5rem;
         }
 
+        /*ANT RATE*/
+        .ant-rate{
+          color: #fbbc04;
+        }
+        .ant-rate-star:not(:last-child){
+          margin-right: 4px;
+        }
+        /*ANT RATE*/
+
+        /*ANT CHECKBOX*/
+        .ant-checkbox-checked .ant-checkbox-inner{
+          background-color: #ff4d4f;
+          border-color: #ff4d4f;
+        }
+        .ant-checkbox-wrapper:hover .ant-checkbox-inner, .ant-checkbox:hover .ant-checkbox-inner {
+          border-color: #ff4d4f;
+        }
+        .ant-checkbox-input:focus + .ant-checkbox-inner{
+          border: 1px solid #ff4d4f;
+        }
+        .ant-checkbox-checked::after{
+          border: 1px solid #ff4d4f;
+        }
+        /*ANT CHECKBOX*/
+
+        /*ANTD SLIDER*/
+        :global(.ant-slider-handle){
+          background-color: white;
+          border: solid 2px #ff4d4f;
+        }
+        :global(.ant-slider:hover .ant-slider-handle:not(.ant-tooltip-open)){
+          border-color: #d63031;
+        }
+        :global(.ant-slider-handle:focus, 
+                .ant-slider-handle-dragging.ant-slider-handle-dragging.ant-slider-handle-dragging){
+          border: solid 2px #ff4d4f;
+          box-shadow: 0 0 0 5px #ff4d4f36;
+        }
+        :global(.ant-slider:hover .ant-slider-track) {
+          background-color: #f9696be0;
+        }
+        :global(.ant-slider-track){
+          background-color: #f9696be0;
+        }
+        /*ANTD SLIDER*/
+
         /*SLICK-SLIDE*/
         .slick-slide {
           padding: 0px 15px;
@@ -53,6 +99,9 @@ const App = ({ Component, pageProps }) => {
 
         .text-tridatu{
           color: #d63031;
+        }
+        .text-tridatu:hover{
+          color: #ff4d4f;
         }
 
         /*CUSTOM BUTTON*/
@@ -125,6 +174,16 @@ const App = ({ Component, pageProps }) => {
           text-overflow: ellipsis;
           display: -webkit-box;
           -webkit-box-orient: vertical;
+        }
+
+        .noselect{
+          -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Safari */
+             -khtml-user-select: none; /* Konqueror HTML */
+               -moz-user-select: none; /* Old versions of Firefox */
+                -ms-user-select: none; /* Internet Explorer/Edge */
+                    user-select: none; /* Non-prefixed version, currently
+                                          supported by Chrome, Edge, Opera and Firefox */
         }
 
         @media only screen and (max-width: 425px){
