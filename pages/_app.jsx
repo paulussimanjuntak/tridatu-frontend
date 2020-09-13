@@ -36,6 +36,14 @@ const App = ({ Component, pageProps }) => {
           margin-bottom: 1.5rem;
         }
 
+        /*DROPDOWN BOOTSTRAP*/
+        .dropdown-item.active, 
+        .dropdown-item:active{
+          color: #212529;
+          background-color: #cccccc66;
+        }
+        /*DROPDOWN BOOTSTRAP*/
+
         /*ANT RATE*/
         .ant-rate{
           color: #fbbc04;
@@ -45,12 +53,36 @@ const App = ({ Component, pageProps }) => {
         }
         /*ANT RATE*/
 
+        /*ANT RADIO*/
+        .ant-radio{
+          top: -1px;
+        }
+        .ant-radio-checked::after{
+          border: 1px solid #ff4d4f;
+        }
+        .ant-radio-wrapper:hover .ant-radio, 
+        .ant-radio:hover .ant-radio-inner, 
+        .ant-radio-input:focus + .ant-radio-inner{
+          border-color: #ff4d4f;
+        }
+        .ant-radio-inner::after{
+          background-color: #ff4d4f;
+        }
+        .ant-radio-checked .ant-radio-inner{
+          border-color: #ff4d4f;
+        }
+        .ant-radio-input:focus + .ant-radio-inner{
+          box-shadow: 0 0 0 3px rgb(255 77 79 / 0.08);
+        }
+        /*ANT RADIO*/
+
         /*ANT CHECKBOX*/
         .ant-checkbox-checked .ant-checkbox-inner{
           background-color: #ff4d4f;
           border-color: #ff4d4f;
         }
-        .ant-checkbox-wrapper:hover .ant-checkbox-inner, .ant-checkbox:hover .ant-checkbox-inner {
+        .ant-checkbox-wrapper:hover .ant-checkbox-inner, 
+        .ant-checkbox:hover .ant-checkbox-inner {
           border-color: #ff4d4f;
         }
         .ant-checkbox-input:focus + .ant-checkbox-inner{
@@ -81,6 +113,23 @@ const App = ({ Component, pageProps }) => {
           background-color: #f9696be0;
         }
         /*ANTD SLIDER*/
+
+        /*ANTD INPUT NUMBER*/
+        .ant-input-number{
+          border-radius: .25rem;
+        }
+        .ant-input-number:focus, 
+        .ant-input-number-focused{
+          box-shadow: none;
+          border-radius: .25rem;
+        }
+        .ant-input-number-input{
+          border-radius: .25rem;
+        }
+        .ant-input-number:hover .ant-input-number-handler-wrap{
+          opacity: 0;
+        }
+        /*ANTD INPUT NUMBER*/
 
         /*SLICK-SLIDE*/
         .slick-slide {
