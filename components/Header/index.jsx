@@ -205,22 +205,21 @@ const Header = () => {
 
               <span className="border-right mx-4"></span>
 
+              {/*
               <Dropdown overlay={accountMenu} placement="bottomRight">
                 <a onClick={e => e.preventDefault()} className="text-truncate text-dark align-middle">
                   <Avatar size="large" icon={<UserOutlined />} />
                   <span className="pl-2 align-middle">Jhon Bakery Handler</span>
                 </a>
               </Dropdown>
+              */}
 
-
-              {/*
               <Nav.Item className="mr-2 align-self-center d-none d-lg-block" onClick={showLoginHandler}>
                 <Button size="sm" className="btn-dark-tridatu-outline">Masuk</Button>
               </Nav.Item>
               <Nav.Item className="align-self-center d-none d-lg-block" onClick={showRegisterHandler}>
                 <Button size="sm" className="btn-tridatu">Daftar</Button>
               </Nav.Item>
-              */}
 
             </Nav>
           </Navbar.Collapse>

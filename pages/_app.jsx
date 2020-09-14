@@ -1,5 +1,9 @@
+import { Provider } from "react-redux";
+
 import Head from "next/head";
 import Layout from "components/Layout";
+
+import withReduxStore from "lib/with-redux-store";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "antd/dist/antd.css";
@@ -7,7 +11,7 @@ import "antd/dist/antd.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const App = ({ Component, pageProps }) => {
+const App = ({ Component, pageProps, store }) => {
   return (
     <>
       <Head>
@@ -23,9 +27,12 @@ const App = ({ Component, pageProps }) => {
         <link rel="stylesheet" href="/static/css/utility.min.css" />
       </Head>
 
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <Provider store={store}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </Provider>
+
       <style global jsx>{`
         body {
           font-size: 1rem;
@@ -271,4 +278,9 @@ const App = ({ Component, pageProps }) => {
   );
 };
 
-export default App;
+App.getInitialProps = async ({ Component, ctx }) => {
+  const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
+  return { pageProps };
+};
+
+export default withReduxStore(App);
