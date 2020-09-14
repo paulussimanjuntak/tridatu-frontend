@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, Rate, Tag, InputNumber, Radio, Checkbox, Drawer } from 'antd';
+import { Menu, Rate, Tag, InputNumber, Radio, Checkbox, Drawer, Tabs, Input } from 'antd';
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -7,7 +7,9 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import ButtonBoot from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+
 import CardProduct from "components/Card/Product";
+import Pagination from "components/Pagination";
 
 const CardProductMemo = React.memo(CardProduct);
 
@@ -17,6 +19,8 @@ const renderTitle = (title) => <b className="text-dark">{title}</b>
 const renderSubTitle = (title) => <span className="text-muted">{title}</span>
 
 const listFilter = ['Kemeja', 'Batik', 'Kaos', 'Jaket', 'Jeans', 'Celana', 'Ikat Pinggang', 'Tas Selempang', 'Kemeja', 'Batik', 'Kaos', 'Jaket', 'Jeans', 'Celana', 'Ikat Pinggang', 'Tas Selempang'];
+
+const listCategory = [ { title: "Baju", child: ['Kaos', 'Kemeja'] }, { title: "Ikat Pinggang", child: ['Kulit', 'Kanvas'] }, { title: "Celana", child: ['Kain', 'Jeans', 'Panjang', 'Pendek'] }, { title: "Jaket", child: ['Kain', 'Kulit', 'Kanvas'] }, { title: "Tas Selempang", child: ['Kain', 'Kulit', 'Kanvas'] } ]
 
 const ProductContainer = () => {
   const [visible, setVisible] = useState(false);
@@ -32,6 +36,15 @@ const ProductContainer = () => {
   return(
     <>
       <Container className="pt-4 pb-2">
+
+        <section className="banner-section d-lg-none">
+          <Form inline className="mx-lg-2 w-100">
+            <div className="w-100 nav-search product-search">
+              <Input.Search size="large" placeholder="Search" />
+            </div>
+          </Form>
+        </section>
+
         <Row>
           <Col>
             <span className="text-secondary">Hasil pencarian dari "Baju"</span>
@@ -41,39 +54,22 @@ const ProductContainer = () => {
       <hr />
       <Container className="pb-3 pt-3">
         <Row>
-          <Col className="col-3 d-none d-lg-block">
+          <Col className="col-3 d-none d-lg-block ">
             <h6>Filter</h6>
             <Card className="border-0 shadow-filter">
               <Menu
                 className="filter-menu noselect"
-                defaultSelectedKeys={['1']}
                 defaultOpenKeys={['sub1', 'sub6', 'sub7']}
                 mode="inline"
               >
                 <Menu.SubMenu key="sub1" title={renderTitle('Kategori')}>
-                  <Menu.SubMenu key="sub2" title={renderSubTitle('Baju')}>
-                    <Menu.Item key="7" className="text-secondary">Kaos</Menu.Item>
-                    <Menu.Item key="8" className="text-secondary">Kemeja</Menu.Item>
-                  </Menu.SubMenu>
-                  <Menu.SubMenu key="sub4" title={renderSubTitle('Ikat Pinggang')}>
-                    <Menu.Item key="5" className="text-secondary">Kulit</Menu.Item>
-                    <Menu.Item key="6" className="text-secondary">Kanvas</Menu.Item>
-                  </Menu.SubMenu>
-                  <Menu.SubMenu key="sub5" title={renderSubTitle('Celana')}>
-                    <Menu.Item key="12" className="text-secondary">Kain</Menu.Item>
-                    <Menu.Item key="9" className="text-secondary">Jeans</Menu.Item>
-                    <Menu.Item key="10" className="text-secondary">Panjang</Menu.Item>
-                    <Menu.Item key="11" className="text-secondary">Pendek</Menu.Item>
-                  </Menu.SubMenu>
-                  <Menu.SubMenu key="sub8" title={renderSubTitle('Jaket')}>
-                    <Menu.Item key="121" className="text-secondary">Kain</Menu.Item>
-                    <Menu.Item key="91" className="text-secondary">Jeans</Menu.Item>
-                    <Menu.Item key="101" className="text-secondary">Kulit</Menu.Item>
-                  </Menu.SubMenu>
-                  <Menu.SubMenu key="sub9" title={renderSubTitle('Tas Selempang')}>
-                    <Menu.Item key="122" className="text-secondary">Kain</Menu.Item>
-                    <Menu.Item key="102" className="text-secondary">Kulit</Menu.Item>
-                  </Menu.SubMenu>
+                  {listCategory.map((x, i) => (
+                    <Menu.SubMenu key={i} title={renderSubTitle(x.title)}>
+                      {x.child.map(y => (
+                        <Menu.Item key={y+x.title} className="text-secondary">{y}</Menu.Item>
+                      ))}
+                    </Menu.SubMenu>
+                  ))}
                 </Menu.SubMenu>
 
                 <Menu.SubMenu key="sub7" className="filter-checkbox" title={renderTitle('Rating')}>
@@ -92,6 +88,9 @@ const ProductContainer = () => {
                   */}
                   <Menu.Item className="checkbox-item">
                     <Radio.Group onChange={e => console.log(e.target.value)}>
+                      <Radio style={radioStyle} value={3}>
+                        <span className="text-secondary m-l-2">Lihat semua</span>
+                      </Radio>
                       <Radio style={radioStyle} value={1}>
                         <Rate disabled defaultValue={1} count={1} className="filter-rate" />
                         <span className="text-secondary">4 Keatas</span>
@@ -148,12 +147,18 @@ const ProductContainer = () => {
               <a href="#" className="text-tridatu fs-14">Hapus Semua</a>
             </div>
 
-            <Row className="row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4">
+            <Row className="row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 custom-gutters">
               {[...Array(10)].map((_, i) => (
                 <Col key={i}>
                   <CardProductMemo />
                 </Col>
               ))}
+            </Row>
+
+            <Row className="mt-4">
+              <Col className="align-self-center text-center">
+                <Pagination />
+              </Col>
             </Row>
           </Col>
         </Row>
@@ -167,35 +172,111 @@ const ProductContainer = () => {
         </Row>
       </Container>
 
-       <Drawer
+      <Drawer
         placement="bottom"
         title="Filter"
-        closeIcon={<i className="fas fa-times" />}
+        closeIcon={
+          <span 
+            onClick={(e) => {e.stopPropagation(); console.log('close click')}}
+            className="font-weight-lighter fs-14 text-tridatu"
+          >
+            Reset
+          </span>
+        }
         onClose={onClose}
         visible={visible}
         bodyStyle={{padding: 0, backgroundColor:'#f5f5f5'}}
         className="d-block d-sm-block d-md-block d-lg-none d-xl-none"
-        height="100vh"
+        height="100%"
         zIndex="1030"
+        headerStyle={{ border: '0px', boxShadow:'rgba(0,0,0,0.18) 0px 1px 15px', zIndex: '1' }}
+        footer={
+          <div style={{ textAlign: 'right' }} >
+           <ButtonBoot 
+             variant="link" 
+             className="mr-2 rounded-0 text-reset"
+             onClick={onClose}
+           >
+             Batal
+           </ButtonBoot>
+           <ButtonBoot 
+             className="btn-tridatu rounded-0"
+             onClick={onClose}
+           > 
+             Terapkan
+           </ButtonBoot>
+          </div>
+        }
       >
-         <Row className="mb-2 mt-1">
-           <Col>
-             <Card className="border-0 radius-0">
-               <Card.Body>
-                 <Card.Title>Harga</Card.Title>
-               </Card.Body>
-             </Card>
-           </Col>
-         </Row>
-         <Row>
-           <Col>
-             <Card className="border-0 radius-0">
-               <Card.Body>
-                 <Card.Title>Harga</Card.Title>
-               </Card.Body>
-             </Card>
-           </Col>
-         </Row>
+        <Card className="border-0 rounded-0 w-100 card-mobile-filter">
+          <Card.Body>
+            <h6>Kategori</h6>
+            <Tabs>
+              {listCategory.map((x, i) => (
+                <Tabs.TabPane tab={x.title} key={i}>
+                  <Form.Group className="mb-0 filter-category-body">
+                    <Radio.Group onChange={e => console.log(e.target.value)}>
+                      <Radio style={radioStyle} value={x.title}>
+                        <span className="text-secondary m-l-2">Lihat Semua {x.title}</span>
+                      </Radio>
+                      {x.child.map((x, i) => (
+                        <Radio style={radioStyle} value={x} key={i}>
+                          <span className="text-secondary m-l-2">{x}</span>
+                        </Radio>
+                      ))}
+                    </Radio.Group>
+                  </Form.Group>
+                </Tabs.TabPane>
+              ))}
+            </Tabs>
+          </Card.Body>
+        </Card>
+
+        <Card className="border-0 rounded-0 w-100 card-mobile-filter">
+          <Card.Body>
+            <h6>Harga</h6>
+            <Form.Group>
+              <Form.Label className="text-secondary m-b-0">Minimum</Form.Label>
+              <InputNumber formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                parser={value => value.replace(/\Rp\s?|(\.*)/g, "")}
+                className={`w-100`}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label className="text-secondary m-b-0">Maksimum</Form.Label>
+              <InputNumber formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                parser={value => value.replace(/\Rp\s?|(\.*)/g, "")}
+                className={`w-100`}
+              />
+            </Form.Group>
+            <Form.Group className="mb-1">
+              <Checkbox>
+                <span className="text-secondary">Diskon</span>
+              </Checkbox>
+            </Form.Group>
+          </Card.Body>
+        </Card>
+
+        <Card className="border-0 rounded-0 w-100 card-mobile-filter">
+          <Card.Body>
+            <h6>Rating</h6>
+            <Form.Group className="mb-1">
+              <Radio.Group onChange={e => console.log(e.target.value)}>
+                <Radio style={radioStyle} value={3}>
+                  <span className="text-secondary m-l-2">Lihat semua</span>
+                </Radio>
+                <Radio style={radioStyle} value={1}>
+                  <Rate disabled defaultValue={1} count={1} className="filter-rate" />
+                  <span className="text-secondary pl-1">4 Keatas</span>
+                </Radio>
+                <Radio style={radioStyle} value={2}>
+                  <Rate disabled defaultValue={1} count={1} className="filter-rate" />
+                  <span className="text-secondary pl-1">3 Keatas</span>
+                </Radio>
+              </Radio.Group>
+            </Form.Group>
+          </Card.Body>
+        </Card>
       </Drawer>
 
       <style jsx>{ProductsStyle}</style>
@@ -206,6 +287,16 @@ const ProductContainer = () => {
           padding: 4px 10px;
           background: transparent;
           border-radius: .25rem;
+        }
+        :global(.card-mobile-filter:first-child){
+          margin-top: .5rem;
+        }
+        :global(.card-mobile-filter){
+          margin-bottom: .5rem;
+        }
+        :global(.filter-category-body){
+          max-height: 200px;
+          overflow-y: auto;
         }
       `}</style>
     </>

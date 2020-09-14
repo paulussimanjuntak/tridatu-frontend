@@ -25,7 +25,7 @@ const Home = () => {
       <Container className="pt-4">
         <section className="banner-section d-lg-none">
           <Form inline className="mx-lg-2 w-100">
-            <div className="w-100 nav-search home-search">
+            <div className="w-100 nav-search product-search">
               <Input.Search size="large" placeholder="Search" />
             </div>
           </Form>
@@ -55,7 +55,7 @@ const Home = () => {
 
         <section>
           <h4 className="fs-20-s mb-4">Paling Banyak Dilihat</h4>
-          <Row className="row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+          <Row className="row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 custom-gutters">
             {[...Array(10)].map((_, i) => (
               <Col key={i}>
                 <CardProductMemo />
@@ -84,11 +84,6 @@ const Home = () => {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-        }
-
-        :global(.home-search .ant-input-affix-wrapper){
-          background-color: #fff;
-          box-shadow: 0rem .3rem .8rem .0rem rgba(0,0,0,.15)!important;
         }
 
         @media only screen and (min-width: 600px){

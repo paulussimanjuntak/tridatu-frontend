@@ -241,6 +241,31 @@ const App = ({ Component, pageProps }) => {
           }
         }
 
+        .custom-gutters {
+          margin-right: -15px;
+          margin-left: -15px;
+        }
+        .custom-gutters > [class*="col-"], .custom-gutters > [class*="col"] {
+          padding-right: 15px;
+          padding-left: 15px;
+        }
+
+        @media only screen and (max-width: 767.98px){
+          .custom-gutters {
+            margin-right: -5px;
+            margin-left: -5px;
+          }
+          .custom-gutters > [class*="col-"], .custom-gutters > [class*="col"] {
+            padding-right: 5px;
+            padding-left: 5px;
+          }
+        }
+
+        .product-search .ant-input-affix-wrapper{
+          background-color: #fff;
+          box-shadow: 0rem .3rem .8rem .0rem rgba(0,0,0,.15)!important;
+        }
+
       `}</style>
     </>
   );
