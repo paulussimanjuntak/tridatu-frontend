@@ -2,7 +2,7 @@ import Row from "react-bootstrap/Row"
 import Col from "react-bootstrap/Col"
 import { LogoGoogle, LogoFacebook } from "./logo";
 
-const SocialLogin = () => {
+const SocialLogin = ({ text }) => {
   return(
     <>
       <Row>
@@ -12,7 +12,7 @@ const SocialLogin = () => {
               <div className="btn-login-icon">
                 <LogoGoogle />
               </div>
-              <span>Sign in with Google</span>
+              <span>{text} dengan Google</span>
             </button>
           </a>
         </Col>
@@ -22,7 +22,7 @@ const SocialLogin = () => {
               <div className="btn-login-icon">
                 <LogoFacebook />
               </div>
-              <span>Sign in with Google</span>
+              <span>{text} dengan Google</span>
             </button>
           </a>
         </Col>

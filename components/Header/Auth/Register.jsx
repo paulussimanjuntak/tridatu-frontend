@@ -32,7 +32,7 @@ const Register = ({ show, handler, close }) => {
           </Form.Group>
 
           <Form.Group>
-            <Form.Label>Email address</Form.Label>
+            <Form.Label>Email</Form.Label>
             <Form.Control type="email" placeholder="Email" />
           </Form.Group>
 
@@ -50,10 +50,10 @@ const Register = ({ show, handler, close }) => {
         </Form>
 
         <Divider className="mb-4" plain>
-          <span className="text-muted">atau masuk dengan</span>
+          <span className="text-muted">atau daftar dengan</span>
         </Divider>
 
-        <SocialLogin />
+        <SocialLogin text="Daftar" />
       </Modal>
     </>
   )

@@ -27,8 +27,8 @@ const Login = ({ show, handler, close }) => {
 
         <Form className="my-4">
           <Form.Group>
-            <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" />
+            <Form.Label>Email</Form.Label>
+            <Form.Control type="email" placeholder="Email" />
           </Form.Group>
 
           <Form.Group>
@@ -43,7 +43,7 @@ const Login = ({ show, handler, close }) => {
           <span className="text-muted">atau masuk dengan</span>
         </Divider>
 
-        <SocialLogin />
+        <SocialLogin text="Masuk" />
       </Modal>
     </>
   );
