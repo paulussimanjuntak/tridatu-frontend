@@ -4,7 +4,7 @@ import { Rate } from "antd";
 const CardProduct = () => {
   return (
     <>
-      <Card className="mb-4 border-0 shadow">
+      <Card className="m-b-10-s m-b-10-m m-b-30-t border-0 shadow">
         <Card.Img
           variant="top"
           src="https://www.specialbrandstore.com/wp-content/uploads/2017/08/3978-rvca-zap-va_1-330x0.jpg"
