@@ -40,7 +40,7 @@ const Promo = () => {
         </div>
       </div>
 
-      <Tabs activeKey={activeTab} onChange={callback} centered>
+      <Tabs activeKey={activeTab} onChange={callback} centered className="px-1">
         <TabPane tab="Semua Promo (12)" key={ALL_PROMO}>
         </TabPane>
 

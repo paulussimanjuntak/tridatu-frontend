@@ -91,7 +91,7 @@ const PromoDetail = () => {
 
   return(
     <>
-      <Container className="mb-5 pt-4">
+      <Container className="mb-5 pt-md-4 p-t-0-s p-l-0-s p-r-0-s">
         <Card className="border-0 shadow">
           <Card.Img variant="top" src="https://s1.bukalapak.com/promo/promo_partnerinfo_bloggy/original/3XE6rodxHGkoB3Sev2zijM-wBloggy_1.jpg" />
           <Card.Body>
@@ -104,15 +104,15 @@ const PromoDetail = () => {
                 <a className="text-reset"><i className="fal fa-share-square" /><span className="ml-1">Share</span></a>
               </span>
             </div>
-            <h3 className="fs-22-s">Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit</h3>
-            <Card.Text>
+            <h3 className="fs-18-s">Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit</h3>
+            <Card.Text className="fs-14-s">
               Promo elektronik rumah pintar cashback hingga 200 ribu di Tokopedia, 
               yuk cek promonya sekarang hanya di Tokopedia!
             </Card.Text>
 
             <Card className="border-0">
-              <Card.Body>
-                <Table>
+              <Card.Body className="p-0 fs-12-s">
+                <Table responsive>
                   <tbody>
                     <tr>
                       <th>Minimum Pembayaran</th>
