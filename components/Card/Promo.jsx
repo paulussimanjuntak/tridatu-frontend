@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Card from "react-bootstrap/Card";
 import { Typography } from 'antd';
 
@@ -18,9 +19,11 @@ const CardPromo = ({ image }) => {
         </div>
         <Card.Body className="p-3">
           <Card.Text className="text-dark truncate-2 fs-14-s">
-            <a href="/promo/123" className="text-reset">
-              Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit
-            </a>
+            <Link href="/promo/belanja-diskon-serbu" as="/promo/belanja-diskon-serbu">
+              <a className="text-reset">
+                Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit
+              </a>
+            </Link>
           </Card.Text>
           <div className="promotion-date">
             <div className="promotion-date-detail">

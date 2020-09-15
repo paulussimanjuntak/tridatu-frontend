@@ -33,23 +33,38 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
               <Nav.Link onClick={register}>Daftar</Nav.Link>
             </>
           )}
-          <Link href="/" as="/">
-            <Nav.Link as="a" onClick={close}>
-              Beranda
-            </Nav.Link>
-          </Link>
+
           <Link href="/products" as="/products">
             <Nav.Link as="a" onClick={close}>
               Kategori
             </Nav.Link>
           </Link>
+
           <Link href="/promo" as="/promo">
             <Nav.Link as="a" onClick={close}>
               Promo
             </Nav.Link>
           </Link>
+
           {isAuth && (
-            <Nav.Link onClick={logout}>Keluar</Nav.Link>
+            <>
+              <Link href="#" as="#">
+                <Nav.Link as="a" onClick={close}>
+                  Informasi Akun
+                </Nav.Link>
+              </Link>
+              <Link href="#" as="#">
+                <Nav.Link as="a" onClick={close}>
+                  Belanjaan Saya
+                </Nav.Link>
+              </Link>
+              <Link href="#" as="#">
+                <Nav.Link as="a" onClick={close}>
+                  Favorit
+                </Nav.Link>
+              </Link>
+              <Nav.Link onClick={logout}>Keluar</Nav.Link>
+            </>
           )}
         </Nav>
       </Drawer>

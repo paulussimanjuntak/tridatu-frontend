@@ -1,5 +1,6 @@
 import { Collapse, Typography } from 'antd';
 
+import Link from 'next/link'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Card from 'react-bootstrap/Card'
@@ -158,7 +159,9 @@ const PromoDetail = () => {
           </Row>
 
           <div className="text-center mb-5 mt-3">
-            <Button className="btn-dark-tridatu-outline mx-auto">Lihat Semua Promo</Button>
+            <Link href="/promo" as="/promo">
+              <Button as="a" className="btn-dark-tridatu-outline mx-auto">Lihat Semua Promo</Button>
+            </Link>
           </div>
 
         </section>

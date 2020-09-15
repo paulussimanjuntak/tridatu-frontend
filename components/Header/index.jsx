@@ -44,11 +44,11 @@ const menu = (
 
 const accountMenu = (logoutHandler) => (
   <Menu>
-    <Menu.Item> <a href="#"> Informasi Akun </a> </Menu.Item>
-    <Menu.Item> <a href="#"> Blanjaan Saya </a> </Menu.Item>
-    <Menu.Item> <a href="#"> Favorit </a> </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Informasi Akun </a> </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Belanjaan Saya </a> </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Favorit </a> </Menu.Item>
     <Menu.Divider />
-    <Menu.Item onClick={logoutHandler}> <a href="#"> Keluar </a> </Menu.Item>
+    <Menu.Item onClick={logoutHandler}> <a href="#" className="text-decoration-none"> Keluar </a> </Menu.Item>
   </Menu>
 );
 
@@ -108,7 +108,7 @@ const Header = () => {
         variant="light"
         bg="light"
         fixed="top"
-        className="bg-white navbar-shadow-bottom py-2"
+        className="bg-white navbar-shadow-bottom py-2 noselect"
       >
         <Container>
           <Navbar.Brand href="/" className="font-italic">
@@ -184,7 +184,7 @@ const Header = () => {
 
               {isAuth ? (
                 <Dropdown overlay={() => accountMenu(logoutHandler)} placement="bottomRight">
-                  <a onClick={e => e.preventDefault()} className="text-truncate text-dark align-middle">
+                  <a className="text-truncate text-dark align-middle text-decoration-none">
                     <Avatar size="large" src="https://api.mentimun-mentah.tech/static/avatars/default.png" />
                     <span className="pl-2 align-middle">Jhon Bakery Handler</span>
                   </a>
