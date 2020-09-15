@@ -3,7 +3,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import reducers from "./reducers";
 
-export default (initialState) => {
+const Store = (initialState) => {
   const store = createStore(reducers, initialState, composeWithDevTools(applyMiddleware(thunk)));
 
   if (module.hot) {
@@ -15,3 +15,5 @@ export default (initialState) => {
 
   return store;
 };
+
+export default Store;

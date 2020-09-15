@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Input, Badge, Menu, Dropdown, Avatar } from "antd";
-import { UserOutlined } from '@ant-design/icons';
 
 import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
@@ -13,6 +13,8 @@ import Container from "react-bootstrap/Container";
 import Login from "../Header/Auth/Login";
 import Register from "../Header/Auth/Register";
 import MobileMenu from "./MobileMenu";
+
+import * as actions from "store/actions";
 
 const category_data = [ "Aksesoris", "Baju", "Celana", "Jaket", "Tas Selempang"];
 
@@ -30,66 +32,33 @@ const render_category = data => {
 
 const menu = (
   <Menu>
-    <Menu.Item>
-      <a href="#">
-        Notifikasi 
-      </a>
-    </Menu.Item>
+    <Menu.Item> <a href="#"> Notifikasi </a> </Menu.Item>
     <Menu.Divider />
-    <Menu.Item>
-      <a href="#">
-        Informasi Akun
-      </a>
-    </Menu.Item>
-    <Menu.Item>
-      <a href="#">
-        Blanjaan Saya
-      </a>
-    </Menu.Item>
-    <Menu.Item>
-      <a href="#">
-        Favorit
-      </a>
-    </Menu.Item>
+    <Menu.Item> <a href="#"> Informasi Akun </a> </Menu.Item>
+    <Menu.Item> <a href="#"> Blanjaan Saya </a> </Menu.Item>
+    <Menu.Item> <a href="#"> Favorit </a> </Menu.Item>
     <Menu.Divider />
-    <Menu.Item>
-      <a href="#">
-        Keluar
-      </a>
-    </Menu.Item>
+    <Menu.Item> <a href="#"> Keluar </a> </Menu.Item>
   </Menu>
 );
 
-const accountMenu = (
+const accountMenu = (logoutHandler) => (
   <Menu>
-    <Menu.Item>
-      <a href="#">
-        Informasi Akun
-      </a>
-    </Menu.Item>
-    <Menu.Item>
-      <a href="#">
-        Blanjaan Saya
-      </a>
-    </Menu.Item>
-    <Menu.Item>
-      <a href="#">
-        Favorit
-      </a>
-    </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Informasi Akun </a> </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Belanjaan Saya </a> </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Favorit </a> </Menu.Item>
     <Menu.Divider />
-    <Menu.Item>
-      <a href="#">
-        Keluar
-      </a>
-    </Menu.Item>
+    <Menu.Item onClick={logoutHandler}> <a href="#" className="text-decoration-none"> Keluar </a> </Menu.Item>
   </Menu>
 );
 
 const Header = () => {
+  const dispatch = useDispatch();
   const [showLogin, setShowLogin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+
+  const isAuth = useSelector(state => state.auth.auth)
 
   // LOGIN & REGISTER HANDLER
   const showLoginHandler = () => {
@@ -123,6 +92,14 @@ const Header = () => {
   }
   // MOBILE MENU HANDLER
 
+  const loginHandler = () => {
+    dispatch(actions.authSuccess())
+  }
+  const logoutHandler = () => {
+    dispatch(actions.logout())
+    setShowMobileMenu(false)
+  }
+
   return (
     <>
       <Navbar
@@ -131,7 +108,7 @@ const Header = () => {
         variant="light"
         bg="light"
         fixed="top"
-        className="bg-white navbar-shadow-bottom py-2"
+        className="bg-white navbar-shadow-bottom py-2 noselect"
       >
         <Container>
           <Navbar.Brand href="/" className="font-italic">
@@ -158,7 +135,7 @@ const Header = () => {
           </Navbar.Toggle>
 
           <Navbar.Toggle 
-            className="border-0 px-0" 
+            className="border-0 px-2"
             aria-controls="tridatu-navbar-nav" 
             onClick={showMobileMenuHandler}
           >
@@ -187,52 +164,56 @@ const Header = () => {
                 </div>
               </Form>
 
-              <Dropdown overlay={menu} placement="bottomCenter" trigger={['click']} arrow>
+              {/* <Dropdown overlay={menu} placement="bottomCenter" trigger={['click']} arrow> */}
                 <Nav.Link className="mx-2 d-none d-lg-block">
                   <Badge count={100} size="small" className="nav-notification">
                     <i className="far fa-bell fa-lg" />
                   </Badge>
                 </Nav.Link>
-              </Dropdown>
+              {/* </Dropdown> */}
 
-              <Dropdown overlay={menu} placement="bottomCenter" arrow>
+              {/* <Dropdown overlay={menu} placement="bottomCenter" arrow> */}
                 <Nav.Link className="ml-2 d-none d-lg-block">
                   <Badge count={100} size="small" className="nav-notification">
                     <i className="far fa-shopping-cart fa-lg" />
                   </Badge>
                 </Nav.Link>
-              </Dropdown>
+              {/* </Dropdown> */}
 
               <span className="border-right mx-4"></span>
 
-              {/*
-              <Dropdown overlay={accountMenu} placement="bottomRight">
-                <a onClick={e => e.preventDefault()} className="text-truncate text-dark align-middle">
-                  <Avatar size="large" icon={<UserOutlined />} />
-                  <span className="pl-2 align-middle">Jhon Bakery Handler</span>
-                </a>
-              </Dropdown>
-              */}
-
-              <Nav.Item className="mr-2 align-self-center d-none d-lg-block" onClick={showLoginHandler}>
-                <Button size="sm" className="btn-dark-tridatu-outline">Masuk</Button>
-              </Nav.Item>
-              <Nav.Item className="align-self-center d-none d-lg-block" onClick={showRegisterHandler}>
-                <Button size="sm" className="btn-tridatu">Daftar</Button>
-              </Nav.Item>
+              {isAuth ? (
+                <Dropdown overlay={() => accountMenu(logoutHandler)} placement="bottomRight">
+                  <a className="text-truncate text-dark align-middle text-decoration-none">
+                    <Avatar size="large" src="https://api.mentimun-mentah.tech/static/avatars/default.png" />
+                    <span className="pl-2 align-middle">Jhon Bakery Handler</span>
+                  </a>
+                </Dropdown>
+              ) : (
+                <>
+                  <Nav.Item className="mr-2 align-self-center d-none d-lg-block" onClick={showLoginHandler}>
+                    <Button size="sm" className="btn-dark-tridatu-outline">Masuk</Button>
+                  </Nav.Item>
+                  <Nav.Item className="align-self-center d-none d-lg-block" onClick={showRegisterHandler}>
+                    <Button size="sm" className="btn-tridatu">Daftar</Button>
+                  </Nav.Item>
+                </>
+              )}
 
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      <Login show={showLogin} handler={showRegisterHandler} close={closeModalHandler} />
-      <Register show={showRegister} handler={showLoginHandler} close={closeModalHandler} />
+      <Login show={showLogin} handler={showRegisterHandler} close={closeModalHandler} login={loginHandler} />
+      <Register show={showRegister} handler={showLoginHandler} close={closeModalHandler} login={loginHandler} />
       <MobileMenu 
+        isAuth={isAuth}
         visible={showMobileMenu} 
         close={closeMobileMenuHandler} 
         login={showLoginHandler} 
         register={showRegisterHandler}
+        logout={logoutHandler}
       />
 
       <style jsx>{`

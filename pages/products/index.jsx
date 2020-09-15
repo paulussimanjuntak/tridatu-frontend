@@ -24,6 +24,7 @@ const listCategory = [ { title: "Baju", child: ['Kaos', 'Kemeja'] }, { title: "I
 
 const ProductContainer = () => {
   const [visible, setVisible] = useState(false);
+  const [filter, setFilter] = useState(listFilter);
 
   const showDrawer = () => {
     setVisible(true);
@@ -87,7 +88,7 @@ const ProductContainer = () => {
                   </Menu.Item>
                   */}
                   <Menu.Item className="checkbox-item">
-                    <Radio.Group onChange={e => console.log(e.target.value)}>
+                    <Radio.Group className="w-100">
                       <Radio style={radioStyle} value={3}>
                         <span className="text-secondary m-l-2">Lihat semua</span>
                       </Radio>
@@ -131,21 +132,23 @@ const ProductContainer = () => {
             </Card>
           </Col> 
 
-          <Col className="">
+          <Col>
             <h4 className="mb-2 d-none d-lg-block">Produk</h4>
-            <div className="mb-3 d-none d-lg-block">
-              <span className="text-secondary font-weight-light">Filter aktif: </span>
-              {listFilter.map((data, i) => (
-                <Tag key={i} 
-                  closable 
-                  className="filter-tag"
-                  closeIcon={<i className="fas fa-times" />}
-                >
-                  {data}
-                </Tag>
-              ))}
-              <a href="#" className="text-tridatu fs-14">Hapus Semua</a>
-            </div>
+            {filter.length > 0 && (
+              <div className="mb-3 d-none d-lg-block noselect">
+                <span className="text-secondary font-weight-light">Filter aktif: </span>
+                {filter.map((data, i) => (
+                  <Tag key={i} 
+                    closable 
+                    className="filter-tag"
+                    closeIcon={<i className="fas fa-times" />}
+                  >
+                    {data}
+                  </Tag>
+                ))}
+                <a href="#" className="text-tridatu fs-14" onClick={() => setFilter([])}>Hapus Semua</a>
+              </div>
+            )}
 
             <Row className="row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 custom-gutters">
               {[...Array(10)].map((_, i) => (
@@ -215,7 +218,7 @@ const ProductContainer = () => {
               {listCategory.map((x, i) => (
                 <Tabs.TabPane tab={x.title} key={i}>
                   <Form.Group className="mb-0 filter-category-body">
-                    <Radio.Group onChange={e => console.log(e.target.value)}>
+                    <Radio.Group className="w-100">
                       <Radio style={radioStyle} value={x.title}>
                         <span className="text-secondary m-l-2">Lihat Semua {x.title}</span>
                       </Radio>
@@ -250,7 +253,7 @@ const ProductContainer = () => {
               />
             </Form.Group>
             <Form.Group className="mb-1">
-              <Checkbox>
+              <Checkbox className="w-100">
                 <span className="text-secondary">Diskon</span>
               </Checkbox>
             </Form.Group>
@@ -261,7 +264,7 @@ const ProductContainer = () => {
           <Card.Body>
             <h6>Rating</h6>
             <Form.Group className="mb-1">
-              <Radio.Group onChange={e => console.log(e.target.value)}>
+              <Radio.Group className="w-100">
                 <Radio style={radioStyle} value={3}>
                   <span className="text-secondary m-l-2">Lihat semua</span>
                 </Radio>

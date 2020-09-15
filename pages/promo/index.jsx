@@ -17,7 +17,7 @@ const TabPane = Tabs.TabPane ;
 let promos = ['https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-600x328-4.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/01/Thumbnail_600x3282.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-600x328.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/06/Thumbnail-23.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/08/REALME-THUMBNAIL.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-6.jpg', 'https://ecs7.tokopedia.net/img/blog/promo/2020/07/Thumbnail-Interior.png', 'https://ecs7.tokopedia.net/img/blog/promo/2019/09/ZHIYUN-THUMBNAIL.jpg']
 
 const ALL_PROMO = 'ALL_PROMO'
-const TRIDATU_PROMO = 'TRIDATU_PROMO'
+const SPECIAL_PROMO = 'SPECIAL_PROMO'
 const MONTHLY_PROMO = 'MONTHLY_PROMO'
 
 const Promo = () => {
@@ -40,11 +40,11 @@ const Promo = () => {
         </div>
       </div>
 
-      <Tabs activeKey={activeTab} onChange={callback} centered>
+      <Tabs activeKey={activeTab} onChange={callback} centered className="px-1 noselect">
         <TabPane tab="Semua Promo (12)" key={ALL_PROMO}>
         </TabPane>
 
-        <TabPane tab="Promo Tridatu (4)" key={TRIDATU_PROMO}>
+        <TabPane tab="Promo Spesial (4)" key={SPECIAL_PROMO}>
         </TabPane>
 
         <TabPane tab="Promo Bulan Ini (0)" key={MONTHLY_PROMO}>

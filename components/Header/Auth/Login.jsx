@@ -4,7 +4,13 @@ import Button from "react-bootstrap/Button";
 
 import SocialLogin from "./SocialLogin";
 
-const Login = ({ show, handler, close }) => {
+const Login = ({ show, handler, close, login }) => {
+
+  const loginHandler = () => {
+    login();
+    close();
+  }
+
   return (
     <>
       <Modal
@@ -36,7 +42,7 @@ const Login = ({ show, handler, close }) => {
             <Form.Control type="password" placeholder="Password" />
           </Form.Group>
 
-          <Button className="mt-4 btn-tridatu" block>Masuk</Button>
+          <Button className="mt-4 btn-tridatu" block onClick={loginHandler}>Masuk</Button>
         </Form>
 
         <Divider className="mb-4" plain>
