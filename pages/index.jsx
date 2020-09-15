@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -63,8 +64,12 @@ const Home = () => {
             ))}
           </Row>
           <div className="text-center mb-5 mt-3">
-            <Button size="lg" className="btn-dark-tridatu-outline d-none d-lg-block mx-auto">Muat Lebih Banyak</Button>
-            <Button className="btn-dark-tridatu-outline d-lg-none mx-auto">Muat Lebih Banyak</Button>
+            <Link href="/products" as="/products">
+              <Button size="lg" className="btn-dark-tridatu-outline d-none d-lg-block mx-auto">Lihat Semua Produk</Button>
+            </Link>
+            <Link href="/products" as="/products">
+              <Button className="btn-dark-tridatu-outline d-lg-none mx-auto">Lihat Semua Produk</Button>
+            </Link>
           </div>
         </section>
       </Container>

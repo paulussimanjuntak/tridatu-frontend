@@ -92,7 +92,7 @@ const PromoDetail = () => {
 
   return(
     <>
-      <Container className="mb-5 pt-md-4 p-t-0-s p-l-0-s p-r-0-s">
+      <Container className="mb-5 pt-md-4 p-t-0-s p-l-0-s p-r-0-s p-t-24-m">
         <Card className="border-0 shadow">
           <Card.Img variant="top" src="https://s1.bukalapak.com/promo/promo_partnerinfo_bloggy/original/3XE6rodxHGkoB3Sev2zijM-wBloggy_1.jpg" />
           <Card.Body>
