@@ -100,6 +100,23 @@ const ProductsStyle = css`
 :global(.filter-rate > .ant-rate-star){
   width: 20px;
 }
-`
+:global(.filter-tag){
+  margin-right: 7px;
+  margin-bottom: 7px;
+  padding: 4px 10px;
+  background: transparent;
+  border-radius: .25rem;
+}
+:global(.card-mobile-filter:first-child){
+  margin-top: .5rem;
+}
+:global(.card-mobile-filter){
+  margin-bottom: .5rem;
+}
+:global(.filter-category-body){
+  max-height: 200px;
+  overflow-y: auto;
+}
 
+`
 export default ProductsStyle

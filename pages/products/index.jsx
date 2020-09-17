@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, Rate, Tag, InputNumber, Radio, Checkbox, Drawer, Tabs, Input } from 'antd';
+import { Menu, Rate, Tag, InputNumber, Radio, Checkbox, Drawer, Tabs, Input, Select } from 'antd';
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -48,7 +48,19 @@ const ProductContainer = () => {
 
         <Row>
           <Col>
-            <span className="text-secondary">Hasil pencarian dari "Baju"</span>
+            <span className="text-secondary">Hasil pencarian dari "<span className="text-dark">Baju</span>"</span>
+          </Col>
+          <Col className="d-none d-lg-block">
+            <Form inline className="float-right">
+              <Form.Label className="my-1 mr-2">
+                Urutkan:
+              </Form.Label>
+              <Select defaultValue="1" style={{ width: 150 }}>
+                <Select.Option value="1">Paling Sesuai</Select.Option>
+                <Select.Option value="2">Harga Tertinggi</Select.Option>
+                <Select.Option value="3">Harga Terendah</Select.Option>
+              </Select>
+            </Form>
           </Col>
         </Row>
       </Container>
@@ -74,19 +86,6 @@ const ProductContainer = () => {
                 </Menu.SubMenu>
 
                 <Menu.SubMenu key="sub7" className="filter-checkbox" title={renderTitle('Rating')}>
-                  {/*
-                  <Menu.Item className="checkbox-item">
-                    <Checkbox name="_4keatas" checked={rating._4keatas} onChange={ratingHandler}>
-                      <Rate disabled defaultValue={1} count={1} className="filter-rate" />
-                      <span className="text-secondary">4 Keatas</span>
-                    </Checkbox>
-                    <br />
-                    <Checkbox name="_3keatas" checked={rating._3keatas} onChange={ratingHandler}>
-                      <Rate disabled defaultValue={1} count={1} className="filter-rate" />
-                      <span className="text-secondary">3 Keatas</span>
-                    </Checkbox>
-                  </Menu.Item>
-                  */}
                   <Menu.Item className="checkbox-item">
                     <Radio.Group className="w-100">
                       <Radio style={radioStyle} value={3}>
@@ -213,6 +212,25 @@ const ProductContainer = () => {
       >
         <Card className="border-0 rounded-0 w-100 card-mobile-filter">
           <Card.Body>
+            <h6>Urutkan</h6>
+            <Form.Group className="mb-1">
+              <Radio.Group className="w-100">
+                <Radio style={radioStyle} value={3}>
+                  <span className="text-secondary m-l-2">Paling Sesuai</span>
+                </Radio>
+                <Radio style={radioStyle} value={1}>
+                  <span className="text-secondary m-l-2">Harga Tertinggi</span>
+                </Radio>
+                <Radio style={radioStyle} value={2}>
+                  <span className="text-secondary m-l-2">Harga Terendah</span>
+                </Radio>
+              </Radio.Group>
+            </Form.Group>
+          </Card.Body>
+        </Card>
+
+        <Card className="border-0 rounded-0 w-100 card-mobile-filter">
+          <Card.Body>
             <h6>Kategori</h6>
             <Tabs>
               {listCategory.map((x, i) => (
@@ -283,25 +301,6 @@ const ProductContainer = () => {
       </Drawer>
 
       <style jsx>{ProductsStyle}</style>
-      <style jsx>{`
-        :global(.filter-tag){
-          margin-right: 7px;
-          margin-bottom: 7px;
-          padding: 4px 10px;
-          background: transparent;
-          border-radius: .25rem;
-        }
-        :global(.card-mobile-filter:first-child){
-          margin-top: .5rem;
-        }
-        :global(.card-mobile-filter){
-          margin-bottom: .5rem;
-        }
-        :global(.filter-category-body){
-          max-height: 200px;
-          overflow-y: auto;
-        }
-      `}</style>
     </>
   )
 }

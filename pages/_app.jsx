@@ -11,6 +11,8 @@ import "antd/dist/antd.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+import "react-image-gallery/styles/css/image-gallery.css";
+
 const App = ({ Component, pageProps, store }) => {
   return (
     <>
@@ -100,7 +102,7 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*ANT CHECKBOX*/
 
-        /*ANTD SLIDER*/
+        /*ANT SLIDER*/
         :global(.ant-slider-handle){
           background-color: white;
           border: solid 2px #ff4d4f;
@@ -119,15 +121,19 @@ const App = ({ Component, pageProps, store }) => {
         :global(.ant-slider-track){
           background-color: #f9696be0;
         }
-        /*ANTD SLIDER*/
+        /*ANT SLIDER*/
 
-        /*ANTD INPUT NUMBER*/
+        /*ANT INPUT NUMBER*/
         .ant-input-number{
           border-radius: .25rem;
+        }
+        .ant-input-number:hover{
+          border-color: #8c8c8c;
         }
         .ant-input-number:focus, 
         .ant-input-number-focused{
           box-shadow: none;
+          border-color: #8c8c8c;
           border-radius: .25rem;
         }
         .ant-input-number-input{
@@ -136,7 +142,60 @@ const App = ({ Component, pageProps, store }) => {
         .ant-input-number:hover .ant-input-number-handler-wrap{
           opacity: 0;
         }
-        /*ANTD INPUT NUMBER*/
+        /*ANT INPUT NUMBER*/
+
+        /*ANT SELECT*/
+        .ant-select-single:not(.ant-select-customize-input) .ant-select-selector{
+          border-radius: .25rem;
+        }
+        .ant-select:not(.ant-select-disabled):hover .ant-select-selector{
+          border-color: #8c8c8c !important;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%) !important;
+        }
+        .ant-select-focused:not(.ant-select-disabled).ant-select-single:not(.ant-select-customize-input) .ant-select-selector{
+          border-color: #8c8c8c !important;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%) !important;
+        }
+        .ant-select-focused.ant-select-single .ant-select-selector{
+          border-color: #8c8c8c !important;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%) !important;
+        }
+        /*ANT SELECT*/
+
+        /*ANT TABS*/
+        .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn{
+          color: #343a40!important;
+        }
+        .ant-tabs-ink-bar{
+          background: #343a40!important;
+        }
+        .ant-tabs-tab:hover{
+          color: #505050 !important;
+        }
+        .ant-tabs-tab{
+          color: #5d5d5d !important;
+        }
+        .ant-tabs-tab-btn:focus, 
+        .ant-tabs-tab-remove:focus, 
+        .ant-tabs-tab-btn:active, 
+        .ant-tabs-tab-remove:active{
+          color: #343a40!important;
+        }
+        /*ANT TABS*/
+
+        /*ANT INPUT SEARCH*/
+        .ant-input-affix-wrapper{
+          border-radius: .25rem;
+        }
+        .ant-input-affix-wrapper:focus, 
+        .ant-input-affix-wrapper-focused{
+          border-color: #8c8c8c !important;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%) !important;
+        }
+        .ant-input-affix-wrapper:hover{
+          border-color: #8c8c8c !important;
+        }
+        /*ANT INPUT SEARCH*/
 
         /*SLICK-SLIDE*/
         .slick-slide {
