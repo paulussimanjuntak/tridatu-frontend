@@ -3,6 +3,8 @@ import Container from 'react-bootstrap/Container'
 let year = new Date()
 year = year.getFullYear()
 
+const IMG_SOS = '/static/images/social-media'
+
 const Footer = () => {
   return(
     <>
@@ -23,18 +25,26 @@ const Footer = () => {
                     </b>
                   </h5>
                   <p className="social mt-3 mb-3">
-                    <span>
-                      <i className="fab fa-facebook-square" />
-                    </span>
-                    <span>
-                      <i className="fab fa-instagram-square" />
-                    </span>
-                    <span>
-                      <i className="fab fa-twitter-square" />
-                    </span>
-                    <span>
-                      <i className="fab fa-google-plus-square" />
-                    </span>
+                    <img
+                      src={`${IMG_SOS}/facebook.png`}
+                      className="social-img"
+                      alt="tridatu-bali"
+                    />
+                    <img
+                      src={`${IMG_SOS}/instagram.png`}
+                      className="social-img"
+                      alt="tridatu-bali"
+                    />
+                    <img
+                      src={`${IMG_SOS}/twitter.png`}
+                      className="social-img"
+                      alt="tridatu-bali"
+                    />
+                    <img
+                      src={`${IMG_SOS}/tiktok.png`}
+                      className="social-img"
+                      alt="tridatu-bali"
+                    />
                   </p>
                   <small className="copy-rights cursor-pointer">
                     Ⓒ {year} Tridatu Bali ID
@@ -73,7 +83,7 @@ const Footer = () => {
 
                 <div className="col-md-12 col-lg-3 col-12 my-sm-0 mt-5 mt-0-s">
                   <ul className="list-unstyled multi-bank">
-                    <li className="mt-md-3 mt-4 mb-2">Metode Pengiriman</li>
+                    <li className="mt-md-3 mt-4 mb-2">Metode Pembayaran</li>
                     <div className="img-bank">
                       <img
                         src="https://www.gramedia.com/assets/bank/payment-mandiri.png"
@@ -149,7 +159,12 @@ const Footer = () => {
 
         .social {
           position: relative;
-          left: -10px;
+        }
+        .social .social-img{
+          opacity: .6;
+          width: 23px;
+          height: 100%;
+          margin-right: 10px;
         }
 
         .cursor-pointer {
