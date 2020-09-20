@@ -13,6 +13,8 @@ import "slick-carousel/slick/slick-theme.css";
 
 import "react-image-gallery/styles/css/image-gallery.css";
 
+import "react-circular-progressbar/dist/styles.css";
+
 const App = ({ Component, pageProps, store }) => {
   return (
     <>
@@ -197,6 +199,16 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*ANT INPUT SEARCH*/
 
+        /*ANT BUTTON*/
+        .ant-btn, .ant-btn-icon-only, .ant-btn-icon-only.ant-btn-lg{
+          border-radius: .2rem;
+        }
+        .ant-btn:hover, .ant-btn:focus, .ant-btn:active{
+          border-color: #8c8c8c !important;
+          color: inherit;
+        } 
+        /*ANT BUTTON*/
+
         /*SLICK-SLIDE*/
         .slick-slide {
           padding: 0px 15px;
@@ -228,18 +240,20 @@ const App = ({ Component, pageProps, store }) => {
         .btn-tridatu:hover{
           color: #fff;
           background-color: #d63031;
-          border-color: #d63031;
+          border-color: #d63031 !important;
         }
         .btn-tridatu.focus, .btn-tridatu:focus{
+          color: #fff;
           background-color: #d63031;
-          border-color: #d63031;
+          border-color: #d63031 !important;
           box-shadow: 0 0 0 0.2rem rgb(255 77 79 / 16%);
         }
         .btn-tridatu:not(:disabled):not(.disabled).active, 
         .btn-tridatu:not(:disabled):not(.disabled):active, 
         .show>.btn-tridatu.dropdown-toggle{
+          color: #fff;
           background-color: #d63031;
-          border-color: #d63031;
+          border-color: #d63031 !important;
         }
         .btn-tridatu:not(:disabled):not(.disabled).active:focus,
         .btn-tridatu:not(:disabled):not(.disabled):active:focus,
@@ -289,6 +303,10 @@ const App = ({ Component, pageProps, store }) => {
           text-overflow: ellipsis;
           display: -webkit-box;
           -webkit-box-orient: vertical;
+        }
+
+        .va-inherit{
+          vertical-align: inherit!important;
         }
 
         .noselect{
