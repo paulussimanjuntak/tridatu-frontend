@@ -62,16 +62,13 @@ const UlasanContainer = () => {
 
   return (
     <>
-      {[...Array(3)].map((_, i) => (
-        <Comment
-          key={i}
-          actions={actions}
-          author={<b>Han Solo</b>}
-          avatar={avatar}
-          content={content}
-          datetime={datetime}
-        />
-      ))}
+      <Comment
+        actions={actions}
+        author={<b>Han Solo</b>}
+        avatar={avatar}
+        content={content}
+        datetime={datetime}
+      />
     </>
   )
 }

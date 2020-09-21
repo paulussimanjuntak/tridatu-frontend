@@ -4,18 +4,14 @@ const itemRender = (_, type, originalElement) => {
   if (type === "prev") {
     return(
       <div className="prev-next-pagination">
-        <a>
-          <i className="far fa-chevron-left va-1px" />
-        </a>
+        <i className="far fa-chevron-left va-1px" />
       </div>
     ) 
   }
   if (type === "next") {
     return(
       <div className="prev-next-pagination">
-        <a>
-          <i className="far fa-chevron-right va-1px" />
-        </a>
+        <i className="far fa-chevron-right va-1px" />
       </div>
     ) 
   }
