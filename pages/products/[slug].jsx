@@ -9,6 +9,7 @@ import Container from 'react-bootstrap/Container'
 
 import ImageGallery from 'react-image-gallery'
 
+import Pagination from "components/Pagination";
 import UlasanContainer from 'components/Card/Ulasan'
 import { renderLeftNav, renderRightNav, renderFullscreenButton } from 'components/Products/ImageGalleryButton'
 import PHOTOS from 'components/Products/photos'
@@ -286,8 +287,15 @@ const ProductDetail = () => {
                   <Col><h5 className="text-secondary">Daftar Ulasan</h5></Col>
                 </Row>
                 <Row className="mt-3">
-                  <Col className="col-12">
-                    <UlasanContainer />
+                  {[...Array(3)].map((_,i) => (
+                    <Col className="col-12 border-bottom" key={i}>
+                      <UlasanContainer />
+                    </Col>
+                  ))}
+                </Row>
+                <Row className="mt-3">
+                  <Col className="align-self-center text-right">
+                    <Pagination />
                   </Col>
                 </Row>
               </Tabs.TabPane>

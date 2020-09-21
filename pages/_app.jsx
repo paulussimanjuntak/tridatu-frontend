@@ -76,7 +76,7 @@ const App = ({ Component, pageProps, store }) => {
         .ant-radio-input:focus + .ant-radio-inner{
           border-color: #ff4d4f;
         }
-        .ant-radio-inner::after{
+        .ant-radio-inner::after, .ant-checkbox-indeterminate .ant-checkbox-inner::after{
           background-color: #ff4d4f;
         }
         .ant-radio-checked .ant-radio-inner{
@@ -207,7 +207,17 @@ const App = ({ Component, pageProps, store }) => {
           border-color: #8c8c8c !important;
           color: inherit;
         } 
+        .ant-btn-primary:hover, .ant-btn-primary:focus{
+          border-color: #40a9ff !important;
+          color: #fff;
+        }
         /*ANT BUTTON*/
+
+        /*ANT ICON*/
+        .ant-message .anticon{
+          vertical-align: 0.125em;
+        }
+        /*ANT ICON*/
 
         /*SLICK-SLIDE*/
         .slick-slide {
