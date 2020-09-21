@@ -9,6 +9,7 @@ import Container from 'react-bootstrap/Container'
 
 import ImageGallery from 'react-image-gallery'
 
+import UlasanContainer from 'components/Card/Ulasan'
 import { renderLeftNav, renderRightNav, renderFullscreenButton } from 'components/Products/ImageGalleryButton'
 import PHOTOS from 'components/Products/photos'
 
@@ -207,7 +208,7 @@ const ProductDetail = () => {
                           className="header-product-rating-rate"
                           allowHalf
                           disabled
-                          defaultValue={5}
+                          value={5}
                         />
                         <p className="font-weight-light mb-0">dari 20 ulasan</p>
                       </div>
@@ -283,6 +284,11 @@ const ProductDetail = () => {
                 </Row>
                 <Row className="mt-5">
                   <Col><h5 className="text-secondary">Daftar Ulasan</h5></Col>
+                </Row>
+                <Row className="mt-3">
+                  <Col className="col-12">
+                    <UlasanContainer />
+                  </Col>
                 </Row>
               </Tabs.TabPane>
             </Tabs>
