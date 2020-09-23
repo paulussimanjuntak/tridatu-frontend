@@ -129,9 +129,13 @@ const Header = () => {
             </Badge>
           </Navbar.Toggle>
           <Navbar.Toggle className="border-0 mx-2 pl-1 d-lg-none">
-            <Badge count={400} size="small" className="nav-notification">
-              <i className="far fa-shopping-cart fa-lg" />
-            </Badge>
+            <Link href="/cart" as="/cart">
+              <a>
+                <Badge count={400} size="small" className="nav-notification">
+                  <i className="far fa-shopping-cart fa-lg" />
+                </Badge>
+              </a>
+            </Link>
           </Navbar.Toggle>
 
           <Navbar.Toggle 
@@ -173,11 +177,13 @@ const Header = () => {
               {/* </Dropdown> */}
 
               {/* <Dropdown overlay={menu} placement="bottomCenter" arrow> */}
-                <Nav.Link className="ml-2 d-none d-lg-block">
-                  <Badge count={100} size="small" className="nav-notification">
-                    <i className="far fa-shopping-cart fa-lg" />
-                  </Badge>
-                </Nav.Link>
+                <Link href="/cart" as="/cart">
+                  <Nav.Link as="a" className="ml-2 d-none d-lg-block">
+                    <Badge count={100} size="small" className="nav-notification">
+                      <i className="far fa-shopping-cart fa-lg" />
+                    </Badge>
+                  </Nav.Link>
+                </Link>
               {/* </Dropdown> */}
 
               <span className="border-right mx-4"></span>
