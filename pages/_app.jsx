@@ -146,6 +146,12 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*ANT INPUT NUMBER*/
 
+        /*ANT INPUT*/
+        .ant-input{
+          border-radius: .25rem;
+        }
+        /*ANT INPUT*/
+
         /*ANT SELECT*/
         .ant-select-single:not(.ant-select-customize-input) .ant-select-selector{
           border-radius: .25rem;
@@ -197,11 +203,16 @@ const App = ({ Component, pageProps, store }) => {
         .ant-input-affix-wrapper:hover{
           border-color: #8c8c8c !important;
         }
+        .ant-input-search-enter-button input:hover, 
+        .ant-input-search-enter-button input:focus{
+          border-color: #8c8c8c !important;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%) !important;
+        }
         /*ANT INPUT SEARCH*/
 
         /*ANT BUTTON*/
         .ant-btn, .ant-btn-icon-only, .ant-btn-icon-only.ant-btn-lg{
-          border-radius: .2rem;
+          border-radius: .25rem;
         }
         .ant-btn:hover, .ant-btn:focus, .ant-btn:active{
           border-color: #8c8c8c !important;
@@ -212,6 +223,12 @@ const App = ({ Component, pageProps, store }) => {
           color: #fff;
         }
         /*ANT BUTTON*/
+
+        /*ANT BREADCRUMB*/
+        .ant-breadcrumb a:hover{
+          color: #505050d6 !important;
+        }
+        /*ANT BREADCRUMB*/
 
         /*ANT ICON*/
         .ant-message .anticon{
@@ -307,6 +324,10 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*CUSTOM BUTTON*/
 
+        .fw-500{
+          font-weight: 500!important;
+        }
+
         .truncate-2 {
           -webkit-line-clamp: 2;
           overflow: hidden;
@@ -333,6 +354,14 @@ const App = ({ Component, pageProps, store }) => {
           body{
             padding-top: 58px;
           }
+        }
+
+        .border-bottom-5{
+          border-bottom: 5px solid rgb(243,244,245);
+        }
+
+        .border-top-5{
+          border-top: 5px solid rgb(243,244,245);
         }
 
         .custom-gutters {

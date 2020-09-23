@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Rate, InputNumber, Button, Select, Tabs, Progress } from "antd";
+import { Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb } from "antd";
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 
 import Row from 'react-bootstrap/Row'
@@ -29,9 +29,19 @@ const ProductDetail = () => {
       setQuantity(quantity+1) 
     }
   }
+
   return(
     <>
       <Container className="pt-4 pb-2">
+        <Row className="mb-3">
+          <Col className="col-12">
+            <Breadcrumb>
+              <Breadcrumb.Item href="/products">Products</Breadcrumb.Item>
+              <Breadcrumb.Item href="/products">Baju</Breadcrumb.Item>
+              <Breadcrumb.Item>Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih</Breadcrumb.Item>
+            </Breadcrumb>
+          </Col>
+        </Row>
         <Row>
           {/* POTHOS OF PRODUCTS */}
           <Col lg={5}>
@@ -57,7 +67,7 @@ const ProductDetail = () => {
                   defaultValue={5}
                 />
                 <span className="header-product-rating-detail">
-                  116 Ulasan • 127 Terjual
+                  116 Ulasan • 127 Terjual • 169x Dilihat
                 </span>
               </div>
             </div>
@@ -68,11 +78,13 @@ const ProductDetail = () => {
               <h5 className="info-product-left">Harga</h5>
               <div className="media-body info-product-body">
                 {/* <h5 className="info-product-body-title">Top-aligned media</h5> */}
-                <div className="fs-14 font-weight-light mb-2">
+                <div className="fs-14 font-weight-light">
+    {/*
                   <span className="info-product-body-price-disc">
                     <s>Rp. 150.000</s>
                   </span>
                   <br />
+    */}
                   <span className="info-product-body-price font-weight-bold h6 fs-14-s">Rp. 105.000</span>
                 </div>
               </div>
@@ -148,6 +160,24 @@ const ProductDetail = () => {
               </div>
             </div>
             {/* SIZE PRODUCTS INFORMATION */}
+
+            {/* PRODUCTS INFORMATION */}
+            <div className="media info-product">
+              <h5 className="info-product-left">Info produk</h5>
+              <div className="media-body info-product-body">
+                <div className="d-flex">
+                  <div className="info-item">
+                    <p>Berat</p>
+                    <p>100gr</p>
+                  </div>
+                  <div className="info-item">
+                    <p>Kondisi</p>
+                    <p>Baru</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* PRODUCTS INFORMATION */}
 
             {/* ACTIONS PRODUCTS INFORMATION */}
             <div className="info-product">
@@ -370,6 +400,25 @@ const ProductDetail = () => {
           padding-left: 3px;
           padding-right: 8px;
           color: rgba(0, 0, 0, 0.45);
+        }
+
+        .info-item{
+          padding: 0px 16px;
+          border-right: 1px solid rgb(229, 231, 233);
+        }
+        .info-item:last-child{
+          border-right: 0;
+        }
+        .info-item:first-of-type{
+          padding-left: 0;
+        }
+        .info-item p{
+          margin-bottom: 0;
+          font-size: 14px;
+        }
+        .info-item p:first-of-type{
+          color: #828282;
+          font-weight: 300;
         }
 
         :global(.wh-80){

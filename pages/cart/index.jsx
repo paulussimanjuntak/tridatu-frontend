@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { Checkbox, Button, InputNumber, Popconfirm, message } from 'antd';
+import { Checkbox, Button, InputNumber, Popconfirm, message, Input } from 'antd';
 
+import Link from 'next/link'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
+
+import CartStyle from 'components/Cart/style'
 
 const plainOptions = ['A', 'A'];
 const defaultCheckedList = ['A'];
@@ -64,7 +67,7 @@ const Cart = () => {
             <div className="cart-item">
               <Checkbox.Group value={checkedList} onChange={onChange} className="w-100">
                 <Row className="mx-0">
-                  {[...Array(8)].map((_, i) => (
+                  {[...Array(3)].map((_, i) => (
                     <Col className="col-12 d-flex cart-item-body" key={i}>
                       <Checkbox value="A" className="cart-item-checkbox" />
                       <div className="media">
@@ -119,70 +122,38 @@ const Cart = () => {
 
           <Col>
             <Card className="checkout-summary">
+              <Card.Body className="p-b-25 border-bottom-5">
+                <p className="font-weight-bold">Voucher promo</p>
+                <Input.Search
+                  className="search-promo"
+                  placeholder="Masukkan kode promo"
+                  enterButton="Pilih"
+                  onSearch={value => console.log(value)}
+                />
+              </Card.Body>
               <Card.Body>
                 <p className="font-weight-bold">Ringkasan belanja</p>
                 <p className="font-weight-light checkout-summary-price"> 
                   Total Harga
                   <span className="float-right cart-item-price font-weight-bold">Rp. 120.000</span>
                 </p>
-                <Button 
-                  block
-                  className="btn-tridatu"
-                >
-                  Beli (8)
-                </Button>
+                <Link href="/cart/shipment" as="/cart/shipment">
+                  <a>
+                    <Button 
+                      block
+                      className="btn-tridatu"
+                    >
+                      Beli (8)
+                    </Button>
+                  </a>
+                </Link>
               </Card.Body>
             </Card>
           </Col>
         </Row>
       </Container>
 
-      <style jsx>{`
-        .cart-header{
-          width: 100%;
-          padding-bottom: 16px;
-          padding-top: 16px;
-          border-bottom: 5px solid rgb(243, 244, 245);
-        }
-        :global(.cart-item .cart-item-body){
-          padding-top: 14px;
-          padding-bottom: 20px;
-          border-bottom: 1px solid rgb(243, 244, 245);
-        }
-        :global(.cart-item-body > .cart-item-checkbox){
-          align-self: center;
-          margin-right: 14px;
-        }
-        .cart-item-img{
-          width: 90px;
-          height: 90px;
-          object-fit: cover;
-          border-radius: .2rem;
-        }
-        .cart-item-price{
-          letter-spacing: -1px;
-          color: #d63031;
-        }
-        .cart-item-price > .price-disc{
-          color: #bbb;
-          font-weight: 400;
-          margin-right: 10px;
-        }
-        :global(.cart-item-quantity-input){
-          top: 1px;
-        }
-
-        :global(.checkout-summary){
-          margin-top: 16px;
-          box-shadow: rgb(202, 211, 225) 0px 1px 4px 0px;
-          border: 0;
-          border-radius: .2rem;
-          position: sticky;
-          top: 5rem;
-        }
-        :global(.checkout-summary-total){
-        }
-      `}</style>
+      <style jsx>{CartStyle}</style>
     </>
   )
 }
