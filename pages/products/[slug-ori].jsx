@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb } from "antd";
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 
-import Slider from "react-slick";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
@@ -15,24 +14,6 @@ import UlasanContainer from 'components/Card/Ulasan'
 import { renderLeftNav, renderRightNav, renderFullscreenButton } from 'components/Products/ImageGalleryButton'
 import PHOTOS from 'components/Products/photos'
 
-let th = []
-PHOTOS.map(x => th.push(x.thumbnail))
-
-const settings = {
-  customPaging: (i) => {
-    return (
-      <a>
-        <img src={th[i]} width="50" />
-      </a>
-    );
-  },
-  dots: true,
-  dotsClass: "slick-dots slick-thumb",
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1,
-  slidesToScroll: 1
-}
 const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1)
 
@@ -64,20 +45,13 @@ const ProductDetail = () => {
         <Row>
           {/* POTHOS OF PRODUCTS */}
           <Col lg={6}>
-          <Slider {...settings}>
-            {PHOTOS.map((x, i) => (
-              <div key={i}>
-                <img src={x.original} />
-              </div>
-            ))}
-          </Slider>
-            {/* <ImageGallery */}
-            {/*   items={PHOTOS} */} 
-            {/*   showPlayButton={false} */}
-            {/*   renderLeftNav={renderLeftNav} */}
-            {/*   renderRightNav={renderRightNav} */}
-            {/*   renderFullscreenButton={renderFullscreenButton} */}
-            {/* /> */}
+            <ImageGallery
+              items={PHOTOS} 
+              showPlayButton={false}
+              renderLeftNav={renderLeftNav}
+              renderRightNav={renderRightNav}
+              renderFullscreenButton={renderFullscreenButton}
+            />
           </Col>
           {/* POTHOS OF PRODUCTS */}
 
@@ -471,14 +445,6 @@ const ProductDetail = () => {
         }
         :global(.ulasan-star-rating.ant-progress-status-success .ant-progress-bg, .ulasan-star-rating .ant-progress-bg){
           background-color: #fbbc04;
-        }
-
-        :global(.slick-thumb){
-          bottom: -45px;
-        }
-        :global(.slick-thumb li){
-          width: 60px;
-          height: 45px;
         }
       `}</style>
     </>
