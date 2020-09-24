@@ -15,6 +15,8 @@ import "react-image-gallery/styles/css/image-gallery.css";
 
 import "react-circular-progressbar/dist/styles.css";
 
+import "react-alice-carousel/lib/alice-carousel.css";
+
 const App = ({ Component, pageProps, store }) => {
   return (
     <>
