@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb } from "antd";
+import { Modal, Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb } from "antd";
+import { Comment, Avatar, List, Input } from 'antd';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 
 import Slider from "react-slick";
@@ -12,29 +13,19 @@ import ImageGallery from 'react-image-gallery'
 
 import Pagination from "components/Pagination";
 import UlasanContainer from 'components/Card/Ulasan'
+import ShareModal from 'components/Card/ShareModal'
+import CardProduct from "components/Card/Product";
+
+const CardProductMemo = React.memo(CardProduct);
+
 import { renderLeftNav, renderRightNav, renderFullscreenButton } from 'components/Products/ImageGalleryButton'
+import { brandSettings } from "lib/slickSetting";
+
 import PHOTOS from 'components/Products/photos'
 
-let th = []
-PHOTOS.map(x => th.push(x.thumbnail))
-
-const settings = {
-  customPaging: (i) => {
-    return (
-      <a>
-        <img src={th[i]} width="50" />
-      </a>
-    );
-  },
-  dots: true,
-  dotsClass: "slick-dots slick-thumb",
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1,
-  slidesToScroll: 1
-}
 const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1)
+  const [showShareModal, setShowShareModal] = useState(false)
 
   const quantityHandler = (e, val) => {
     if(val == "input"){
@@ -63,28 +54,22 @@ const ProductDetail = () => {
         </Row>
         <Row>
           {/* POTHOS OF PRODUCTS */}
-          <Col lg={6}>
-          <Slider {...settings}>
-            {PHOTOS.map((x, i) => (
-              <div key={i}>
-                <img src={x.original} />
-              </div>
-            ))}
-          </Slider>
-            {/* <ImageGallery */}
-            {/*   items={PHOTOS} */} 
-            {/*   showPlayButton={false} */}
-            {/*   renderLeftNav={renderLeftNav} */}
-            {/*   renderRightNav={renderRightNav} */}
-            {/*   renderFullscreenButton={renderFullscreenButton} */}
-            {/* /> */}
+          <Col lg={6} className="product-images">
+            <ImageGallery
+              items={PHOTOS} 
+              showPlayButton={false}
+              useBrowserFullscreen={false}
+              renderLeftNav={renderLeftNav}
+              renderRightNav={renderRightNav}
+              renderFullscreenButton={renderFullscreenButton}
+            />
           </Col>
           {/* POTHOS OF PRODUCTS */}
 
           <Col lg={6}>
             {/* TITLE PRODUCTS INFORMATION */}
             <div className="header-product">
-              <h1 className="header-product-title">Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih, M</h1>
+              <h1 className="header-product-title">Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih</h1>
               <div className="header-product-rating">
                 <Rate
                   className="header-product-rating-rate"
@@ -105,12 +90,12 @@ const ProductDetail = () => {
               <div className="media-body info-product-body">
                 {/* <h5 className="info-product-body-title">Top-aligned media</h5> */}
                 <div className="fs-14 font-weight-light">
-    {/*
+                  {/*
                   <span className="info-product-body-price-disc">
                     <s>Rp. 150.000</s>
                   </span>
                   <br />
-    */}
+                  */}
                   <span className="info-product-body-price font-weight-bold h6 fs-14-s">Rp. 105.000</span>
                 </div>
               </div>
@@ -228,6 +213,7 @@ const ProductDetail = () => {
                   </Form.Group>
                   <Form.Group as={Col} className="mb-0">
                     <Button 
+                      onClick={() => setShowShareModal(true)}
                       size="large"
                       icon={<i className="fal fa-share-square va-inherit" />} 
                     />
@@ -249,8 +235,8 @@ const ProductDetail = () => {
               </Tabs.TabPane>
 
               <Tabs.TabPane tab="Ulasan (20)" key="2">
-                <Row>
-                  <Col className="col-auto align-self-center">
+                <Row className="mt-4">
+                  <Col className="col-auto align-self-center mr-3">
                     <div className="d-inline-flex">
                       <CircularProgressbar 
                         className="wh-80 mr-3" 
@@ -359,15 +345,46 @@ const ProductDetail = () => {
                   </Col>
                 </Row>
               </Tabs.TabPane>
+
+              <Tabs.TabPane tab="Diskusi (3)" key="3">
+                <section>
+
+                </section>
+              </Tabs.TabPane>
+
             </Tabs>
           </Col>
         </Row>
+
+        <section className="mt-3 border-top pt-4 recomend-section">
+          <h4 className="fs-20-s mb-4">Rekomendasi untuk mu</h4>
+          <Slider {...brandSettings}>
+            {[...Array(10)].map((_, i) => (
+              <Col key={i} className="px-0">
+                <CardProductMemo />
+              </Col>
+            ))}
+          </Slider>
+        </section>
       </Container>
+
+      <Modal
+        centered
+        footer={null}
+        visible={showShareModal}
+        onCancel={() => setShowShareModal(false)}
+        title="Bagikan"
+        closeIcon={ <i className="fas fa-times" /> }
+        bodyStyle={{padding: "10px 0px"}}
+        width="400px"
+      >
+        <ShareModal link="www.google.com" />
+      </Modal>
 
       <style jsx>{`
         :global(.image-gallery-image){
           width: 443px;
-          height: 443px;
+          height: 100%;
         }
         .header-product{
           margin-bottom: 20px;
@@ -473,12 +490,29 @@ const ProductDetail = () => {
           background-color: #fbbc04;
         }
 
-        :global(.slick-thumb){
-          bottom: -45px;
+        
+        :global(.product-images > .image-gallery.fullscreen-modal){
+          z-index: 1040;
+          background: #000000cc;
         }
-        :global(.slick-thumb li){
-          width: 60px;
-          height: 45px;
+        :global(.product-images > .image-gallery > .image-gallery-content.fullscreen){
+          background: #00000000;
+        }
+        :global(.product-images > .image-gallery > .image-gallery-content.fullscreen .image-gallery-image){
+          max-height: calc(100vh - 200px);
+        }
+        :global(.image-gallery-thumbnail.active, .image-gallery-thumbnail:hover, .image-gallery-thumbnail:focus){
+          border: 4px solid #6c757d;
+        }
+
+        :global(.recomend-section .slick-list){
+          padding-bottom: 20px;
+        }
+        :global(.recomend-section .slick-prev, .recomend-section .slick-next){
+          top: calc(50% - 10px);
+        }
+        :global(.recomend-section .slick-prev:before, .recomend-section .slick-next:before){
+          display: none;
         }
       `}</style>
     </>

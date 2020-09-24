@@ -101,12 +101,6 @@ const Home = () => {
         :global(.brand-section .slick-prev:before, .brand-section .slick-next:before){
           display: none;
         }
-        :global(.slick-slider > i.arrow-slick:before, i.arrow-slick:before){
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-        }
 
         :global(.info-store > .info-store-title){
           font-size: 24px;
