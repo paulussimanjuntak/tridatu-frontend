@@ -15,8 +15,6 @@ import "react-image-gallery/styles/css/image-gallery.css";
 
 import "react-circular-progressbar/dist/styles.css";
 
-import "react-alice-carousel/lib/alice-carousel.css";
-
 const App = ({ Component, pageProps, store }) => {
   return (
     <>
@@ -238,6 +236,12 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*ANT ICON*/
 
+        /*ANT MODAL*/
+        .ant-modal-mask, .ant-image-preview-mask, .ant-modal-wrap{
+          z-index: 1030
+        }
+        /*ANT MODAL*/
+
         /*SLICK-SLIDE*/
         .slick-slide {
           padding: 0px 15px;
@@ -250,6 +254,12 @@ const App = ({ Component, pageProps, store }) => {
         }
         .slick-prev:before, .slick-next:before  {
           content: '' !important;
+        }
+        .slick-slider > i.arrow-slick:before, i.arrow-slick:before{
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
         /*SLICK-SLIDE*/
 
