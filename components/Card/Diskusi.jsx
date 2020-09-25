@@ -9,7 +9,7 @@ const DiskusiContainer = ({ children, head, body }) => {
       <b>Han Solo</b> 
       <span className="diskusi-date">
         {moment().fromNow()} 
-        <span className="action-btn">
+        <span className="hover-pointer action-btn">
           <Popconfirm
             title={`${head ? "Hapus diskusi?" : "Hapus komentar?"}`}
             okText="Ya"
@@ -80,7 +80,7 @@ const DiskusiContainer = ({ children, head, body }) => {
           color: #343a40!important;
         }
         :global(.action-btn:hover){
-          cursor: pointer;
+          color: #000!important;
         }
       `}</style>
     </>

@@ -52,7 +52,7 @@ const Cart = () => {
 
   return(
     <>
-      <Container className="pt-4 pb-2">
+      <Container className="pt-2 pt-sm-4 pb-2">
         <Row>
           <Col lg={8}>
             <div className="cart-header">
@@ -62,7 +62,16 @@ const Cart = () => {
                 checked={checkAll}
               >
                 <span className="p-l-4 fs-16 noselect">Pilih semua</span>
-              </Checkbox>            
+              </Checkbox>
+              <Popconfirm
+                title="Anda yakin ingin menghapus semua item?"
+                okText="Ya"
+                cancelText="Batal"
+                placement="bottomRight"
+                arrowPointAtCenter
+              >
+                <b className="text-tridatu float-right hover-pointer">Hapus</b>
+              </Popconfirm>
             </div>
             <div className="cart-item">
               <Checkbox.Group value={checkedList} onChange={onChange} className="w-100">
@@ -73,28 +82,32 @@ const Cart = () => {
                       <div className="media">
                         <img src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp" className="mr-3 cart-item-img" alt="Tridatu Bali ID" />
                         <div className="media-body">
-                          <h5 className="mt-0 fs-16">Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih, M </h5>
-                          <h5 className="mt-0 fs-16 font-weight-bold cart-item-price">
+                          <h5 className="mt-0 fs-12-s fs-16 truncate-2">
+                            Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih
+                          </h5>
+                          <h5 className="mt-0 fs-12-s fs-16 font-weight-bold cart-item-price">
                             <span className="price-disc">
                               <s>Rp. 150.000</s>
                             </span>
+                            <br className="d-block d-sm-none"/>
                             Rp. 105.000
                           </h5>
                           <div>
                             <Button 
+                              className="sm-btn-custom"
                               disabled={quantity == 1}
-                              icon={<i className="far fa-minus" />} 
+                              icon={<i className="far fa-minus fs-12-s" />} 
                               onClick={(e) => quantityHandler(e, 'min')} 
                             />
                             <InputNumber 
-                              size="middle"
-                              className="mx-2 cart-item-quantity-input"
+                              className="mx-sm-2 mx-1 cart-item-quantity-input fs-12-s"
                               min={1} 
                               value={quantity} 
                               onChange={(e) => quantityHandler(e, 'input')} 
                             />
                             <Button 
-                              icon={<i className="far fa-plus" />} 
+                              className="sm-btn-custom"
+                              icon={<i className="far fa-plus fs-12-s" />} 
                               onClick={(e) => quantityHandler(e, 'plus')} 
                             />
                             <Popconfirm
@@ -104,15 +117,18 @@ const Cart = () => {
                               })}
                               okText="Ya"
                               cancelText="Batal"
+                              placement="bottomRight"
+                              arrowPointAtCenter
                             >
                               <Button 
-                                className="ml-2"
-                                icon={<i className="far fa-trash-alt" />} 
+                                className="ml-2 sm-btn-custom"
+                                icon={<i className="far fa-trash-alt fs-12-s" />} 
                               />
                             </Popconfirm>
                           </div>
                         </div>
                       </div>
+
                     </Col>
                   ))}
                 </Row>
@@ -154,6 +170,26 @@ const Cart = () => {
       </Container>
 
       <style jsx>{CartStyle}</style>
+      <style jsx>{`
+        @media only screen and (max-width: 575px){
+          :global(.cart-item-quantity-input){
+            width: 50px;
+            top: 0;
+          }
+          :global(.cart-item-quantity-input .ant-input-number-input){
+            height: 22px;
+          }
+          :global(.cart-item-body){
+            padding-right: 0px;
+          }
+          :global(.sm-btn-custom){
+            width: 24px;
+            height: 24px;
+            padding: 0px 0;
+            font-size: 14px;
+          }
+        }
+      `}</style>
     </>
   )
 }
