@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Modal, Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb } from "antd";
 import { Comment, Avatar } from 'antd';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
@@ -29,6 +30,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1)
   const [showShareModal, setShowShareModal] = useState(false)
 
+  const isAuth = useSelector(state => state.auth.auth)
+
   const quantityHandler = (e, val) => {
     if(val == "input"){
       setQuantity(e)
@@ -56,7 +59,7 @@ const ProductDetail = () => {
         </Row>
         <Row>
           {/* POTHOS OF PRODUCTS */}
-          <Col lg={6} className="product-images">
+          <Col lg={6} className="product-images m-b-13-m m-b-13-s">
             <ImageGallery
               items={PHOTOS} 
               showPlayButton={false}
@@ -210,14 +213,14 @@ const ProductDetail = () => {
                   <Form.Group as={Col} className="mb-0 col-auto">
                     <Button 
                       size="large"
-                      icon={<i className="fal fa-heart va-inherit" />} 
+                      icon={<i className="fal fa-heart" />} 
                     />
                   </Form.Group>
                   <Form.Group as={Col} className="mb-0">
                     <Button 
                       onClick={() => setShowShareModal(true)}
                       size="large"
-                      icon={<i className="fal fa-share-square va-inherit" />} 
+                      icon={<i className="fal fa-share-square" />} 
                     />
                   </Form.Group>
                 </Form.Row>
@@ -373,10 +376,10 @@ const ProductDetail = () => {
                 </section>
 
                 {[...Array(3)].map((_,i) => (
-                  <section className="diskusi-section" key={i}>
-                    <DiskusiContainer body="isi">
+                  <section className="diskusi-section mb-0" key={i}>
+                    <DiskusiContainer head body="isi">
                       <DiskusiContainer body="isi" />
-                      <DiskusiContainer body="balas" />
+                      {isAuth && <DiskusiContainer body="balas" />}
                     </DiskusiContainer>
                   </section>
                 ))}
@@ -499,7 +502,7 @@ const ProductDetail = () => {
         }
 
         .diskusi-section:not(:last-child){
-          box-shadow: 0 .8rem 1rem rgba(0,0,0,.05)!important;
+          box-shadow: 0 .1rem .1rem rgba(0,0,0,.05)!important;
         }
 
         :global(.wh-80){
@@ -524,7 +527,9 @@ const ProductDetail = () => {
           background-color: #fbbc04;
         }
 
-        
+        :global(.product-images .image-gallery-thumbnails){
+          overflow: scroll;
+        }
         :global(.product-images > .image-gallery.fullscreen-modal){
           z-index: 1040;
           background: #000000cc;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Input, Badge, Menu, Dropdown, Avatar } from "antd";
 
@@ -94,11 +94,16 @@ const Header = () => {
 
   const loginHandler = () => {
     dispatch(actions.authSuccess())
+    setShowMobileMenu(false)
   }
   const logoutHandler = () => {
     dispatch(actions.logout())
     setShowMobileMenu(false)
   }
+
+  useEffect(() => {
+    if(!showMobileMenu) document.body.style.removeProperty('overflow')
+  },[showMobileMenu])
 
   return (
     <>

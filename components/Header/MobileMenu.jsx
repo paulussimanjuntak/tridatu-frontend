@@ -14,6 +14,7 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
       </div>
     )
   }
+
   return(
     <>
       <Drawer

@@ -1,5 +1,7 @@
-import Card from "react-bootstrap/Card";
 import { Rate } from "antd";
+
+import Link from "next/link";
+import Card from "react-bootstrap/Card";
 
 const CardProduct = () => {
   return (
@@ -14,28 +16,30 @@ const CardProduct = () => {
         />
         <span className="card-discount">70%</span>
         <i className="fas fa-heart card-wishlist" />
-        <Card.Body className="p-2">
-          <a href="#" className="text-decoration-none text-secondary">
-            <p className="fs-14 mb-2 font-weight-light text-break truncate-2">
-              Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih, M
-            </p>
+        <Link href="/products/Tshirt-Deus-Ex-Machina-02" as="/products/Tshirt-Deus-Ex-Machina-02">
+          <a className="text-decoration-none text-secondary">
+            <Card.Body className="p-2">
+                  <p className="fs-14 mb-2 font-weight-light text-break truncate-2">
+                    Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih, M
+                  </p>
+              <p className="fs-12 font-weight-light mb-2">
+                <span className="text-danger">
+                  <s>Rp. 150.000</s>
+                </span>
+                <br />
+                <span className="font-weight-bold h6 fs-14-s">Rp. 105.000</span>
+              </p>
+              <div className="card-rating fs-12 mb-2">
+                <Rate
+                  className="fs-14 mx-0"
+                  allowHalf
+                  disabled
+                  defaultValue={4.5}
+                />
+              </div>
+            </Card.Body>
           </a>
-          <p className="fs-12 font-weight-light mb-2">
-            <span className="text-danger">
-              <s>Rp. 150.000</s>
-            </span>
-            <br />
-            <span className="font-weight-bold h6 fs-14-s">Rp. 105.000</span>
-          </p>
-          <div className="card-rating fs-12 mb-2">
-            <Rate
-              className="fs-14 mx-0"
-              allowHalf
-              disabled
-              defaultValue={4.5}
-            />
-          </div>
-        </Card.Body>
+        </Link>
       </Card>
 
       <style jsx>{`

@@ -9,27 +9,27 @@ const ShareModal = ({ link }) => {
       <ListGroup variant="flush">
         <EmailShareButton url={link} className="w-100 text-left share-button">
           <ListGroup.Item className="share-button border-0">
-            <EmailIcon size={32} /> <span className="ml-2 fs-14 fw-500">Share on Email</span>
+            <EmailIcon size={32} /> <span className="ml-2 fs-14">Share on Email</span>
           </ListGroup.Item>
         </EmailShareButton>
         <FacebookShareButton url={link} className="w-100 text-left share-button">
           <ListGroup.Item className="share-button border-0">
-            <FacebookIcon size={32} /> <span className="ml-2 fs-14 fw-500">Share on Facebook</span>
+            <FacebookIcon size={32} /> <span className="ml-2 fs-14">Share on Facebook</span>
           </ListGroup.Item>
         </FacebookShareButton>
         <TwitterShareButton url={link} className="w-100 text-left share-button">
           <ListGroup.Item className="share-button border-0">
-            <TwitterIcon size={32} /> <span className="ml-2 fs-14 fw-500">Share on Twitter</span>
+            <TwitterIcon size={32} /> <span className="ml-2 fs-14">Share on Twitter</span>
           </ListGroup.Item>
         </TwitterShareButton>
         <WhatsappShareButton url={link} className="w-100 text-left share-button">
           <ListGroup.Item className="share-button border-0">
-            <WhatsappIcon size={32} /> <span className="ml-2 fs-14 fw-500">Share on Whatsapp</span>
+            <WhatsappIcon size={32} /> <span className="ml-2 fs-14">Share on Whatsapp</span>
           </ListGroup.Item>
         </WhatsappShareButton>
         <TelegramShareButton url={link} className="w-100 text-left share-button">
           <ListGroup.Item className="share-button border-0">
-            <TelegramIcon size={32} /> <span className="ml-2 fs-14 fw-500">Share on Telegram</span>
+            <TelegramIcon size={32} /> <span className="ml-2 fs-14">Share on Telegram</span>
           </ListGroup.Item>
         </TelegramShareButton>
       </ListGroup>
