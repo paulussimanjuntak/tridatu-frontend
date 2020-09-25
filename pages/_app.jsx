@@ -55,6 +55,16 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*DROPDOWN BOOTSTRAP*/
 
+        /*FORM CONTROL BOOTSTRAP*/
+        .form-control{
+          font-size: .9rem;
+        }
+        .form-control:focus{
+          border-color: #8c8c8c;
+          box-shadow: 0 0 0 0.2rem rgb(140 140 140 / 14%);
+        }
+        /*FORM CONTROL BOOTSTRAP*/
+
         /*ANT RATE*/
         .ant-rate{
           color: #fbbc04;
@@ -300,6 +310,11 @@ const App = ({ Component, pageProps, store }) => {
           background-color: #d63031;
           border-color: #d63031;
           box-shadow: 0 0 0 0.2rem rgb(255 77 79 / 16%);
+        }
+
+        .btn-tridatu.disabled, .btn-tridatu:disabled{
+          background-color: #ff4d4f;
+          border-color: #ff4d4f;
         }
 
         .btn-dark-tridatu-outline{

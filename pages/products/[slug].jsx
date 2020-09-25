@@ -1,18 +1,20 @@
 import { useState } from 'react'
 import { Modal, Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb } from "antd";
-import { Comment, Avatar, List, Input } from 'antd';
+import { Comment, Avatar } from 'antd';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 
 import Slider from "react-slick";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
+import ButtonBoot from 'react-bootstrap/Button'
 import Container from 'react-bootstrap/Container'
 
 import ImageGallery from 'react-image-gallery'
 
 import Pagination from "components/Pagination";
 import UlasanContainer from 'components/Card/Ulasan'
+import DiskusiContainer from 'components/Card/Diskusi'
 import ShareModal from 'components/Card/ShareModal'
 import CardProduct from "components/Card/Product";
 
@@ -348,8 +350,36 @@ const ProductDetail = () => {
 
               <Tabs.TabPane tab="Diskusi (3)" key="3">
                 <section>
-
+                  <Comment 
+                    avatar={
+                      <Avatar
+                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                        alt="Han Solo"
+                      />
+                    }
+                    content={
+                      <Form>
+                        <Form.Group>
+                          <Form.Control 
+                            as="textarea" 
+                            rows={3}
+                            placeholder="Apa yang ingin Anda tanyakan tentang produk ini?"
+                          />
+                        </Form.Group>
+                        <ButtonBoot className="btn-tridatu px-5">Kirim</ButtonBoot>
+                      </Form>
+                    }
+                  />
                 </section>
+
+                {[...Array(3)].map((_,i) => (
+                  <section className="diskusi-section" key={i}>
+                    <DiskusiContainer body="isi">
+                      <DiskusiContainer body="isi" />
+                      <DiskusiContainer body="balas" />
+                    </DiskusiContainer>
+                  </section>
+                ))}
               </Tabs.TabPane>
 
             </Tabs>
@@ -466,6 +496,10 @@ const ProductDetail = () => {
         .info-item p:first-of-type{
           color: #828282;
           font-weight: 300;
+        }
+
+        .diskusi-section:not(:last-child){
+          box-shadow: 0 .8rem 1rem rgba(0,0,0,.05)!important;
         }
 
         :global(.wh-80){
