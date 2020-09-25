@@ -367,6 +367,10 @@ const App = ({ Component, pageProps, store }) => {
           vertical-align: inherit!important;
         }
 
+        .hover-pointer:hover{
+          cursor: pointer;
+        }
+
         .noselect{
           -webkit-touch-callout: none; /* iOS Safari */
             -webkit-user-select: none; /* Safari */
