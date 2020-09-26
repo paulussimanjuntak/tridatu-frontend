@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Checkbox, Button, InputNumber, Popconfirm, message, Input } from 'antd';
+import { Alert, Checkbox, Button, InputNumber, Popconfirm, message, Input, Modal, Radio } from 'antd';
 
 import Link from 'next/link'
 import Row from 'react-bootstrap/Row'
@@ -9,21 +9,19 @@ import Container from 'react-bootstrap/Container'
 
 import CartStyle from 'components/Cart/style'
 
+import { promos } from 'pages/promo'
+
 const plainOptions = ['A', 'A'];
 const defaultCheckedList = ['A'];
 
-message.config({
-  top: 90,
-  duration: 3,
-  maxCount: 1,
-  rtl: false,
-});
+message.config({ top: 90, duration: 3, maxCount: 1, rtl: false });
 
 const Cart = () => {
   const [checkedList, setCheckedList] = useState(defaultCheckedList)
   const [indeterminate, setIndeterminate] = useState(true)
   const [checkAll, setCheckAll] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const [showPromoModal, setShowPromoModal] = useState(false)
 
   const onChange = checkedList => {
     setCheckedList(checkedList)
@@ -48,6 +46,14 @@ const Cart = () => {
     if(val === "plus"){
       setQuantity(quantity+1) 
     }
+  }
+
+  const showPromoModalHandler = () => {
+    setShowPromoModal(true)
+  }
+
+  const closePromoModalHandler = () => {
+    setShowPromoModal(false)
   }
 
   return(
@@ -76,7 +82,7 @@ const Cart = () => {
             <div className="cart-item">
               <Checkbox.Group value={checkedList} onChange={onChange} className="w-100">
                 <Row className="mx-0">
-                  {[...Array(3)].map((_, i) => (
+                  {[...Array(19)].map((_, i) => (
                     <Col className="col-12 d-flex cart-item-body" key={i}>
                       <Checkbox value="A" className="cart-item-checkbox" />
                       <div className="media">
@@ -138,13 +144,38 @@ const Cart = () => {
 
           <Col>
             <Card className="checkout-summary">
-              <Card.Body className="p-b-25 border-bottom-5">
-                <p className="font-weight-bold">Voucher promo</p>
-                <Input.Search
-                  className="search-promo"
-                  placeholder="Masukkan kode promo"
-                  enterButton="Pilih"
-                  onSearch={value => console.log(value)}
+              <Card.Body className="border-bottom-5">
+                <Button 
+                  block
+                  size="large"
+                  className="text-left text-secondary"
+                  onClick={showPromoModalHandler}
+                >
+                  <i className="fad fa-badge-percent text-tridatu mr-2" />
+                  <span className="font-weight-bold">Pakai kode promo</span>
+                  <i className="fas fa-angle-right" 
+                    style={{
+                      right: '15px',
+                      position: 'absolute',
+                      top: '50%',
+                      transform: 'translateY(-50%)'
+                    }}
+                  />
+                </Button>
+                <Alert
+                  closable
+                  type="success"
+                  className="mt-2 promo-success-selected"
+                  closeText={<i className="fas fa-times" />}
+                  onClose={() => console.log('closed')}
+                  message={
+                    <Row className=" text-truncate">
+                      <Col className="col-12 text-truncate">
+                        <p className="mb-0 text-truncate">sddsjahdkjsahkdkjshadasaasdasd</p>
+                        <p className="mb-0">ssd</p>
+                      </Col>
+                    </Row>
+                  }
                 />
               </Card.Body>
               <Card.Body>
@@ -157,6 +188,7 @@ const Cart = () => {
                   <a>
                     <Button 
                       block
+                      size="large"
                       className="btn-tridatu"
                     >
                       Beli (8)
@@ -169,8 +201,133 @@ const Cart = () => {
         </Row>
       </Container>
 
+      <Modal
+        centered
+        title=" "
+        visible={showPromoModal}
+        onOk={closePromoModalHandler}
+        onCancel={closePromoModalHandler}
+        zIndex="1030"
+        closeIcon={<i className="fas fa-times" />}
+        footer={null}
+        className="modal-promo"
+        bodyStyle={{padding: '0'}}
+      >
+        <Card.Body className="border-0 px-4 pb-0">
+          <h4 className="fs-20-s mb-0">
+            Pakai Promo
+            <a href="#" className="fs-12 float-right text-tridatu pt-2">
+              Reset Promo
+            </a>
+          </h4>
+        </Card.Body>
+        <Card.Body className="border-0 px-4 border-bottom-5">
+          <Input.Search
+            size="large"
+            className="search-promo"
+            placeholder="Masukkan kode promo"
+            enterButton={<Button className="text-danger">Pakai</Button>}
+            onSearch={value => console.log(value)}
+          />
+        </Card.Body>
+        <Card.Body className="border-0 px-4 pb-2">
+          <h6 className="fs-16-s">
+            Promo yang tersedia
+          </h6>
+        </Card.Body>
+        <Card.Body className="pt-0 px-0">
+          <Card.Body className="border-0 px-4 pb-0 pt-1 promo-list">
+            <Radio.Group 
+              className="promo-radio"
+              onChange={e => console.log(e)}
+            >
+              {promos.map((data, i) => (
+                <Radio.Button value={i} key={i}>
+                  <Row>
+                    <Col className="pr-0">
+                      <Card.Img 
+                        className="promo-list-img"
+                        src={data}
+                      />
+                    </Col>
+                    <Col className="pl-0 truncate-2">
+                      <Card.Body className="p-2">
+                        <p className="mb-1 truncate-2 fs-16 noselect">
+                          <b>Belanja Gadget dan Electronic Ter-update Belanja Gadget dan Electronic Ter-update</b>
+                        </p>
+                        <p className="text-truncate mb-1 text-secondary">10 Sep - 29 Okt 2020</p>
+                        <p className="mb-0 text-truncate text-tridatu">BRINUF4BRINUF4</p>
+                      </Card.Body>
+                    </Col>
+                  </Row>
+                </Radio.Button>
+              ))}
+            </Radio.Group>
+          </Card.Body>
+        </Card.Body>
+      </Modal>
+
       <style jsx>{CartStyle}</style>
       <style jsx>{`
+        :global(.modal-promo > .ant-modal-content, 
+                .modal-promo > .ant-modal-content > .ant-modal-header) {
+          border-radius: 10px;
+          border: unset;
+        }
+        :global(.promo-radio){
+          width: 100%;
+        }
+        :global(.promo-list){
+          max-height: 50vh;
+          overflow: auto;
+        }
+        :global(.promo-radio > .ant-radio-button-wrapper){
+          color: rgb(0 0 0 / 70%);
+          display: block;
+          margin-bottom: 10px;
+          padding: 0px;
+          height: 120px;
+          border: 1px dashed #d9d9d9;
+          border-radius: 3px;
+          line-height: unset;
+        }
+        :global(.promo-radio > .ant-radio-button-wrapper:hover, 
+                .promo-radio > .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):active){
+          color: #000000;
+          box-shadow: 0 0 0 0.2rem rgb(255 77 79 / 10%);
+        }
+        :global(.promo-radio > .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within){
+          box-shadow: 0 0 0 0.2rem rgb(255 77 79 / 10%);
+        }
+        :global(.promo-radio > .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover){
+          border-color: #ff4d4f;
+        }
+        :global(.promo-radio > .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):first-child){
+          border-color: #ff4d4f;
+        }
+        :global(.promo-radio > .ant-radio-button-wrapper.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)){
+          border-color: #ff4d4f;
+        }
+        :global(.promo-list-img){
+          height: -webkit-fill-available;
+          object-fit: cover;
+          border-bottom-right-radius: 0;
+          border-top-right-radius: 0;
+          border-bottom-left-radius: 2px;
+          border-top-left-radius: 2px;
+        }
+        :global(.promo-radio > .ant-radio-button-wrapper .col:first-of-type){
+          border-right: 1px dashed #d9d9d9;
+        }
+        :global(.promo-success-selected){
+          border: 0px;
+          background-color: #effaf3;
+          border-left: 3px solid #48c774;
+        }
+        :global(.ant-radio-button-wrapper:not(:first-child)::before){
+          left: 0px;
+          background-color: unset;
+        }
         @media only screen and (max-width: 575px){
           :global(.cart-item-quantity-input){
             width: 50px;

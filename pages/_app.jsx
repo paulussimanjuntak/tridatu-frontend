@@ -387,8 +387,12 @@ const App = ({ Component, pageProps, store }) => {
           }
         }
 
+        .bor-rad-15px{
+          border-radius: 15px;
+        }
+
         .border-bottom-5{
-          border-bottom: 5px solid rgb(243,244,245);
+          border-bottom: 5px solid rgb(243,244,245) !important;
         }
 
         .border-top-5{

@@ -196,7 +196,7 @@ const Header = () => {
               {isAuth ? (
                 <Dropdown overlay={() => accountMenu(logoutHandler)} placement="bottomRight">
                   <a className="text-truncate text-dark align-middle text-decoration-none">
-                    <Avatar size="large" src="https://api.mentimun-mentah.tech/static/avatars/default.png" />
+                    <Avatar size="large" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
                     <span className="pl-2 align-middle">Jhon Bakery Handler</span>
                   </a>
                 </Dropdown>
