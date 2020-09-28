@@ -169,10 +169,13 @@ const Cart = () => {
                   closeText={<i className="fas fa-times" />}
                   onClose={() => console.log('closed')}
                   message={
-                    <Row className=" text-truncate">
-                      <Col className="col-12 text-truncate">
-                        <p className="mb-0 text-truncate">sddsjahdkjsahkdkjshadasaasdasd</p>
-                        <p className="mb-0">ssd</p>
+                    <Row className="">
+                      <Col className="col-12">
+                        <p className="mb-0 text-truncate promo-success-selected-title font-weight-bold">
+                          Khusus Pulau Sumatera, Belanja di BukaMart Ada Cashback!
+                          Khusus Pulau Sumatera, Belanja di BukaMart Ada Cashback!
+                        </p>
+                        <p className="mb-0 text-break">ssqweqwesddsjahdkjsahkdsqweqwesddsjahdkjsahkdqweqwesddsjahdkjsahkd</p>
                       </Col>
                     </Row>
                   }
@@ -324,6 +327,9 @@ const Cart = () => {
           background-color: #effaf3;
           border-left: 3px solid #48c774;
         }
+        :global(.promo-success-selected-title){
+          width: 100%; 
+        }
         :global(.ant-radio-button-wrapper:not(:first-child)::before){
           left: 0px;
           background-color: unset;
@@ -344,6 +350,16 @@ const Cart = () => {
             height: 24px;
             padding: 0px 0;
             font-size: 14px;
+          }
+        }
+        @media only screen and (min-width: 992px){
+          :global(.promo-success-selected-title){
+            width: 200px; 
+          }
+        }
+        @media only screen and (min-width: 1200px){
+          :global(.promo-success-selected-title){
+            width: 260px; 
           }
         }
       `}</style>
