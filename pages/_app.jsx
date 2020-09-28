@@ -63,6 +63,10 @@ const App = ({ Component, pageProps, store }) => {
           border-color: #8c8c8c;
           box-shadow: 0 0 0 0.2rem rgb(140 140 140 / 14%);
         }
+        .form-control::placeholder {
+          color: black;
+          opacity: .3;
+        }
         /*FORM CONTROL BOOTSTRAP*/
 
         /*ANT RATE*/
@@ -312,7 +316,9 @@ const App = ({ Component, pageProps, store }) => {
           box-shadow: 0 0 0 0.2rem rgb(255 77 79 / 16%);
         }
 
-        .btn-tridatu.disabled, .btn-tridatu:disabled{
+        .btn-tridatu.disabled, .btn-tridatu:disabled, .btn-tridatu.disabled:hover, .btn-tridatu:disabled:hover{
+          opacity: .65;
+          color: #fff;
           background-color: #ff4d4f;
           border-color: #ff4d4f;
         }
@@ -423,7 +429,6 @@ const App = ({ Component, pageProps, store }) => {
           background-color: #fff;
           box-shadow: 0rem .3rem .8rem .0rem rgba(0,0,0,.15)!important;
         }
-
       `}</style>
     </>
   );

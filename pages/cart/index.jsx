@@ -7,32 +7,50 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
 
+// Validator
+import isEmpty from 'validator/lib/isEmpty';
+// Validator
+
 import CartStyle from 'components/Cart/style'
 
-import { promos } from 'pages/promo'
+const promos = [
+  {
+    code: 'TDT-100K',
+    image: 'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-6.jpg',
+    discount: '100000'
+  }, 
+  {
+    code: 'TDT-200K',
+    image: 'https://ecs7.tokopedia.net/img/blog/promo/2020/07/Thumbnail-Interior.png',
+    discount: '200000'
+  },
+  {
+    code: 'TDT-300K',
+    image: 'https://ecs7.tokopedia.net/img/blog/promo/2019/09/ZHIYUN-THUMBNAIL.jpg',
+    discount: '300000'
+  }
+]
 
-const plainOptions = ['A', 'A'];
-const defaultCheckedList = ['A'];
+const listItem = ['https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_740a5eed-2e1f-4aa7-b71e-2b1cdd64ab3c_1574_1574.webp', 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp', 'https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_4c4f2a88-54a1-46a2-b5d2-ddd39a9f9b87_1527_1527.webp']
 
 message.config({ top: 90, duration: 3, maxCount: 1, rtl: false });
 
 const Cart = () => {
-  const [checkedList, setCheckedList] = useState(defaultCheckedList)
-  const [indeterminate, setIndeterminate] = useState(true)
+  const [checkedList, setCheckedList] = useState([])
   const [checkAll, setCheckAll] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const [promo, setPromo] = useState({ code: '', isUsed: false })
   const [showPromoModal, setShowPromoModal] = useState(false)
 
-  const onChange = checkedList => {
+  const onSelectItemHandler = checkedList => {
     setCheckedList(checkedList)
-    setIndeterminate(!!checkedList.length && checkedList.length < plainOptions.length)
-    setCheckAll(checkedList.length === plainOptions.length)
+    setCheckAll(checkedList.length === listItem.length)
   }
 
   const onCheckAllChange = e => {
-    setCheckedList(e.target.checked ? plainOptions : [])
-    setIndeterminate(false)
+    setCheckedList(e.target.checked ? listItem : [])
     setCheckAll(e.target.checked)
+    if(checkAll) setPromo({ code: '', isUsed: false })
   }
 
   const quantityHandler = (e, val) => {
@@ -53,7 +71,22 @@ const Cart = () => {
   }
 
   const closePromoModalHandler = () => {
+    setPromo({ ...promo, code: '' })
     setShowPromoModal(false)
+  }
+
+  const promoChangeHandler = e => {
+    const value = e.target.value
+    setPromo({ ...promo, code: value })
+  }
+
+  const onUsePromoHandler = () => {
+    setPromo({ ...promo, isUsed: true })
+    setShowPromoModal(false)
+  }
+
+  const onRemovePromoHandler = () => {
+    setPromo({ ...promo, isUsed: false, code: '' })
   }
 
   return(
@@ -63,30 +96,31 @@ const Cart = () => {
           <Col lg={8}>
             <div className="cart-header">
               <Checkbox
-                indeterminate={indeterminate}
                 onChange={onCheckAllChange}
                 checked={checkAll}
               >
                 <span className="p-l-4 fs-16 noselect">Pilih semua</span>
               </Checkbox>
-              <Popconfirm
-                title="Anda yakin ingin menghapus semua item?"
-                okText="Ya"
-                cancelText="Batal"
-                placement="bottomRight"
-                arrowPointAtCenter
-              >
-                <b className="text-tridatu float-right hover-pointer">Hapus</b>
-              </Popconfirm>
+              {checkedList.length > 0 && (
+                <Popconfirm
+                  title="Anda yakin ingin menghapus item yang anda pilih?"
+                  okText="Ya"
+                  cancelText="Batal"
+                  placement="bottomRight"
+                  arrowPointAtCenter
+                >
+                  <b className="text-tridatu float-right hover-pointer">Hapus</b>
+                </Popconfirm>
+              )}
             </div>
             <div className="cart-item">
-              <Checkbox.Group value={checkedList} onChange={onChange} className="w-100">
+              <Checkbox.Group value={checkedList} onChange={onSelectItemHandler} className="w-100">
                 <Row className="mx-0">
-                  {[...Array(19)].map((_, i) => (
+                  {listItem.map((data, i) => (
                     <Col className="col-12 d-flex cart-item-body" key={i}>
-                      <Checkbox value="A" className="cart-item-checkbox" />
+                      <Checkbox value={data} className="cart-item-checkbox" />
                       <div className="media">
-                        <img src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp" className="mr-3 cart-item-img" alt="Tridatu Bali ID" />
+                        <img src={data} className="mr-3 cart-item-img" alt="Tridatu Bali ID" />
                         <div className="media-body">
                           <h5 className="mt-0 fs-12-s fs-16 truncate-2">
                             Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih
@@ -134,7 +168,6 @@ const Cart = () => {
                           </div>
                         </div>
                       </div>
-
                     </Col>
                   ))}
                 </Row>
@@ -145,47 +178,54 @@ const Cart = () => {
           <Col>
             <Card className="checkout-summary">
               <Card.Body className="border-bottom-5">
-                <Button 
-                  block
-                  size="large"
-                  className="text-left text-secondary"
-                  onClick={showPromoModalHandler}
-                >
-                  <i className="fad fa-badge-percent text-tridatu mr-2" />
-                  <span className="font-weight-bold">Pakai kode promo</span>
-                  <i className="fas fa-angle-right" 
-                    style={{
-                      right: '15px',
-                      position: 'absolute',
-                      top: '50%',
-                      transform: 'translateY(-50%)'
-                    }}
+                {!promo.isUsed ? (
+                  <Button 
+                    block
+                    size="large"
+                    className="text-left text-secondary fs-14"
+                    disabled={checkedList.length < 1}
+                    onClick={showPromoModalHandler}
+                  >
+                    <i className="fad fa-badge-percent text-tridatu mr-2 fa-lg" />
+                    <span className="font-weight-bold">Pakai kode promo</span>
+                    <i className="fas fa-angle-right" 
+                      style={{
+                        right: '15px',
+                        position: 'absolute',
+                        top: '50%',
+                        transform: 'translateY(-50%)'
+                      }}
+                    />
+                  </Button>
+                ) : (
+                  <Alert
+                    closable
+                    type="success"
+                    className="mt-2 promo-success-selected"
+                    closeText={<i className="fas fa-times" />}
+                    afterClose={onRemovePromoHandler}
+                    message={
+                      <Row>
+                        <Col className="col-12">
+                          <p className="mb-0 text-truncate promo-success-selected-title font-weight-bold">
+                            Kode promo : TDT-100K
+                          </p>
+                          <p className="mb-0 text-break">
+                            Kamu mendapatkan potongan sebesar Rp. 100.000
+                          </p>
+                        </Col>
+                      </Row>
+                    }
                   />
-                </Button>
-                <Alert
-                  closable
-                  type="success"
-                  className="mt-2 promo-success-selected"
-                  closeText={<i className="fas fa-times" />}
-                  onClose={() => console.log('closed')}
-                  message={
-                    <Row className="">
-                      <Col className="col-12">
-                        <p className="mb-0 text-truncate promo-success-selected-title font-weight-bold">
-                          Khusus Pulau Sumatera, Belanja di BukaMart Ada Cashback!
-                          Khusus Pulau Sumatera, Belanja di BukaMart Ada Cashback!
-                        </p>
-                        <p className="mb-0 text-break">ssqweqwesddsjahdkjsahkdsqweqwesddsjahdkjsahkdqweqwesddsjahdkjsahkd</p>
-                      </Col>
-                    </Row>
-                  }
-                />
+                )}
               </Card.Body>
               <Card.Body>
-                <p className="font-weight-bold">Ringkasan belanja</p>
-                <p className="font-weight-light checkout-summary-price"> 
+                <p className="font-weight-bold fs-14">Ringkasan belanja</p>
+                <p className="font-weight-light checkout-summary-price fs-14">
                   Total Harga
-                  <span className="float-right cart-item-price font-weight-bold">Rp. 120.000</span>
+                  <span className="float-right cart-item-price font-weight-bold">
+                    {checkedList.length < 1 ? "-" : "Rp. 120.000"}
+                  </span>
                 </p>
                 <Link href="/cart/shipment" as="/cart/shipment">
                   <a>
@@ -193,6 +233,7 @@ const Cart = () => {
                       block
                       size="large"
                       className="btn-tridatu"
+                      disabled={checkedList.length < 1}
                     >
                       Beli (8)
                     </Button>
@@ -219,9 +260,14 @@ const Cart = () => {
         <Card.Body className="border-0 px-4 pb-0">
           <h4 className="fs-20-s mb-0">
             Pakai Promo
-            <a href="#" className="fs-12 float-right text-tridatu pt-2">
+            <Button 
+              type="link" 
+              disabled={isEmpty(promo.code, {ignore_whitespace:true})} 
+              className="fs-12 float-right text-tridatu border-0"
+              onClick={onRemovePromoHandler}
+            >
               Reset Promo
-            </a>
+            </Button>
           </h4>
         </Card.Body>
         <Card.Body className="border-0 px-4 border-bottom-5">
@@ -229,8 +275,16 @@ const Cart = () => {
             size="large"
             className="search-promo"
             placeholder="Masukkan kode promo"
-            enterButton={<Button className="text-danger">Pakai</Button>}
-            onSearch={value => console.log(value)}
+            value={promo.code}
+            enterButton={
+              <Button 
+                disabled={isEmpty(promo.code, {ignore_whitespace:true})}
+              >
+                Pakai
+              </Button>
+            }
+            onSearch={onUsePromoHandler}
+            onChange={promoChangeHandler}
           />
         </Card.Body>
         <Card.Body className="border-0 px-4 pb-2">
@@ -242,15 +296,16 @@ const Cart = () => {
           <Card.Body className="border-0 px-4 pb-0 pt-1 promo-list">
             <Radio.Group 
               className="promo-radio"
-              onChange={e => console.log(e)}
+              value={promo.code}
+              onChange={promoChangeHandler}
             >
               {promos.map((data, i) => (
-                <Radio.Button value={i} key={i}>
+                <Radio.Button value={data.code} key={i}>
                   <Row>
                     <Col className="pr-0">
                       <Card.Img 
                         className="promo-list-img"
-                        src={data}
+                        src={data.image}
                       />
                     </Col>
                     <Col className="pl-0 truncate-2">
@@ -259,7 +314,7 @@ const Cart = () => {
                           <b>Belanja Gadget dan Electronic Ter-update Belanja Gadget dan Electronic Ter-update</b>
                         </p>
                         <p className="text-truncate mb-1 text-secondary">10 Sep - 29 Okt 2020</p>
-                        <p className="mb-0 text-truncate text-tridatu">BRINUF4BRINUF4</p>
+                        <p className="mb-0 text-truncate text-tridatu">{data.code}</p>
                       </Card.Body>
                     </Col>
                   </Row>
@@ -271,98 +326,6 @@ const Cart = () => {
       </Modal>
 
       <style jsx>{CartStyle}</style>
-      <style jsx>{`
-        :global(.modal-promo > .ant-modal-content, 
-                .modal-promo > .ant-modal-content > .ant-modal-header) {
-          border-radius: 10px;
-          border: unset;
-        }
-        :global(.promo-radio){
-          width: 100%;
-        }
-        :global(.promo-list){
-          max-height: 50vh;
-          overflow: auto;
-        }
-        :global(.promo-radio > .ant-radio-button-wrapper){
-          color: rgb(0 0 0 / 70%);
-          display: block;
-          margin-bottom: 10px;
-          padding: 0px;
-          height: 120px;
-          border: 1px dashed #d9d9d9;
-          border-radius: 3px;
-          line-height: unset;
-        }
-        :global(.promo-radio > .ant-radio-button-wrapper:hover, 
-                .promo-radio > .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):active){
-          color: #000000;
-          box-shadow: 0 0 0 0.2rem rgb(255 77 79 / 10%);
-        }
-        :global(.promo-radio > .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within){
-          box-shadow: 0 0 0 0.2rem rgb(255 77 79 / 10%);
-        }
-        :global(.promo-radio > .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover){
-          border-color: #ff4d4f;
-        }
-        :global(.promo-radio > .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):first-child){
-          border-color: #ff4d4f;
-        }
-        :global(.promo-radio > .ant-radio-button-wrapper.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)){
-          border-color: #ff4d4f;
-        }
-        :global(.promo-list-img){
-          height: -webkit-fill-available;
-          object-fit: cover;
-          border-bottom-right-radius: 0;
-          border-top-right-radius: 0;
-          border-bottom-left-radius: 2px;
-          border-top-left-radius: 2px;
-        }
-        :global(.promo-radio > .ant-radio-button-wrapper .col:first-of-type){
-          border-right: 1px dashed #d9d9d9;
-        }
-        :global(.promo-success-selected){
-          border: 0px;
-          background-color: #effaf3;
-          border-left: 3px solid #48c774;
-        }
-        :global(.promo-success-selected-title){
-          width: 100%; 
-        }
-        :global(.ant-radio-button-wrapper:not(:first-child)::before){
-          left: 0px;
-          background-color: unset;
-        }
-        @media only screen and (max-width: 575px){
-          :global(.cart-item-quantity-input){
-            width: 50px;
-            top: 0;
-          }
-          :global(.cart-item-quantity-input .ant-input-number-input){
-            height: 22px;
-          }
-          :global(.cart-item-body){
-            padding-right: 0px;
-          }
-          :global(.sm-btn-custom){
-            width: 24px;
-            height: 24px;
-            padding: 0px 0;
-            font-size: 14px;
-          }
-        }
-        @media only screen and (min-width: 992px){
-          :global(.promo-success-selected-title){
-            width: 200px; 
-          }
-        }
-        @media only screen and (min-width: 1200px){
-          :global(.promo-success-selected-title){
-            width: 260px; 
-          }
-        }
-      `}</style>
     </>
   )
 }
