@@ -39,10 +39,7 @@ const Cart = () => {
   const [checkedList, setCheckedList] = useState([])
   const [checkAll, setCheckAll] = useState(false)
   const [quantity, setQuantity] = useState(1)
-  const [promo, setPromo] = useState({
-    code: '',
-    isUsed: false
-  })
+  const [promo, setPromo] = useState({ code: '', isUsed: false })
   const [showPromoModal, setShowPromoModal] = useState(false)
 
   const onSelectItemHandler = checkedList => {
