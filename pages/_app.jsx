@@ -312,7 +312,9 @@ const App = ({ Component, pageProps, store }) => {
           box-shadow: 0 0 0 0.2rem rgb(255 77 79 / 16%);
         }
 
-        .btn-tridatu.disabled, .btn-tridatu:disabled{
+        .btn-tridatu.disabled, .btn-tridatu:disabled, .btn-tridatu.disabled:hover, .btn-tridatu:disabled:hover{
+          opacity: .65;
+          color: #fff;
           background-color: #ff4d4f;
           border-color: #ff4d4f;
         }
