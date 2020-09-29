@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Button, Modal } from 'antd'
+
+import Link from 'next/link'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Card from 'react-bootstrap/Card'
@@ -58,8 +60,49 @@ Kuta Selatan, Kab. Badung, 80361
                 ))}
               </Row>
             </div>
+          </Col>
 
-
+          <Col>
+            <Card className="checkout-summary">
+              <Card.Body className="border-bottom-5">
+                <Button 
+                  block
+                  size="large"
+                  className="text-left text-secondary fs-14"
+                >
+                  <i className="fad fa-badge-percent text-tridatu mr-2 fa-lg" />
+                  <span className="font-weight-bold">Pakai kode promo</span>
+                  <i className="fas fa-angle-right" 
+                    style={{
+                      right: '15px',
+                      position: 'absolute',
+                      top: '50%',
+                      transform: 'translateY(-50%)'
+                    }}
+                  />
+                </Button>
+              </Card.Body>
+              <Card.Body>
+                <p className="font-weight-bold fs-14">Ringkasan belanja</p>
+                <p className="font-weight-light checkout-summary-price fs-14">
+                  Total Harga
+                  <span className="float-right cart-item-price font-weight-bold">
+                    Rp. 120.000
+                  </span>
+                </p>
+                <Link href="/cart/shipment" as="/cart/shipment">
+                  <a>
+                    <Button 
+                      block
+                      size="large"
+                      className="btn-tridatu"
+                    >
+                      Beli (8)
+                    </Button>
+                  </a>
+                </Link>
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
       </Container>
