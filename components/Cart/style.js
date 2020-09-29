@@ -30,6 +30,10 @@ const Cart = css`
   object-fit: cover;
   border-radius: .2rem;
 }
+.cart-item-img.sm{
+  width: 50px;
+  height: 50px;
+}
 .cart-item-price{
   letter-spacing: -1px;
   color: #d63031;

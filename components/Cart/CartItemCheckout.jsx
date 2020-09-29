@@ -2,7 +2,7 @@ import Col from 'react-bootstrap/Col'
 
 import CartStyle from './style'
 
-const ProductCartShipment = () => {
+const ProductCartCheckout = () => {
   return(
     <>
       <Col className="col-12 d-flex cart-item-body">
@@ -28,4 +28,4 @@ const ProductCartShipment = () => {
   )
 }
 
-export default ProductCartShipment
+export default ProductCartCheckout

@@ -21,7 +21,7 @@ export const listPromo = [
   {code:'TDT-600K',image:'https://ecs7.tokopedia.net/img/blog/promo/2019/09/ZHIYUN-THUMBNAIL.jpg',discount:'300000'},
 ]
 
-const listItem = ['https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_740a5eed-2e1f-4aa7-b71e-2b1cdd64ab3c_1574_1574.webp', 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp', 'https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_4c4f2a88-54a1-46a2-b5d2-ddd39a9f9b87_1527_1527.webp']
+const listItem = ['https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_740a5eed-2e1f-4aa7-b71e-2b1cdd64ab3c_1574_1574.webp', 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp', 'https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_4c4f2a88-54a1-46a2-b5d2-ddd39a9f9b87_1527_1527.webp', 'https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_740a5eed-2e1f-4aa7-b71e-2b1cdd64ab3c_1574_1574.webp', 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp', 'https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_4c4f2a88-54a1-46a2-b5d2-ddd39a9f9b87_1527_1527.webp']
 
 message.config({ top: 90, duration: 3, maxCount: 1, rtl: false });
 
