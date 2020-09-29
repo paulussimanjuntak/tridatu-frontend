@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Alert, Checkbox, Button, InputNumber, Popconfirm, message, Input, Modal, Radio } from 'antd';
+import { Checkbox, Button, InputNumber, Popconfirm, message } from 'antd'
 
 import Link from 'next/link'
 import Row from 'react-bootstrap/Row'
@@ -7,28 +7,18 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
 
-// Validator
-import isEmpty from 'validator/lib/isEmpty';
-// Validator
+import PromoModal from 'components/Cart/PromoModal'
+import { PromoSelected, PromoButton } from 'components/Cart/PromoSelected'
 
 import CartStyle from 'components/Cart/style'
 
-const promos = [
-  {
-    code: 'TDT-100K',
-    image: 'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-6.jpg',
-    discount: '100000'
-  }, 
-  {
-    code: 'TDT-200K',
-    image: 'https://ecs7.tokopedia.net/img/blog/promo/2020/07/Thumbnail-Interior.png',
-    discount: '200000'
-  },
-  {
-    code: 'TDT-300K',
-    image: 'https://ecs7.tokopedia.net/img/blog/promo/2019/09/ZHIYUN-THUMBNAIL.jpg',
-    discount: '300000'
-  }
+export const listPromo = [
+  {code:'TDT-100K',image:'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-6.jpg',discount:'100000'}, 
+  {code:'TDT-200K',image:'https://ecs7.tokopedia.net/img/blog/promo/2020/07/Thumbnail-Interior.png',discount:'200000'},
+  {code:'TDT-300K',image:'https://ecs7.tokopedia.net/img/blog/promo/2019/09/ZHIYUN-THUMBNAIL.jpg',discount:'300000'},
+  {code:'TDT-400K',image:'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-6.jpg',discount:'100000'}, 
+  {code:'TDT-500K',image:'https://ecs7.tokopedia.net/img/blog/promo/2020/07/Thumbnail-Interior.png',discount:'200000'},
+  {code:'TDT-600K',image:'https://ecs7.tokopedia.net/img/blog/promo/2019/09/ZHIYUN-THUMBNAIL.jpg',discount:'300000'},
 ]
 
 const listItem = ['https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_740a5eed-2e1f-4aa7-b71e-2b1cdd64ab3c_1574_1574.webp', 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp', 'https://ecs7.tokopedia.net/img/cache/200-square/product-1/2019/5/18/3453155/3453155_4c4f2a88-54a1-46a2-b5d2-ddd39a9f9b87_1527_1527.webp']
@@ -179,43 +169,13 @@ const Cart = () => {
             <Card className="checkout-summary">
               <Card.Body className="border-bottom-5">
                 {!promo.isUsed ? (
-                  <Button 
-                    block
-                    size="large"
-                    className="text-left text-secondary fs-14"
+                  <PromoButton
                     disabled={checkedList.length < 1}
-                    onClick={showPromoModalHandler}
-                  >
-                    <i className="fad fa-badge-percent text-tridatu mr-2 fa-lg" />
-                    <span className="font-weight-bold">Pakai kode promo</span>
-                    <i className="fas fa-angle-right" 
-                      style={{
-                        right: '15px',
-                        position: 'absolute',
-                        top: '50%',
-                        transform: 'translateY(-50%)'
-                      }}
-                    />
-                  </Button>
+                    show={showPromoModalHandler}
+                  />
                 ) : (
-                  <Alert
-                    closable
-                    type="success"
-                    className="mt-2 promo-success-selected"
-                    closeText={<i className="fas fa-times" />}
-                    afterClose={onRemovePromoHandler}
-                    message={
-                      <Row>
-                        <Col className="col-12">
-                          <p className="mb-0 text-truncate promo-success-selected-title font-weight-bold">
-                            Kode promo : TDT-100K
-                          </p>
-                          <p className="mb-0 text-break">
-                            Kamu mendapatkan potongan sebesar Rp. 100.000
-                          </p>
-                        </Col>
-                      </Row>
-                    }
+                  <PromoSelected
+                    reset={onRemovePromoHandler}
                   />
                 )}
               </Card.Body>
@@ -227,7 +187,7 @@ const Cart = () => {
                     {checkedList.length < 1 ? "-" : "Rp. 120.000"}
                   </span>
                 </p>
-                <Link href="/cart/shipment" as="/cart/shipment">
+                <Link href="/checkout" as="/checkout">
                   <a>
                     <Button 
                       block
@@ -245,85 +205,15 @@ const Cart = () => {
         </Row>
       </Container>
 
-      <Modal
-        centered
-        title=" "
-        visible={showPromoModal}
-        onOk={closePromoModalHandler}
-        onCancel={closePromoModalHandler}
-        zIndex="1030"
-        closeIcon={<i className="fas fa-times" />}
-        footer={null}
-        className="modal-promo"
-        bodyStyle={{padding: '0'}}
-      >
-        <Card.Body className="border-0 px-4 pb-0">
-          <h4 className="fs-20-s mb-0">
-            Pakai Promo
-            <Button 
-              type="link" 
-              disabled={isEmpty(promo.code, {ignore_whitespace:true})} 
-              className="fs-12 float-right text-tridatu border-0"
-              onClick={onRemovePromoHandler}
-            >
-              Reset Promo
-            </Button>
-          </h4>
-        </Card.Body>
-        <Card.Body className="border-0 px-4 border-bottom-5">
-          <Input.Search
-            size="large"
-            className="search-promo"
-            placeholder="Masukkan kode promo"
-            value={promo.code}
-            enterButton={
-              <Button 
-                disabled={isEmpty(promo.code, {ignore_whitespace:true})}
-              >
-                Pakai
-              </Button>
-            }
-            onSearch={onUsePromoHandler}
-            onChange={promoChangeHandler}
-          />
-        </Card.Body>
-        <Card.Body className="border-0 px-4 pb-2">
-          <h6 className="fs-16-s">
-            Promo yang tersedia
-          </h6>
-        </Card.Body>
-        <Card.Body className="pt-0 px-0">
-          <Card.Body className="border-0 px-4 pb-0 pt-1 promo-list">
-            <Radio.Group 
-              className="promo-radio"
-              value={promo.code}
-              onChange={promoChangeHandler}
-            >
-              {promos.map((data, i) => (
-                <Radio.Button value={data.code} key={i}>
-                  <Row>
-                    <Col className="pr-0">
-                      <Card.Img 
-                        className="promo-list-img"
-                        src={data.image}
-                      />
-                    </Col>
-                    <Col className="pl-0 truncate-2">
-                      <Card.Body className="p-2">
-                        <p className="mb-1 truncate-2 fs-16 noselect">
-                          <b>Belanja Gadget dan Electronic Ter-update Belanja Gadget dan Electronic Ter-update</b>
-                        </p>
-                        <p className="text-truncate mb-1 text-secondary">10 Sep - 29 Okt 2020</p>
-                        <p className="mb-0 text-truncate text-tridatu">{data.code}</p>
-                      </Card.Body>
-                    </Col>
-                  </Row>
-                </Radio.Button>
-              ))}
-            </Radio.Group>
-          </Card.Body>
-        </Card.Body>
-      </Modal>
+      <PromoModal
+        show={showPromoModal} 
+        close={closePromoModalHandler}
+        reset={onRemovePromoHandler}
+        selectPromo={onUsePromoHandler}
+        onChange={promoChangeHandler}
+        promo={promo}
+        dataPromo={listPromo}
+      />
 
       <style jsx>{CartStyle}</style>
     </>

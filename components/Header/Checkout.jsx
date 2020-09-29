@@ -1,7 +1,7 @@
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 
-const ShipmentHeader = () => {
+const CheckoutHeader = () => {
   return (
     <>
       <Navbar
@@ -57,4 +57,4 @@ const ShipmentHeader = () => {
   );
 };
 
-export default ShipmentHeader;
+export default CheckoutHeader;

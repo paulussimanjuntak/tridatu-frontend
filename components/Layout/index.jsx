@@ -1,13 +1,13 @@
 import { useRouter } from "next/router";
 import Header from "components/Header";
-import ShipmentHeader from "components/Header/Shipment";
+import CheckoutHeader from "components/Header/Checkout";
 import Footer from "components/Footer";
 
 const Layout = ({ children }) => {
   const router = useRouter();
   return (
     <>
-      {router.pathname === '/cart/shipment' ? <ShipmentHeader /> : <Header />}
+      {router.pathname === '/checkout' ? <CheckoutHeader/> : <Header />}
         {children} 
       <Footer />
     </>
