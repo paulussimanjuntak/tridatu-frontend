@@ -5,6 +5,9 @@ import { Input, Badge, Menu, Dropdown, Avatar } from "antd";
 
 import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
@@ -33,21 +36,10 @@ const render_category = data => {
   return list_category;
 };
 
-const accountMenu = (logoutHandler) => (
-  <Menu>
-    <Menu.Item> <a href="#" className="text-decoration-none"> Informasi Akun </a> </Menu.Item>
-    <Menu.Item> <a href="#" className="text-decoration-none"> Belanjaan Saya </a> </Menu.Item>
-    <Menu.Item> <a href="#" className="text-decoration-none"> Favorit </a> </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item onClick={logoutHandler}> <a href="#" className="text-decoration-none"> Keluar </a> </Menu.Item>
-  </Menu>
-);
-
 const menu = (
   <Menu>
     <Menu.ItemGroup title={<b>Keranjang</b>} />
     <Menu.Divider />
-    <Menu.ItemGroup className="cart-item-navbar">
     {[...Array(10)].map((_,i) => (
       <Menu.Item key={i}>
         <a href="#">
@@ -55,7 +47,16 @@ const menu = (
         </a>
       </Menu.Item>
     ))}
-    </Menu.ItemGroup>
+  </Menu>
+);
+
+const accountMenu = (logoutHandler) => (
+  <Menu>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Informasi Akun </a> </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Belanjaan Saya </a> </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Favorit </a> </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item onClick={logoutHandler}> <a href="#" className="text-decoration-none"> Keluar </a> </Menu.Item>
   </Menu>
 );
 
