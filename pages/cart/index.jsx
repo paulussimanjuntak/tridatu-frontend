@@ -12,7 +12,7 @@ import { PromoSelected, PromoButton } from 'components/Cart/PromoSelected'
 
 import CartStyle from 'components/Cart/style'
 
-const listPromo = [
+export const listPromo = [
   {code:'TDT-100K',image:'https://ecs7.tokopedia.net/img/blog/promo/2020/09/Thumbnail-6.jpg',discount:'100000'}, 
   {code:'TDT-200K',image:'https://ecs7.tokopedia.net/img/blog/promo/2020/07/Thumbnail-Interior.png',discount:'200000'},
   {code:'TDT-300K',image:'https://ecs7.tokopedia.net/img/blog/promo/2019/09/ZHIYUN-THUMBNAIL.jpg',discount:'300000'},
@@ -187,7 +187,7 @@ const Cart = () => {
                     {checkedList.length < 1 ? "-" : "Rp. 120.000"}
                   </span>
                 </p>
-                <Link href="/cart/shipment" as="/cart/shipment">
+                <Link href="/checkout" as="/checkout">
                   <a>
                     <Button 
                       block

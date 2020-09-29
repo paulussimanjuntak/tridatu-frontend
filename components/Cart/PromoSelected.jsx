@@ -8,12 +8,12 @@ export const PromoSelected = ({ reset }) => {
       <Alert
         closable
         type="success"
-        className="mt-2 promo-success-selected"
+        className="promo-success-selected"
         closeText={<i className="fas fa-times" />}
         afterClose={reset}
         message={
           <Row>
-            <Col className="col-12">
+            <Col className="col-12 fs-12-s">
               <p className="mb-0 text-truncate promo-success-selected-title font-weight-bold">
                 Kode promo : TDT-100K
               </p>
@@ -34,7 +34,7 @@ export const PromoButton = ({ disabled, show }) => {
       <Button 
         block
         size="large"
-        className="text-left text-secondary fs-14"
+        className="text-left text-secondary fs-14 text-truncate fs-12-s"
         disabled={disabled}
         onClick={show}
       >

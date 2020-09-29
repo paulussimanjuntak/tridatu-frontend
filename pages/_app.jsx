@@ -254,6 +254,11 @@ const App = ({ Component, pageProps, store }) => {
         .ant-modal-mask, .ant-image-preview-mask, .ant-modal-wrap{
           z-index: 1030
         }
+        .modal-rad-10 > .ant-modal-content,
+        .modal-rad-10 > .ant-modal-content > .ant-modal-header{
+          border-radius: 10px;
+          border: unset;
+        }
         /*ANT MODAL*/
 
         /*SLICK-SLIDE*/
@@ -371,6 +376,10 @@ const App = ({ Component, pageProps, store }) => {
 
         .va-inherit{
           vertical-align: inherit!important;
+        }
+
+        .ls-n1{
+          letter-spacing: -1px;
         }
 
         .hover-pointer:hover{
