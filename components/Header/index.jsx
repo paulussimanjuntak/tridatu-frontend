@@ -43,16 +43,47 @@ const accountMenu = (logoutHandler) => (
   </Menu>
 );
 
-const menu = (
-  <Menu>
-    <Menu.ItemGroup title={<b>Keranjang</b>} />
+const notificationMenu = (
+  <Menu className="d-none d-lg-block">
+    <Menu.ItemGroup 
+      title={
+        <>
+          <b className="text-dark">Notifikasi</b>
+          <a className="text-tridatu view-all-text-navbar">Baca Semua</a>
+        </>
+      }
+    />
+    <Menu.Divider />
+    <Menu.ItemGroup className="cart-item-navbar notification-item-navbar">
+    {[...Array(10)].map((_,i) => (
+      <Menu.Item key={i} className="notification-item">
+        <b className="text-wrap truncate-2">Tagihan Anda Sudah Ada</b>
+        <small className="text-wrap mb-0 text-secondary truncate-3">
+          Davis, tagihan IndiHome / Telepon Anda sudah ada. Bayar sekarang biar hati tenang.
+        </small>
+      </Menu.Item>
+    ))}
+    </Menu.ItemGroup>
+  </Menu>
+);
+
+const cartMenu = (
+  <Menu className="d-none d-lg-block">
+    <Menu.ItemGroup 
+      title={
+        <>
+          <b className="text-dark">Keranjang</b>
+          <Link href="/cart" as="/cart">
+            <a className="text-tridatu view-all-text-navbar">Lihat Sekarang</a>
+          </Link>
+        </>
+      }
+    />
     <Menu.Divider />
     <Menu.ItemGroup className="cart-item-navbar">
     {[...Array(10)].map((_,i) => (
       <Menu.Item key={i}>
-        <a href="#">
-          <CartItem />
-        </a>
+        <CartItem />
       </Menu.Item>
     ))}
     </Menu.ItemGroup>
@@ -188,10 +219,10 @@ const Header = () => {
 
               <Dropdown 
                 arrow
-                overlay={menu} 
-                trigger={['click']}
+                overlay={notificationMenu} 
+                trigger={['hover']}
                 placement="bottomCenter" 
-                overlayClassName="position-fixed top-50" 
+                overlayClassName="position-fixed top-50 w-340px"
                 overlayStyle={{top: '500px'}}
               >
                 <Nav.Link className="mx-2 d-none d-lg-block">
@@ -203,10 +234,10 @@ const Header = () => {
 
               <Dropdown 
                 arrow
-                overlay={menu} 
+                overlay={cartMenu} 
                 trigger={['hover']}
                 placement="bottomCenter" 
-                overlayClassName="position-fixed top-50"
+                overlayClassName="position-fixed top-50 w-340px"
                 onClick={(e) => goToHandler(e, 'cart')}
               >
                 <Nav.Link className="ml-2 d-none d-lg-block">
@@ -256,6 +287,9 @@ const Header = () => {
         :global(.top-50){
           top: 50px !important;
         }
+        :global(.w-340px){
+          width: 340px !important;
+        }
         :global(.navbar-shadow-bottom) {
           box-shadow: rgba(0, 0, 0, 0.18) 0px 1px 15px !important;
         }
@@ -297,6 +331,37 @@ const Header = () => {
         :global(.nav-search > .ant-input-affix-wrapper:focus, .ant-input-affix-wrapper-focused){
           box-shadow: unset;
         }
+
+        /*CART ITEM NAVBAR*/
+        :global(.cart-item-navbar){
+          max-height: 300px;
+          overflow: scroll;
+        }
+        :global(.cart-item-navbar > .ant-dropdown-menu-item-group-title){
+          padding: 0;
+        }
+        :global(.cart-item-navbar > .ant-dropdown-menu-item-group-list){
+          margin: 0;
+          max-height: 300px;
+        }
+        :global(.view-all-text-navbar){
+          float: right;
+          line-height: 2;
+          font-size: 12px;
+        }
+        :global(.notification-item-navbar > .ant-dropdown-menu-item-group-list > .notification-item){
+          background: white;
+        }
+        :global(.notification-item-navbar > .ant-dropdown-menu-item-group-list > .notification-item:not(:last-child)){
+          border-bottom: 1px solid #dee2e6!important;
+        }
+        :global(.notification-item-navbar > .ant-dropdown-menu-item-group-list > .notification-item:hover){
+          background-color: #f5f5f5;
+        }
+        :global(.notification-item-navbar > .ant-dropdown-menu-item-group-list > .notification-item.unread){
+          background-color:#effaf3;
+        }
+        /*CART ITEM NAVBAR*/
 
         /* LOGIN & REGISTER */
         :global(.modal-login > .ant-modal-content, .modal-login
