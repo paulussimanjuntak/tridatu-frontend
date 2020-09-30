@@ -366,6 +366,13 @@ const App = ({ Component, pageProps, store }) => {
           font-weight: 500!important;
         }
 
+        .truncate-3 {
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+        }
         .truncate-2 {
           -webkit-line-clamp: 2;
           overflow: hidden;
