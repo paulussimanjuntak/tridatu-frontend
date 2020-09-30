@@ -167,8 +167,19 @@ const App = ({ Component, pageProps, store }) => {
         /*ANT INPUT*/
 
         /*ANT SELECT*/
+        .ant-select-selection-item{
+          color: #495057;
+        }
         .ant-select-single:not(.ant-select-customize-input) .ant-select-selector{
           border-radius: .25rem;
+          height: calc(1.5em + .75rem + 2px);
+        }
+        .ant-select-single:not(.ant-select-customize-input) .ant-select-selector .ant-select-selection-search-input{
+          height: calc(1.5em + .75rem + 2px);
+        }
+        .ant-select-single .ant-select-selector .ant-select-selection-item,
+        .ant-select-single .ant-select-selector .ant-select-selection-placeholder{
+          line-height: 2.4;
         }
         .ant-select:not(.ant-select-disabled):hover .ant-select-selector{
           border-color: #8c8c8c !important;

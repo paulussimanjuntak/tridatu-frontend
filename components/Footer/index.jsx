@@ -8,8 +8,7 @@ const IMG_SOS = '/static/images/social-media'
 const Footer = () => {
   return(
     <>
-      <footer>
-        <hr className="mx-0 px-0" />
+      <footer className="border-top">
         <div className="row justify-content-around mb-0 pt-2 pb-0 mx-0">
           <div className="col-sm-12 col-md-12 col-lg-11">
             <Container>
