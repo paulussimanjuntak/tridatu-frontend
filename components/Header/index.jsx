@@ -35,7 +35,13 @@ const render_category = data => {
 
 const accountMenu = (logoutHandler) => (
   <Menu>
-    <Menu.Item> <a href="#" className="text-decoration-none"> Informasi Akun </a> </Menu.Item>
+    <Menu.Item>
+      <Link href="/account">
+        <a href="#" className="text-decoration-none">
+          Informasi Akun
+        </a>
+      </Link>
+    </Menu.Item>
     <Menu.Item> <a href="#" className="text-decoration-none"> Belanjaan Saya </a> </Menu.Item>
     <Menu.Item> <a href="#" className="text-decoration-none"> Favorit </a> </Menu.Item>
     <Menu.Divider />
@@ -238,7 +244,7 @@ const Header = () => {
                 trigger={['hover']}
                 placement="bottomCenter" 
                 overlayClassName="position-fixed top-50 w-340px"
-                onClick={(e) => goToHandler(e, 'cart')}
+                onClick={(e) => goToHandler(e, '/cart')}
               >
                 <Nav.Link className="ml-2 d-none d-lg-block">
                   <Badge count={100} size="small" className="nav-notification">
