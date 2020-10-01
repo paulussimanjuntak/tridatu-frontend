@@ -1,14 +1,17 @@
 import { useRouter } from 'next/router'
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Input, Badge, Menu, Dropdown, Avatar } from "antd";
+import { Input, Badge, Menu, Dropdown, Avatar, Tabs } from "antd";
 
 import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
+import Card from "react-bootstrap/Card";
+import CardColumns from "react-bootstrap/CardColumns";
 import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import Container from "react-bootstrap/Container";
 
 import Login from "../Header/Auth/Login";
@@ -19,24 +22,16 @@ import CartItem from 'components/Cart/CartItemNavbar'
 
 import * as actions from "store/actions";
 
-const category_data = [ "Aksesoris", "Baju", "Celana", "Jaket", "Tas Selempang"];
+import { category_data } from './data'
 
-const render_category = data => {
-  const list_category = [];
-  data.forEach((x, i) =>
-    list_category.push(
-      <Link href="/products" as="/products" key={i}>
-          <NavDropdown.Item as="a">{x}</NavDropdown.Item>
-      </Link>
-    )
-  );
-  return list_category;
-};
+const dataitem = [ "Baju", "Celana", "Jaket", "Sepatu"];
+const aksesorisitem = [ "Gelang", "Ikat pinggang"];
+
 
 const accountMenu = (logoutHandler) => (
-  <Menu>
+  <Menu className="d-none d-lg-block">
     <Menu.Item>
-      <Link href="/account">
+      <Link href="/account" as="/account">
         <a href="#" className="text-decoration-none">
           Informasi Akun
         </a>
@@ -102,6 +97,7 @@ const Header = () => {
   const [showLogin, setShowLogin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
 
   const isAuth = useSelector(state => state.auth.auth)
 
@@ -146,14 +142,96 @@ const Header = () => {
     setShowMobileMenu(false)
   }
 
-  const goToHandler = (e, des) => {
-    e.preventDefault()
-    router.push(des, des)
+  const goToHandler = (destination) => {
+    router.push(destination, destination)
+  }
+
+  const showCategoryDropdownHandler = () => {
+      setShowCategoryDropdown(true)
+  }
+  const showCategoryDropdownChange = flag => {
+    setShowCategoryDropdown(flag)
   }
 
   useEffect(() => {
     if(!showMobileMenu) document.body.style.removeProperty('overflow')
   },[showMobileMenu])
+
+  const renderCategory = data => {
+    let arr = []
+    let tmp = []
+    data.map(x => {
+      if(x.sub && x.sub.length > 0){
+        arr.push(
+          <Menu.SubMenu 
+            key={x.category} 
+            title={x.category} 
+            className="d-none d-lg-block" 
+            onTitleClick={() => goToHandler("/products")}
+          >
+            {x.sub.map(x => (
+              <Menu.Item
+                key={x}
+                className="d-none d-lg-block"
+                onClick={() => goToHandler("/products")}
+              >
+              {x}
+              </Menu.Item>
+            ))}
+          </Menu.SubMenu>
+        )
+      } else {
+        tmp.push(
+          <Menu.Item 
+            key={x.category} 
+            className="d-none d-lg-block"
+            onClick={() => goToHandler("/products")}
+          >
+            {x.category}
+          </Menu.Item>
+        )
+      }
+    })
+    arr.push(tmp)
+    return arr
+  }
+
+  const categoryMenu = (
+    <Menu
+      className="d-none d-lg-block"
+      onClick={showCategoryDropdownHandler}
+      onMouseEnter={() => document.body.classList.add("overflow-hidden")}
+      onMouseLeave={() => document.body.classList.remove("overflow-hidden")}
+    >
+      <Menu.Item key="1" className="category-item-navbar">
+        <Container>
+          <Tabs 
+            tabBarGutter={10}
+            tabPosition="left" 
+            defaultActiveKey="1" 
+            className="category-item-navbar-tabs-left" 
+          >
+            {category_data.map(data => (
+              <Tabs.TabPane tab={data.category} key={data.category}>
+                <Row className="make-columns">
+                  {data.sub.map(child => (
+                    <Col xs={6} md={4} key={child.title}>
+                      <div className="panel">
+                        <b>{child.title}</b>
+                        {child.child.map(dataChild => (
+                          <p className="mb-0">{dataChild}</p>
+                        ))}
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
+              </Tabs.TabPane>
+            ))}
+          </Tabs>
+        </Container>
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <>
@@ -203,16 +281,44 @@ const Header = () => {
 
           <Navbar.Collapse id="tridatu-navbar-nav">
             <Nav className="w-100">
-              <NavDropdown
-                title={<span className="text-dark">Kategori</span>}
-                id="Kategori"
-                className="dropdown-kategori"
+
+              <Dropdown 
+                overlay={categoryMenu} 
+                trigger={['click']}
+                placement="bottomCenter" 
+                overlayClassName="position-fixed top-68 vw-100 category-dropdown"
+                visible={showCategoryDropdown}
+                onVisibleChange={showCategoryDropdownChange}
               >
-                {render_category(category_data)}
-              </NavDropdown>
+                <Nav.Link as="a" 
+                  className="text-dark align-self-center"
+                  onMouseEnter={() => document.body.classList.add("overflow-hidden")}
+                  onMouseLeave={() => document.body.classList.remove("overflow-hidden")}
+                >
+                  Kategori
+                </Nav.Link>
+              </Dropdown>
+
+    {/*
+              <Dropdown 
+                arrow
+                overlay={categoryMenu} 
+                trigger={['hover']}
+                placement="bottomCenter" 
+                overlayClassName="position-fixed top-50"
+              >
+                <Nav.Link as="a" 
+                  className="text-dark align-self-center"
+                  onMouseEnter={() => document.body.classList.add("overflow-hidden")}
+                  onMouseLeave={() => document.body.classList.remove("overflow-hidden")}
+                >
+                  Kategori
+                </Nav.Link>
+              </Dropdown>
+    */}
 
               <Link href="/promo" as="/promo">
-                <Nav.Link as="a" className="text-dark">
+                <Nav.Link as="a" className="text-dark align-self-center">
                   Promo
                 </Nav.Link>
               </Link>
@@ -231,7 +337,7 @@ const Header = () => {
                 overlayClassName="position-fixed top-50 w-340px"
                 overlayStyle={{top: '500px'}}
               >
-                <Nav.Link className="mx-2 d-none d-lg-block">
+                <Nav.Link className="mx-2 d-none d-lg-block align-self-center">
                   <Badge count={100} size="small" className="nav-notification">
                     <i className="far fa-bell fa-lg" />
                   </Badge>
@@ -244,9 +350,9 @@ const Header = () => {
                 trigger={['hover']}
                 placement="bottomCenter" 
                 overlayClassName="position-fixed top-50 w-340px"
-                onClick={(e) => goToHandler(e, '/cart')}
+                onClick={() => goToHandler("/cart")}
               >
-                <Nav.Link className="ml-2 d-none d-lg-block">
+                <Nav.Link className="ml-2 d-none d-lg-block align-self-center">
                   <Badge count={100} size="small" className="nav-notification">
                     <i className="far fa-shopping-cart fa-lg" />
                   </Badge>
@@ -293,6 +399,9 @@ const Header = () => {
         :global(.top-50){
           top: 50px !important;
         }
+        :global(.top-68){
+          top: 68px !important;
+        }
         :global(.w-340px){
           width: 340px !important;
         }
@@ -337,6 +446,27 @@ const Header = () => {
         :global(.nav-search > .ant-input-affix-wrapper:focus, .ant-input-affix-wrapper-focused){
           box-shadow: unset;
         }
+
+        /*CATEGORY ITEM NAVBAR*/
+        :global(.category-dropdown > .ant-dropdown-menu){
+          border-top: 1px solid #ececec;
+          box-shadow: rgba(0,0,0,0.18) 0px 25px 32px !important;
+        }
+        :global(.category-item-navbar){
+          height: auto;
+          max-height: 80vh;
+        }
+        :global(.category-item-navbar.ant-dropdown-menu-item:hover){
+          background-color: transparent;
+          cursor: default;
+        }
+
+        :global(.category-item-navbar-tabs-left){
+          height: 100%;
+          max-height: 80vh;
+          overflow: auto;
+        }
+        /*CATEGORY ITEM NAVBAR*/
 
         /*CART ITEM NAVBAR*/
         :global(.cart-item-navbar){
@@ -397,6 +527,24 @@ const Header = () => {
           :global(.align-baseline-middle){
             vertical-align: unset !important;
           }
+        }
+        :global(.row.make-columns){
+          column-width: 19em !important;
+          -moz-column-width: 19em !important;
+          -webkit-column-width: 19em !important;
+          column-gap: 1em !important;
+          -moz-column-gap: 1em !important;
+          -webkit-column-gap: 1em !important; 
+        }
+        :global(.row.make-columns > div){
+          display: inline-block;
+          padding: .5rem;
+          width: 100%; 
+        }
+        :global(.panel){
+          display: inline-block;
+          height: auto;
+          width: 100%; 
         }
       `}</style>
     </>
