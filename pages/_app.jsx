@@ -256,7 +256,7 @@ const App = ({ Component, pageProps, store }) => {
         /*ANT BREADCRUMB*/
 
         /*ANT ICON*/
-        .ant-message .anticon{
+        .ant-message .anticon, .anticon{
           vertical-align: 0.125em;
         }
         /*ANT ICON*/

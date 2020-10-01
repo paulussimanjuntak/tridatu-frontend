@@ -61,7 +61,7 @@ const Home = () => {
 
           <Col lg={2} md={12}>
             <section className="info-store">
-              <h4 className="fs-20-s info-store-title mb-3">Informasi Toko</h4>
+              <h4 className="fs-20-s info-store-title mb-3">Informasi Outlet</h4>
               <Slider {...infoStoreSettings}>
                 {infoStores.map((data, i) => (
                   <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
@@ -104,6 +104,9 @@ const Home = () => {
 
         :global(.info-store > .info-store-title){
           font-size: 24px;
+        }
+        :global(.info-store .slick-track){
+          height: auto !important;
         }
         :global(.info-store-img){
           width: 130px;
