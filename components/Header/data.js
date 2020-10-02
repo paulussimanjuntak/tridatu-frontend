@@ -4,7 +4,7 @@ export const category_data = [
     sub: [
       {
         title: "Baju",
-        child: [ "Kemeja", "Kaos", "Tank Top", "Polo Shirt", "Piyama", "Baju Kasual", "Baju Katun", "Sweater", "Cardigan", "Rompi", "Blazer" ]
+        child: [ "Polo Shirt", "Piyama", "Baju Kasual", "Baju Katun", "Sweater", "Cardigan" ]
       },
       {
         title: "Celana",
@@ -28,7 +28,7 @@ export const category_data = [
       },
       {
         title: "Baju2",
-        child: [ "Kemeja", "Kaos", "Tank Top", "Polo Shirt", "Piyama", "Baju Kasual", "Baju Katun", "Cardigan", "Rompi", "Blazer" ]
+        child: [ "Kemeja", "Kaos", "Tank Top", "Polo Shirt", "Piyama", "Baju Kasual", "Rompi", "Blazer" ]
       },
       {
         title: "Celana2",
@@ -40,7 +40,7 @@ export const category_data = [
       },
       {
         title: "Baju3",
-        child: [ "Kemeja", "Kaos", "Tank Top", "Polo Shirt", "Piyama", "Baju Kasual", "Baju Katun", "Sweater", "Cardigan", "Rompi", "Blazer" ]
+        child: [ "Baju Kasual", "Baju Katun", "Sweater", "Cardigan", "Rompi", "Blazer" ]
       },
       {
         title: "Celana3",

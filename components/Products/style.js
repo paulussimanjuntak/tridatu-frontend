@@ -118,5 +118,10 @@ const ProductsStyle = css`
   overflow-y: auto;
 }
 
+:global(.scrollable-submenu > .ant-menu-sub.ant-menu-inline){
+  max-height: 300px;
+  overflow: scroll;
+}
+
 `
 export default ProductsStyle
