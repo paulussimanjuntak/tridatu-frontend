@@ -5,11 +5,7 @@ import { Input, Badge, Menu, Dropdown, Avatar, Tabs } from "antd";
 
 import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import Card from "react-bootstrap/Card";
-import CardColumns from "react-bootstrap/CardColumns";
 import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
@@ -23,10 +19,6 @@ import CartItem from 'components/Cart/CartItemNavbar'
 import * as actions from "store/actions";
 
 import { category_data } from './data'
-
-const dataitem = [ "Baju", "Celana", "Jaket", "Sepatu"];
-const aksesorisitem = [ "Gelang", "Ikat pinggang"];
-
 
 const accountMenu = (logoutHandler) => (
   <Menu className="d-none d-lg-block">
@@ -157,45 +149,6 @@ const Header = () => {
     if(!showMobileMenu) document.body.style.removeProperty('overflow')
   },[showMobileMenu])
 
-  const renderCategory = data => {
-    let arr = []
-    let tmp = []
-    data.map(x => {
-      if(x.sub && x.sub.length > 0){
-        arr.push(
-          <Menu.SubMenu 
-            key={x.category} 
-            title={x.category} 
-            className="d-none d-lg-block" 
-            onTitleClick={() => goToHandler("/products")}
-          >
-            {x.sub.map(x => (
-              <Menu.Item
-                key={x}
-                className="d-none d-lg-block"
-                onClick={() => goToHandler("/products")}
-              >
-              {x}
-              </Menu.Item>
-            ))}
-          </Menu.SubMenu>
-        )
-      } else {
-        tmp.push(
-          <Menu.Item 
-            key={x.category} 
-            className="d-none d-lg-block"
-            onClick={() => goToHandler("/products")}
-          >
-            {x.category}
-          </Menu.Item>
-        )
-      }
-    })
-    arr.push(tmp)
-    return arr
-  }
-
   const categoryMenu = (
     <Menu
       className="d-none d-lg-block"
@@ -213,18 +166,20 @@ const Header = () => {
           >
             {category_data.map(data => (
               <Tabs.TabPane tab={data.category} key={data.category}>
-                <Row className="make-columns">
+                <div className="westeros-c-column-container">
                   {data.sub.map(child => (
-                    <Col xs={6} md={4} key={child.title}>
-                      <div className="panel">
-                        <b>{child.title}</b>
-                        {child.child.map(dataChild => (
-                          <p className="mb-0">{dataChild}</p>
-                        ))}
-                      </div>
-                    </Col>
+                    <div className="westeros-c-column-container_item" key={child.title}>
+                      <b className="fs-16">{child.title}</b>
+                      {child.child.map((dataChild,i) => (
+                        <p className="mb-0 text-dark" key={i}>
+                          <Link href="/products" as="/products">
+                            <a className="text-reset"> {dataChild} </a>
+                          </Link>
+                        </p>
+                      ))}
+                    </div>
                   ))}
-                </Row>
+                </div>
               </Tabs.TabPane>
             ))}
           </Tabs>
@@ -298,24 +253,6 @@ const Header = () => {
                   Kategori
                 </Nav.Link>
               </Dropdown>
-
-    {/*
-              <Dropdown 
-                arrow
-                overlay={categoryMenu} 
-                trigger={['hover']}
-                placement="bottomCenter" 
-                overlayClassName="position-fixed top-50"
-              >
-                <Nav.Link as="a" 
-                  className="text-dark align-self-center"
-                  onMouseEnter={() => document.body.classList.add("overflow-hidden")}
-                  onMouseLeave={() => document.body.classList.remove("overflow-hidden")}
-                >
-                  Kategori
-                </Nav.Link>
-              </Dropdown>
-    */}
 
               <Link href="/promo" as="/promo">
                 <Nav.Link as="a" className="text-dark align-self-center">
@@ -411,12 +348,6 @@ const Header = () => {
         :global(.align-baseline-middle) {
           vertical-align: -webkit-baseline-middle !important;
         }
-        :global(.dropdown-kategori > .dropdown-menu) {
-          border: 0;
-          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-          max-height: 345px;
-          overflow-y: auto;
-        }
         :global(.nav-notification){
           color: rgba(0,0,0,.5);
           font-size: 16px;
@@ -465,6 +396,10 @@ const Header = () => {
           height: 100%;
           max-height: 80vh;
           overflow: auto;
+        }
+        :global(.category-item-navbar-tabs-left > .ant-tabs-nav){
+          position: sticky;
+          top: 0;
         }
         /*CATEGORY ITEM NAVBAR*/
 
@@ -528,23 +463,15 @@ const Header = () => {
             vertical-align: unset !important;
           }
         }
-        :global(.row.make-columns){
-          column-width: 19em !important;
-          -moz-column-width: 19em !important;
-          -webkit-column-width: 19em !important;
-          column-gap: 1em !important;
-          -moz-column-gap: 1em !important;
-          -webkit-column-gap: 1em !important; 
+
+        :global(.westeros-c-column-container){
+          columns: 182px;
+          column-gap: 2em;
         }
-        :global(.row.make-columns > div){
-          display: inline-block;
-          padding: .5rem;
-          width: 100%; 
-        }
-        :global(.panel){
-          display: inline-block;
-          height: auto;
-          width: 100%; 
+        :global(.westeros-c-column-container_item){
+          margin-bottom: 24px;
+          page-break-inside: avoid;
+          break-inside: avoid;
         }
       `}</style>
     </>

@@ -80,14 +80,19 @@ const ProductsStyle = css`
 :global(.ant-menu-item:active, .ant-menu-submenu-title:active){
   background-color: #cccccc66;
 }
-:global(.ant-menu-vertical .ant-menu-submenu, 
-        .ant-menu-vertical-left .ant-menu-submenu, 
-        .ant-menu-vertical-right .ant-menu-submenu, 
-        .filter-menu .ant-menu-submenu:last-child){
-  border-bottom: 1px solid #6c757d2b;
-}
-:global(.filter-menu .filter-checkbox > .ant-menu-sub:last-child){
-  border-bottom: 1px solid #6c757d2b !important;
+
+// :global(.ant-menu-vertical .ant-menu-submenu, 
+//         .ant-menu-vertical-left .ant-menu-submenu, 
+//         .ant-menu-vertical-right .ant-menu-submenu, 
+//         .filter-menu .ant-menu-submenu:last-child){
+//   border-bottom: 1px solid #6c757d2b;
+// }
+// :global(.filter-menu .filter-checkbox > .ant-menu-sub:last-child){
+//   border-bottom: 1px solid #6c757d2b !important;
+// }
+
+:global(.filter-menu .title-filter:not(:first-of-type)){
+  border-top: 1px solid #6c757d2b !important;
 }
 :global(.checkbox-item > .ant-checkbox-wrapper){
   width: 100%;
@@ -116,6 +121,11 @@ const ProductsStyle = css`
 :global(.filter-category-body){
   max-height: 200px;
   overflow-y: auto;
+}
+
+:global(.scrollable-submenu > .ant-menu-sub.ant-menu-inline){
+  max-height: 300px;
+  overflow: scroll;
 }
 
 `
