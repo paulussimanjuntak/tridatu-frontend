@@ -89,6 +89,7 @@ const Home = () => {
             </Link>
           </div>
         </section>
+
       </Container>
 
       <style jsx>{`
