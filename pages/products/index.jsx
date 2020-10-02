@@ -24,6 +24,9 @@ const listCategory = [ { title: "Baju", child: ['Kaos', 'Kemeja'] }, { title: "I
 
 const genderList = ['Pria', 'Wanita', 'Uniseks'];
 const brandList = ['Adidas', 'Billabong', 'Bershka', 'Converse', 'Deus', 'GAP', 'Giordano', 'Gucci', 'H&M', 'Mango', 'New Balance', 'Pull & Bear', 'Louis Vuitton', 'Levis', 'Nike', 'Top Man', 'Uniqlo', 'Supreme', 'Zara']
+const sortList = ['Paling Sesuai', 'Harga Tertinggi', 'Harga Terendah']
+
+import { category_data } from 'components/Header/data'
 
 const ProductContainer = () => {
   const [visible, setVisible] = useState(false);
@@ -58,10 +61,10 @@ const ProductContainer = () => {
               <Form.Label className="my-1 mr-2">
                 Urutkan:
               </Form.Label>
-              <Select defaultValue="1" style={{ width: 150 }}>
-                <Select.Option value="1">Paling Sesuai</Select.Option>
-                <Select.Option value="2">Harga Tertinggi</Select.Option>
-                <Select.Option value="3">Harga Terendah</Select.Option>
+              <Select defaultValue={sortList[0]} style={{ width: 150 }}>
+                {sortList.map(x => (
+                  <Select.Option value={x}>{x}</Select.Option>
+                ))}
               </Select>
             </Form>
           </Col>
@@ -78,27 +81,21 @@ const ProductContainer = () => {
                 defaultOpenKeys={['sub1', 'sub6', 'sub7', 'sub2', 'sub8']}
                 mode="inline"
               >
-                <Menu.SubMenu key="sub1" title={renderTitle('Kategori')}>
-                  {listCategory.map((x, i) => (
-                    <Menu.SubMenu key={i} title={renderSubTitle(x.title)}>
-                      {x.child.map(y => (
-                        <Menu.Item key={y+x.title} className="text-secondary">{y}</Menu.Item>
+                <Menu.SubMenu key="sub1" className="title-filter" title={renderTitle('Kategori')}>
+                  {category_data.map((data, i) => (
+                    <Menu.SubMenu key={data.category + i} title={renderSubTitle(data.category)}>
+                      {data.sub.map((child, ii) => (
+                        <Menu.SubMenu key={child.title + (i + ii)} title={renderSubTitle(child.title)} className="pl-3">
+                          {child.child.map((dataChild,iii) => (
+                            <Menu.Item key={dataChild + (iii+ii+i)} className="text-secondary">{dataChild}</Menu.Item>
+                          ))}
+                        </Menu.SubMenu>
                       ))}
                     </Menu.SubMenu>
                   ))}
                 </Menu.SubMenu>
 
-                <Menu.SubMenu key="sub2" className="filter-checkbox" title={renderTitle('Jenis Kelamin')}>
-                  {genderList.map(x => (
-                    <Menu.Item className="checkbox-item" key={x}>
-                      <Checkbox>
-                        <span className="text-secondary">{x}</span>
-                      </Checkbox>
-                    </Menu.Item>
-                  ))}
-                </Menu.SubMenu>
-
-                <Menu.SubMenu key="sub7" className="filter-checkbox" title={renderTitle('Rating')}>
+                <Menu.SubMenu key="sub7" className="filter-checkbox title-filter" title={renderTitle('Rating')}>
                   <Menu.Item className="checkbox-item">
                     <Radio.Group className="w-100">
                       <Radio style={radioStyle} value={3}>
@@ -116,7 +113,7 @@ const ProductContainer = () => {
                   </Menu.Item>
                 </Menu.SubMenu>
 
-                <Menu.SubMenu key="sub6" className="filter-checkbox" title={renderTitle('Harga')}>
+                <Menu.SubMenu key="sub6" className="filter-checkbox title-filter" title={renderTitle('Harga')}>
                   <div className="p-l-20 p-r-20 mt-3">
                     <Form.Group>
                       <Form.Label className="text-secondary m-b-13">Harga Minimum</Form.Label>
@@ -140,7 +137,7 @@ const ProductContainer = () => {
                   </Menu.Item>
                 </Menu.SubMenu>
 
-                <Menu.SubMenu key="sub8" title={renderTitle('Brand')} className="scrollable-submenu">
+                <Menu.SubMenu key="sub8" className="scrollable-submenu title-filter" title={renderTitle('Brand')}>
                   {brandList.map(x => (
                     <Menu.Item className="checkbox-item" key={x}>
                       <Checkbox>
@@ -235,7 +232,15 @@ const ProductContainer = () => {
       >
         <Card className="border-0 rounded-0 w-100 card-mobile-filter">
           <Card.Body>
-            <h6>Urutkan</h6>
+            <h6 className="mb-3">Urutkan</h6>
+            {sortList.map(tag => (
+              <Tag.CheckableTag
+                key={tag}
+                className="filter-tag filter-tag-mobile"
+              >
+                {tag}
+              </Tag.CheckableTag>
+            ))}
             <Form.Group className="mb-1">
               <Radio.Group className="w-100">
                 <Radio style={radioStyle} value={3}>
@@ -273,6 +278,20 @@ const ProductContainer = () => {
                 </Tabs.TabPane>
               ))}
             </Tabs>
+          </Card.Body>
+        </Card>
+
+        <Card className="border-0 rounded-0 w-100 card-mobile-filter">
+          <Card.Body>
+            <h6>Jenis Kelamin</h6>
+            {genderList.map(tag => (
+              <Tag.CheckableTag
+                key={tag}
+                className="filter-tag filter-tag-mobile"
+              >
+                {tag}
+              </Tag.CheckableTag>
+            ))}
           </Card.Body>
         </Card>
 
@@ -324,6 +343,11 @@ const ProductContainer = () => {
       </Drawer>
 
       <style jsx>{ProductsStyle}</style>
+      <style jsx>{`
+        :global(.filter-tag-mobile.ant-tag-checkable){
+          border: 1px solid #d9d9d9;
+        }
+      `}</style>
     </>
   )
 }

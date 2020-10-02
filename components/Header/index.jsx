@@ -169,9 +169,13 @@ const Header = () => {
                 <div className="westeros-c-column-container">
                   {data.sub.map(child => (
                     <div className="westeros-c-column-container_item" key={child.title}>
-                      <b>{child.title}</b>
+                      <b className="fs-16">{child.title}</b>
                       {child.child.map((dataChild,i) => (
-                        <p className="mb-0" key={i}>{dataChild}</p>
+                        <p className="mb-0 text-dark" key={i}>
+                          <Link href="/products" as="/products">
+                            <a className="text-reset"> {dataChild} </a>
+                          </Link>
+                        </p>
                       ))}
                     </div>
                   ))}
