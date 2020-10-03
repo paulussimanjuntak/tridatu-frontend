@@ -123,7 +123,7 @@ const ProductsStyle = css`
   overflow-y: auto;
 }
 
-:global(.scrollable-submenu > .ant-menu-sub.ant-menu-inline){
+:global(.scrollable-submenu > .ant-menu-sub.ant-menu-inline, .scrollable-submenu){
   max-height: 300px;
   overflow: scroll;
 }

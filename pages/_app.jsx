@@ -272,6 +272,17 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*ANT MODAL*/
 
+        /*ANT TAG SELECTABLE*/
+        .ant-tag-checkable:not(.ant-tag-checkable-checked):hover{
+          color: #000;
+        }
+        .ant-tag-checkable:active{
+          border-color: #d63031;
+          color: #d63031;
+          background-color: #ffeaea;
+        }
+        /*ANT TAG SELECTABLE*/
+
         /*SLICK-SLIDE*/
         .slick-slide {
           padding: 0px 15px;
