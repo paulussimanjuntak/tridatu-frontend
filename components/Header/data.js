@@ -73,7 +73,7 @@ export const category_data = [
         child: ["Atasan", "Bawahan", "Aksesoris", "Sepatu", "Sandal"]
       },
       {
-        title: "Celana",
+        title: "Perempuan",
         child: ["Atasan", "Bawahan", "Dress", "Aksesoris", "Sepatu", "Sandal"]
       }
     ]

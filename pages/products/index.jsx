@@ -10,10 +10,11 @@ import Container from "react-bootstrap/Container";
 
 import CardProduct from "components/Card/Product";
 import Pagination from "components/Pagination";
-
-const CardProductMemo = React.memo(CardProduct);
+import formFilter from "formdata/formFilter";
 
 import ProductsStyle, { radioStyle } from "components/Products/style";
+
+const CardProductMemo = React.memo(CardProduct);
 
 const renderTitle = (title) => <b className="text-dark">{title}</b> 
 const renderSubTitle = (title) => <span className="text-muted">{title}</span>
@@ -30,7 +31,10 @@ import { category_data } from 'components/Header/data'
 
 const ProductContainer = () => {
   const [visible, setVisible] = useState(false);
-  const [filter, setFilter] = useState(listFilter);
+  const [filter, setFilter] = useState(formFilter);
+  const [activeFilter, setActiveFilter] = useState({
+    category: {value: []},
+  });
 
   const showDrawer = () => {
     setVisible(true);
@@ -39,6 +43,14 @@ const ProductContainer = () => {
   const onClose = () => {
     setVisible(false);
   };
+
+  const onCategoryChange = e => {
+    const tmp = e.keyPath.join("")
+    const data = { ...activeFilter, category: {value: [e.key]} }
+    const emptydata = { ...activeFilter, category: {value: []} }
+    console.log(e)
+    setActiveFilter(data)
+  }
 
   return(
     <>
@@ -71,6 +83,9 @@ const ProductContainer = () => {
         </Row>
       </Container>
       <hr />
+      <pre>
+        {JSON.stringify(activeFilter, null, 4)}
+      </pre>
       <Container className="pb-3 pt-3">
         <Row>
           <Col className="col-3 d-none d-lg-block ">
@@ -81,13 +96,18 @@ const ProductContainer = () => {
                 defaultOpenKeys={['sub1', 'sub6', 'sub7', 'sub2', 'sub8']}
                 mode="inline"
               >
-                <Menu.SubMenu key="sub1" className="title-filter" title={renderTitle('Kategori')}>
+                <Menu.SubMenu 
+                  key="sub1" 
+                  className="title-filter" 
+                  title={renderTitle('Kategori')} 
+                  onClick={onCategoryChange}
+                >
                   {category_data.map((data, i) => (
                     <Menu.SubMenu key={data.category + i} title={renderSubTitle(data.category)}>
                       {data.sub.map((child, ii) => (
                         <Menu.SubMenu key={child.title + (i + ii)} title={renderSubTitle(child.title)} className="pl-3">
-                          {child.child.map((dataChild,iii) => (
-                            <Menu.Item key={dataChild + (iii+ii+i)} className="text-secondary">{dataChild}</Menu.Item>
+                          {child.child.map(dataChild => (
+                            <Menu.Item key={dataChild} className="text-secondary">{dataChild}</Menu.Item>
                           ))}
                         </Menu.SubMenu>
                       ))}
@@ -153,6 +173,7 @@ const ProductContainer = () => {
 
           <Col>
             <h4 className="mb-2 d-none d-lg-block">Produk</h4>
+            {/*
             {filter.length > 0 && (
               <div className="mb-3 d-none d-lg-block noselect">
                 <span className="text-secondary font-weight-light">Filter aktif: </span>
@@ -168,6 +189,7 @@ const ProductContainer = () => {
                 <a href="#" className="text-tridatu fs-14" onClick={() => setFilter([])}>Hapus Semua</a>
               </div>
             )}
+            */}
 
             <Row className="row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 custom-gutters">
               {[...Array(10)].map((_, i) => (
@@ -193,6 +215,8 @@ const ProductContainer = () => {
           </Col>
         </Row>
       </Container>
+
+      {/*FILTER MOBILE*/}
 
       <Drawer
         placement="bottom"
