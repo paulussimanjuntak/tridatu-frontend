@@ -1,8 +1,16 @@
+import { useState } from 'react';
 import { Drawer, Avatar } from 'antd';
 import Link from 'next/link';
-import Nav from 'react-bootstrap/Nav'
+import Nav from 'react-bootstrap/Nav';
+
+import CategoryMenu from './CategoryMenu';
 
 const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
+  const [showCategory, setShowCategory] = useState(false)
+
+  const showCategoryHandler = () => setShowCategory(true)
+  const closeCategoryHandler = () => setShowCategory(false)
+
   let headerMobile;
   if(isAuth){
     headerMobile = (
@@ -36,7 +44,7 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
           )}
 
           <Link href="/products" as="/products">
-            <Nav.Link as="a" onClick={close}>
+            <Nav.Link as="a" onClick={showCategoryHandler}>
               Kategori
             </Nav.Link>
           </Link>
@@ -68,6 +76,20 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
             </>
           )}
         </Nav>
+      </Drawer>
+
+      <Drawer
+        placement="right"
+        zIndex="1031"
+        width="100vw"
+        onClose={closeCategoryHandler}
+        visible={showCategory}
+        closeIcon={<i className="fas fa-times" />}
+        className="d-block d-sm-block d-md-block d-lg-none d-xl-none"
+        headerStyle={{overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}
+        title={<b>Kategori</b>}
+      >
+        <CategoryMenu />
       </Drawer>
 
       <style jsx>{`

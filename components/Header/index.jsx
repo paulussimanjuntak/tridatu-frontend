@@ -400,7 +400,17 @@ const Header = () => {
         :global(.category-item-navbar-tabs-left > .ant-tabs-nav){
           position: sticky;
           top: 0;
+          width: 150px;
         }
+        :global(.category-item-navbar-tabs-left .ant-tabs-tab){
+          padding-left: 0 !important;
+        }
+        :global(.category-item-navbar-tabs-left .ant-tabs-tab-btn){
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
         /*CATEGORY ITEM NAVBAR*/
 
         /*CART ITEM NAVBAR*/
@@ -451,6 +461,11 @@ const Header = () => {
           height: 42px;
           width: auto;
         }
+        @media only screen and (max-width: 357px){
+          :global(.westeros-c-column-container){
+            columns: 85px !important;
+          }
+        }
         @media only screen and (max-width: 425px){
           :global(.text-navbar){
             font-size: 16px;
@@ -461,6 +476,14 @@ const Header = () => {
           }
           :global(.align-baseline-middle){
             vertical-align: unset !important;
+          }
+        }
+        @media only screen and (max-width: 768px){
+          :global(.category-item-navbar-tabs-left > .ant-tabs-nav){
+            width: 100px;
+          }
+          :global(.westeros-c-column-container){
+            columns: 100px !important;
           }
         }
 
