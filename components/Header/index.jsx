@@ -23,8 +23,8 @@ import { category_data } from './data'
 const accountMenu = (logoutHandler) => (
   <Menu className="d-none d-lg-block">
     <Menu.Item>
-      <Link href="/account" as="/account">
-        <a href="#" className="text-decoration-none">
+      <Link href="/account/profile" as="/account/profile">
+        <a className="text-decoration-none">
           Informasi Akun
         </a>
       </Link>
