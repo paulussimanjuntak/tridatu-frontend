@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Avatar, Select, Button, Upload } from 'antd'
 
 import Nav from 'react-bootstrap/Nav'
@@ -8,25 +8,39 @@ import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
 
-import { uploadButton, imagePreview, imageValidation, getBase64Img } from 'lib/imageUploader'
+import { uploadButton, imagePreview, imageValidation } from 'lib/imageUploader'
 
 const Account = () => {
   const [loading, setLoading] = useState(false)
-  const [avatar, setAvatar] = useState([])
+  const [avatar, setAvatar] = useState({
+    image: { value: [], isValid: true, message: null }
+  })
 
-  const onAvatarChangeHandler = ({fileList: newFileList}) => {
-    setAvatar(newFileList)
+  const onAvatarChangeHandler = ({file: newFile}) => {
+    const tmp = []
+    tmp.push(newFile)
+    const data = {
+      ...avatar, 
+      image: {value: tmp, isValid: true, message: null}
+    }
+    setAvatar(data)
   }
 
-  const onAvatarChange = info => {
-    if(info.file.status === 'uploading'){
-      setLoading(true)
-      return
+  useEffect(() => {
+    const avatarData = {
+      image: { 
+        value: [{
+          uid: -Math.abs(Math.random()),
+          url: `https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`
+        }], 
+        isValid: true, 
+        message: null 
+      },
     }
-    if(info.file.status === 'done'){
-      getBase64Img()
-    }
-  }
+    setAvatar(avatarData)
+  },[])
+
+  const avatarImage = avatar.image;
 
   return(
     <>
@@ -121,24 +135,31 @@ const Account = () => {
                     </Card.Body>
                   </Col>
 
-                  <Col lg={4} className="text-center order-md-12 order-1">
+                  <Col lg={4} className="text-center order-md-12 order-1 align-self-center">
                     <Card className="border-0">
                       <Upload
                         accept="image/*"
                         listType="picture-card"
-
-                        showUploadList={{showRemoveIcon: false, showPreviewIcon: true}}
+                        className="avatar-uploader"
                         onPreview={imagePreview}
-                        beforeUpload={(file) => imageValidation(file, "https://goole.com", "avatar", "formHeader")}
+                        fileList={avatarImage.value}
+                        showUploadList={{showRemoveIcon: false, showPreviewIcon: true}}
+                        beforeUpload={(file) => imageValidation(file, "www.google.com", "avatar", "formHeader")}
                       >
-                        {avatar.length >= 1 ? null : uploadButton(loading)}
+                        {avatarImage.value.length >= 1 ? null : uploadButton(loading)}
                       </Upload>
                       <Upload
                         onChange={onAvatarChangeHandler}
                         showUploadList={false}
                       >
-                        <Button>Upload</Button>
+                        <Button>Pilih Foto</Button>
                       </Upload>
+                      <p className="fs-12 mb-0 mt-3 text-secondary mt-0">
+                        Ukuran gambar: maks. 4 MB
+                      </p>
+                      <p className="fs-12 mb-0 text-secondary mt-0">
+                        Format gambar: .JPEG, .JPG, .PNG
+                      </p>
                     </Card>
                   </Col>
 
@@ -162,6 +183,25 @@ const Account = () => {
         }
         :global(.side-nav-link:hover){
           color: rgba(0, 0, 0, 0.95);
+        }
+
+        :global(.avatar-uploader .ant-upload){
+          vertical-align: middle;
+          border-radius: 50%;
+          margin-left: auto !important;
+          margin-right: auto !important;
+        }
+        :global(.avatar-uploader .ant-upload-list-picture-card-container){
+          margin-right: 0;
+          border-radius: 50%;
+        }
+        :global(.avatar-uploader .ant-upload-list-item-info,
+                .avatar-uploader .ant-upload-list-picture-card .ant-upload-list-item-info::before){
+          border-radius: 50%;
+        }
+        :global(.avatar-uploader .ant-upload-list-picture-card .ant-upload-list-item){
+          padding: 5px;
+          border-radius: 50%;
         }
       `}</style>
     </>
