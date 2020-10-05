@@ -4,7 +4,7 @@ export const category_data = [
     sub: [
       {
         title: "Baju",
-        child: [ "Polo Shirt", "Piyama", "Baju Kasual", "Baju Katun", "Sweater", "Cardigan" ]
+        child: [ "polo shirt ", "Piyama", "Baju Kasual", "Baju Katun", "Sweater", "Cardigan" ]
       },
       {
         title: "Celana",

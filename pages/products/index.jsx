@@ -5,6 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import Badge from "react-bootstrap/Badge";
 import ButtonBoot from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 
@@ -240,7 +241,14 @@ const ProductContainer = () => {
         <Row className="fixed-bottom text-center mb-3 d-lg-none">
           <Col>
             <ButtonBoot variant="dark" className="badge-pill px-3 py-2 fs-14 shadow" onClick={showDrawer}>
-              <i className="far fa-filter mr-2" />Filter
+              {renderFilterList().length > 0 ? (
+                <Badge variant="light" className="mr-2">{renderFilterList().length}</Badge>
+              ) : (
+                <>
+                  <i className="far fa-filter mr-2" />
+                </>
+              )}
+              Filter
             </ButtonBoot>
           </Col>
         </Row>

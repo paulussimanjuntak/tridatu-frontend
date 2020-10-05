@@ -283,6 +283,12 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*ANT TAG SELECTABLE*/
 
+        /*ANT UPLOAD*/
+        .ant-upload-list-picture-card .ant-upload-list-item-info::before {
+          left: 0;
+        }
+        /*ANT UPLOAD*/
+
         /*SLICK-SLIDE*/
         .slick-slide {
           padding: 0px 15px;
