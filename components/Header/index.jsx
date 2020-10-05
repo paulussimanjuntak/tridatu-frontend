@@ -29,7 +29,7 @@ const accountMenu = (logoutHandler) => (
         </a>
       </Link>
     </Menu.Item>
-    <Menu.Item> <a href="#" className="text-decoration-none"> Belanjaan Saya </a> </Menu.Item>
+    <Menu.Item> <a href="#" className="text-decoration-none"> Pesanan Saya </a> </Menu.Item>
     <Menu.Item> <a href="#" className="text-decoration-none"> Favorit </a> </Menu.Item>
     <Menu.Divider />
     <Menu.Item onClick={logoutHandler}> <a href="#" className="text-decoration-none"> Keluar </a> </Menu.Item>
@@ -461,7 +461,7 @@ const Header = () => {
           height: 42px;
           width: auto;
         }
-        @media only screen and (max-width: 357px){
+        @media only screen and (max-width: 375px){
           :global(.westeros-c-column-container){
             columns: 85px !important;
           }
@@ -478,12 +478,14 @@ const Header = () => {
             vertical-align: unset !important;
           }
         }
+        @media only screen and (max-width: 768px) and (min-width: 378px){
+          :global(.westeros-c-column-container){
+            columns: 100px !important;
+          }
+        }
         @media only screen and (max-width: 768px){
           :global(.category-item-navbar-tabs-left > .ant-tabs-nav){
             width: 100px;
-          }
-          :global(.westeros-c-column-container){
-            columns: 100px !important;
           }
         }
 

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Avatar, Select, Button, Upload } from 'antd'
 
 import Nav from 'react-bootstrap/Nav'
@@ -7,7 +8,26 @@ import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
 
+import { uploadButton, imagePreview, imageValidation, getBase64Img } from 'lib/imageUploader'
+
 const Account = () => {
+  const [loading, setLoading] = useState(false)
+  const [avatar, setAvatar] = useState([])
+
+  const onAvatarChangeHandler = ({fileList: newFileList}) => {
+    setAvatar(newFileList)
+  }
+
+  const onAvatarChange = info => {
+    if(info.file.status === 'uploading'){
+      setLoading(true)
+      return
+    }
+    if(info.file.status === 'done'){
+      getBase64Img()
+    }
+  }
+
   return(
     <>
       <div className="bg-light">
@@ -101,8 +121,25 @@ const Account = () => {
                     </Card.Body>
                   </Col>
 
-                  <Col lg={4} className="text-center">
-                    <p>Avatar</p>
+                  <Col lg={4} className="text-center order-md-12 order-1">
+                    <Card className="border-0">
+                      <Upload
+                        accept="image/*"
+                        listType="picture-card"
+
+                        showUploadList={{showRemoveIcon: false, showPreviewIcon: true}}
+                        onPreview={imagePreview}
+                        beforeUpload={(file) => imageValidation(file, "https://goole.com", "avatar", "formHeader")}
+                      >
+                        {avatar.length >= 1 ? null : uploadButton(loading)}
+                      </Upload>
+                      <Upload
+                        onChange={onAvatarChangeHandler}
+                        showUploadList={false}
+                      >
+                        <Button>Upload</Button>
+                      </Upload>
+                    </Card>
                   </Col>
 
                 </Row>
