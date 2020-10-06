@@ -437,6 +437,10 @@ const App = ({ Component, pageProps, store }) => {
           }
         }
 
+        .bor-rad-25rem{
+          border-radius: .25rem;
+        }
+
         .bor-rad-15px{
           border-radius: 15px;
         }
