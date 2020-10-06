@@ -19,7 +19,7 @@ const ProductCartCheckout = () => {
               <br className="d-block d-sm-none"/>
               Rp. 105.000
             </h5>
-            <p className="fs-12-s text-black-50 ls-n1">5 barang (3,75 kg)</p>
+            <p className="fs-12-s text-black-50 ls-n1 mb-0">5 barang (3,75 kg)</p>
           </div>
         </div>
       </Col>
