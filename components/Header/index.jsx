@@ -49,7 +49,7 @@ const notificationMenu = (
     <Menu.Divider />
     <Menu.ItemGroup className="cart-item-navbar notification-item-navbar">
     {[...Array(10)].map((_,i) => (
-      <Menu.Item key={i} className="notification-item">
+      <Menu.Item key={i} className={`notification-item ${i%2 === 0 && 'unread'}`}>
         <b className="text-wrap truncate-2">Tagihan Anda Sudah Ada</b>
         <small className="text-wrap mb-0 text-secondary truncate-3">
           Davis, tagihan IndiHome / Telepon Anda sudah ada. Bayar sekarang biar hati tenang.
