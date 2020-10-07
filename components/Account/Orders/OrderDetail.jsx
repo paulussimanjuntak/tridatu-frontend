@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card'
 
 import CartItemCheckout from 'components/Cart/CartItemCheckout'
 
-const OrderDetail = ({ notWaiting }) => {
+const OrderDetail = ({ notWaiting, notCanceled }) => {
   return(
     <>
       <Card.Footer className="bg-white border-top-5">
@@ -15,7 +15,7 @@ const OrderDetail = ({ notWaiting }) => {
             <p className="text-secondary mb-0">Jalan Pulau Suarhana Blok Santhy No 2, KOTA BADUNG, KUTA SELATAN, BALI, ID, 80622</p>
           </Col>
         </Row>
-        {notWaiting && (
+        {notWaiting && notCanceled && (
           <>
             <div className="border-delivery m-t-8 m-b-8" />
             <Row className="align-items-center">

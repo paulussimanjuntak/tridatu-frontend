@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Tabs, Input, Select } from 'antd'
 
 import Col from 'react-bootstrap/Col'
@@ -74,7 +73,13 @@ const Orders = () => {
               ))}
             </Tabs.TabPane>
             <Tabs.TabPane tab="Dibatalkan" key={CANCELED}>
-              Dibatalkan
+              {searchComponent}
+              {[...Array(3)].map((_, i) => (
+                <OrderList key={i}
+                  status="Dibatalkan"
+                  payBefore="Pesanan ini telah dibatalkan"
+                />
+              ))}
             </Tabs.TabPane>
           </Tabs>
         </Card.Body>

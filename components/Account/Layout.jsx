@@ -8,6 +8,7 @@ import Container from 'react-bootstrap/Container'
 
 const PROFILE = '/account/profile'
 const ORDERS = '/account/orders'
+const REVIEW = '/account/review'
 const FAVORITE = '/account/favorite'
 const ADDRESS = '/account/address'
 const PASSWORD = '/account/password'
@@ -41,6 +42,13 @@ const AccountLayout = ({ children, pathname }) => {
                 <span>
                   <i className="far fa-clipboard-list mr-2" />
                   Pesanan Saya
+                </span>
+              </Nav.Link>
+
+              <Nav.Link eventKey={REVIEW} className="side-nav-link">
+                <span>
+                  <i className="far fa-file-signature mr-2" />
+                  Ulasan
                 </span>
               </Nav.Link>
 

@@ -22,11 +22,13 @@ const OrderList = ({ status, payBefore }) => {
 
   let badgeStatus = ""
   if(WAITING) badgeStatus = "warning"
+  if(PACKED) badgeStatus = "info"
+  if(SENT) badgeStatus = "secondary"
   if(DONE) badgeStatus = "success"
   if(CANCELED) badgeStatus = "danger"
 
   let howtopayBtn = <Button block className="btn-howtopay">Cara Pembayaran</Button>
-  if( DONE ) howtopayBtn = <Button block className="btn-howtopay">Beri Ulasan</Button>
+  if( !WAITING ) howtopayBtn = <></>
 
   return(
     <>
@@ -135,6 +137,7 @@ const OrderList = ({ status, payBefore }) => {
             >
               <OrderDetail
                 notWaiting={!WAITING}
+                notCanceled={!CANCELED}
               />
             </motion.div>
           )}
