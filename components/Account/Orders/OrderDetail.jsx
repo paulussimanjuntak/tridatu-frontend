@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card'
 
 import CartItemCheckout from 'components/Cart/CartItemCheckout'
 
-const OrderDetail = () => {
+const OrderDetail = ({ notWaiting }) => {
   return(
     <>
       <Card.Footer className="bg-white border-top-5">
@@ -12,24 +12,31 @@ const OrderDetail = () => {
           <Col className="fs-12 col-12">
             <p className="font-weight-bold mb-0">Jhony Bakerey Suardhana</p>
             <p className="text-secondary mb-0">(+62) 8123451234</p>
-            <p className="text-secondary">Jalan Pulau Suarhana Blok Santhy No 2, KOTA BADUNG, KUTA SELATAN, BALI, ID, 80622</p>
+            <p className="text-secondary mb-0">Jalan Pulau Suarhana Blok Santhy No 2, KOTA BADUNG, KUTA SELATAN, BALI, ID, 80622</p>
           </Col>
         </Row>
-        <div className="border-delivery" />
-        <Row className="align-items-center mt-2">
-          <Col>
-            <p className="mb-0 title-no-order">
-              No Pesanan: 
-              <br className="d-block d-md-none" /> 
-              <span className="data-no-order fs-14">{' '}201006KFTF78US</span>
-            </p>
-          </Col>
-          <Col>
-            <a className="float-right text-tridatu">
-              Invoice
-            </a>
-          </Col>
-        </Row>
+        {notWaiting && (
+          <>
+            <div className="border-delivery m-t-8 m-b-8" />
+            <Row className="align-items-center">
+              <Col>
+                <p className="mb-0 title-no-order">
+                  No Invoice: 
+                  <br className="d-block d-md-none" /> 
+                  <span className="data-no-order fs-14-s">{' '}INV/20191002/XIX/X/375442105</span>
+                  <a className="float-right text-tridatu">
+                    Invoice
+                  </a>
+                </p>
+                <p className="mb-0 title-no-order">
+                  No Resi: 
+                  <br className="d-block d-md-none" /> 
+                  <span className="data-no-order fs-14-s">{' '}000504323762</span>
+                </p>
+              </Col>
+            </Row>
+          </>
+        )}
       </Card.Footer>
 
       <Card.Footer className="bg-white border-top-5">

@@ -9,10 +9,24 @@ import Alert from 'react-bootstrap/Alert'
 
 import OrderDetail from './OrderDetail'
 
-const OrderList = () => {
+const OrderList = ({ status, payBefore }) => {
   const [showOrderDetail, setShowOrderDetail] = useState(false)
 
   const orderDetailHandler = () => setShowOrderDetail(!showOrderDetail)
+
+  const WAITING = status.toLowerCase() == "belum bayar"
+  const PACKED = status.toLowerCase() == "dikemas"
+  const SENT = status.toLowerCase() == "dikirim"
+  const DONE = status.toLowerCase() == "selesai"
+  const CANCELED = status.toLowerCase() == "dibatalkan"
+
+  let badgeStatus = ""
+  if(WAITING) badgeStatus = "warning"
+  if(DONE) badgeStatus = "success"
+  if(CANCELED) badgeStatus = "danger"
+
+  let howtopayBtn = <Button block className="btn-howtopay">Cara Pembayaran</Button>
+  if( DONE ) howtopayBtn = <Button block className="btn-howtopay">Beri Ulasan</Button>
 
   return(
     <>
@@ -20,18 +34,20 @@ const OrderList = () => {
         <Card.Header>
           <i className="far fa-shopping-bag fa-lg" />
           <strong className="mx-2">Belanja</strong>
-          <span className="badge badge-warning">Belum bayar</span>
-          <Popconfirm
-            title="Batalkan transaksi ini?"
-            okText="Ya"
-            cancelText="Batal"
-            placement="bottomRight"
-            arrowPointAtCenter
-          >
-            <a className="float-right text-tridatu fs-12">
-              Batalkan <span className="d-none d-md-inline-block">transaksi</span>
-            </a>
-          </Popconfirm>
+          <span className={`badge badge-${badgeStatus} fw-500`}>{status}</span>
+          {WAITING && (
+            <Popconfirm
+              title="Batalkan transaksi ini?"
+              okText="Ya"
+              cancelText="Batal"
+              placement="bottomRight"
+              arrowPointAtCenter
+            >
+              <a className="float-right text-tridatu fs-12">
+                Batalkan <span className="d-none d-md-inline-block">transaksi</span>
+              </a>
+            </Popconfirm>
+          )}
         </Card.Header>
         <Card.Body>
           <Row>
@@ -44,22 +60,22 @@ const OrderList = () => {
               </div>
               <div className="payment-card-row">
                 <Alert variant="dark" className="w-100 alert-payment mb-0">
-                  <i className="far fa-lightbulb-on mr-2" /> Bayar sebelum 7 Oct 2020, 15:56 WIB
+                  <i className="far fa-lightbulb-on mr-2" /> {payBefore}
                 </Alert>
               </div>
               <div className="payment-card-row text-truncate">
                 <div className="payment-card-column">
-                  <div className="payment-information-left">Nomor Pesanan</div>
+                  {DONE && <div className="payment-information-left">Nomor Invoice</div>}
                   <div className="payment-information-left">Metode Pembayaran</div>
                   <div className="payment-information-left">Nomor Virtual Account</div>
                 </div>
                 <div className="payment-card-column">
-                  <div className="payment-information-center">:</div>
+                  {DONE && <div className="payment-information-center">:</div>}
                   <div className="payment-information-center">:</div>
                   <div className="payment-information-center">:</div>
                 </div>
                 <div className="payment-card-column text-truncate">
-                  <div className="payment-information-right text-truncate">201006KFTF78US</div>
+                  {DONE && <div className="payment-information-right text-truncate">INV/20191002/XIX/X/375442105</div>}
                   <div className="payment-information-right text-truncate">Mandiri Virtual Account</div>
                   <div className="payment-information-right">8870885156565673</div>
                 </div>
@@ -75,10 +91,12 @@ const OrderList = () => {
                 <p className="title-payment-information-mobile">Total</p>
                 <p className="total-amount-mobile">Rp 1.284.200</p>
               </div>
-              <div className="payment-information-mobile">
-                <p className="title-payment-information-mobile">Nomor Pesanan</p>
-                <p className="data-payment-information-mobile">201006KFTF78US</p>
-              </div>
+              {DONE && (
+                <div className="payment-information-mobile">
+                  <p className="title-payment-information-mobile">Nomor Invoice</p>
+                  <p className="data-payment-information-mobile">INV/20191002/XIX/X/375442105</p>
+                </div>
+              )}
               <div className="payment-information-mobile">
                 <p className="title-payment-information-mobile">Nomor Virtual Account</p>
                 <p className="data-payment-information-mobile">8870885156565673</p>
@@ -90,12 +108,12 @@ const OrderList = () => {
             </Col>
             {/*MOBILE INFORMATION*/}
 
-            <Col lg={4} md={4} sm={12} className="text-center">
+            <Col lg={4} md={4} sm={12} className="text-center align-self-center">
               <img 
                 className="payment-method-logo" 
                 src="https://ecs7.tokopedia.net/img/toppay/payment-logo/icon-mandiri.png"
               />
-              <Button block className="btn-howtopay">Cara Pembayaran</Button>
+              {howtopayBtn}
               <Button block 
                 className="btn-howtopay btn-tridatu" 
                 onClick={orderDetailHandler}
@@ -115,7 +133,9 @@ const OrderList = () => {
               animate={{ opacity: 1, height: "100%" }}
               exit={{ height: "0", opacity: 0 }}
             >
-              <OrderDetail />
+              <OrderDetail
+                notWaiting={!WAITING}
+              />
             </motion.div>
           )}
         </AnimatePresence>

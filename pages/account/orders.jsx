@@ -46,10 +46,15 @@ const Orders = () => {
     <>
       <Card>
         <Card.Body className="bg-transparent">
-          <Tabs defaultActiveKey="1" className="noselect order-tabs">
+          <Tabs defaultActiveKey="1" className="order-tabs">
             <Tabs.TabPane tab="Belum Bayar" key={WAITING}>
               {searchComponent}
-              {[...Array(3)].map((_, i) => <OrderList key={i} />)}
+              {[...Array(3)].map((_, i) => (
+                <OrderList key={i}
+                  status="Belum Bayar"
+                  payBefore="Bayar sebelum 7 Oct 2020, 15:56 WIB"
+                />
+              ))}
             </Tabs.TabPane>
             <Tabs.TabPane tab="Dikemas" key={PACKED}>
               {searchComponent}
@@ -61,7 +66,12 @@ const Orders = () => {
             </Tabs.TabPane>
             <Tabs.TabPane tab="Selesai" key={DONE}>
               {searchComponent}
-              Selesai
+              {[...Array(3)].map((_, i) => (
+                <OrderList key={i}
+                  status="Selesai"
+                  payBefore="[DENPASAR] Paket telah diterima"
+                />
+              ))}
             </Tabs.TabPane>
             <Tabs.TabPane tab="Dibatalkan" key={CANCELED}>
               Dibatalkan
