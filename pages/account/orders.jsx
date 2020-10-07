@@ -45,7 +45,7 @@ const Orders = () => {
     <>
       <Card>
         <Card.Body className="bg-transparent">
-          <Tabs defaultActiveKey="1" className="order-tabs">
+          <Tabs className="order-tabs">
             <Tabs.TabPane tab="Belum Bayar" key={WAITING}>
               {searchComponent}
               {[...Array(3)].map((_, i) => (
