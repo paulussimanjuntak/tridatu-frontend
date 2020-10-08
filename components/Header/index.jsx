@@ -20,19 +20,26 @@ import * as actions from "store/actions";
 
 import { category_data } from './data'
 
+const routes = [
+  {link: "/account/profile", text: "Akun Saya"},
+  {link: "/account/orders", text: "Pesanan Saya"},
+  {link: "/account/favorite", text: "Favorit"},
+]
+
 const accountMenu = (logoutHandler) => (
   <Menu className="d-none d-lg-block">
-    <Menu.Item>
-      <Link href="/account/profile" as="/account/profile">
-        <a className="text-decoration-none">
-          Informasi Akun
-        </a>
-      </Link>
-    </Menu.Item>
-    <Menu.Item> <a href="#" className="text-decoration-none"> Pesanan Saya </a> </Menu.Item>
-    <Menu.Item> <a href="#" className="text-decoration-none"> Favorit </a> </Menu.Item>
+    {routes.map((route, i) => (
+      <Menu.Item key={i}>
+        <Link href={route.link} as={route.link}>
+          <a className="text-decoration-none">
+            {route.text}
+          </a>
+        </Link>
+      </Menu.Item>
+    ))}
+
     <Menu.Divider />
-    <Menu.Item onClick={logoutHandler}> <a href="#" className="text-decoration-none"> Keluar </a> </Menu.Item>
+    <Menu.Item onClick={logoutHandler}> <a className="text-decoration-none"> Keluar </a> </Menu.Item>
   </Menu>
 );
 

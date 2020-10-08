@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form'
 const Password = () => {
   return(
     <>
-      <Card>
+      <Card className="card-container">
         <Card.Header className="bg-transparent border-bottom">
           <h1 className="fs-16 mt-1 mb-0">Atur Password</h1>
           <small>

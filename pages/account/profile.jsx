@@ -42,7 +42,7 @@ const Profile = () => {
 
   return(
     <>
-      <Card>
+      <Card className="card-container">
         <Card.Header className="bg-transparent border-bottom">
           <h1 className="fs-16 mt-1 mb-0">Akun Saya</h1>
           <small>
@@ -56,8 +56,8 @@ const Profile = () => {
 
                 <Form.Row>
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
-                    <Form.Label>Nama</Form.Label>
-                    <Form.Control type="text" placeholder="Nama" />
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control type="text" placeholder="Username" />
                   </Form.Group>
 
                   <Form.Group as={Col} lg={6} md={6} sm={12}>

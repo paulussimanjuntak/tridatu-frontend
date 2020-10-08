@@ -20,7 +20,7 @@ const Address = () => {
 
   return(
     <>
-      <Card>
+      <Card className="card-container">
         <Card.Header className="bg-transparent border-bottom">
           <Row className="justify-content-between">
             <Col className="align-self-center">

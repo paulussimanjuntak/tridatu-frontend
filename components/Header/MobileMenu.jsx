@@ -5,6 +5,12 @@ import Nav from 'react-bootstrap/Nav';
 
 import CategoryMenu from './CategoryMenu';
 
+const routes = [
+  {link: "/account/profile", text: "Akun Saya"},
+  {link: "/account/orders", text: "Pesanan Saya"},
+  {link: "/account/favorite", text: "Favorit"},
+]
+
 const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
   const [showCategory, setShowCategory] = useState(false)
 
@@ -15,7 +21,7 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
   if(isAuth){
     headerMobile = (
       <div className="text-truncate mr-4">
-        <Avatar src="https://api.mentimun-mentah.tech/static/avatars/default.png" />
+        <Avatar src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp" />
         <span className="text-capitalize text-truncate pl-2">
           Jhon Bakery Handler
         </span>
@@ -57,21 +63,13 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
 
           {isAuth && (
             <>
-              <Link href="#" as="#">
-                <Nav.Link as="a" onClick={close}>
-                  Informasi Akun
-                </Nav.Link>
-              </Link>
-              <Link href="#" as="#">
-                <Nav.Link as="a" onClick={close}>
-                  Belanjaan Saya
-                </Nav.Link>
-              </Link>
-              <Link href="#" as="#">
-                <Nav.Link as="a" onClick={close}>
-                  Favorit
-                </Nav.Link>
-              </Link>
+              {routes.map((route, i) => (
+                <Link href={route.link} as={route.link} key={i}>
+                  <Nav.Link as="a" onClick={close}>
+                    {route.text}
+                  </Nav.Link>
+                </Link>
+              ))}
               <Nav.Link onClick={logout}>Keluar</Nav.Link>
             </>
           )}

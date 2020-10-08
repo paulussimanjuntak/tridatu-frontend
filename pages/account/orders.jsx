@@ -43,7 +43,7 @@ const Orders = () => {
 
   return(
     <>
-      <Card>
+      <Card className="card-container">
         <Card.Body className="bg-transparent">
           <Tabs className="order-tabs">
             <Tabs.TabPane tab="Belum Bayar" key={WAITING}>
