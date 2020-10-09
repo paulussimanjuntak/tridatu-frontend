@@ -1,4 +1,5 @@
-import { Avatar, Button } from 'antd'
+import { useState, useEffect } from 'react'
+import { Avatar, Drawer, BackTop } from 'antd'
 
 import { useRouter } from 'next/router'
 import Nav from 'react-bootstrap/Nav'
@@ -12,9 +13,27 @@ const REVIEW = '/account/review'
 const FAVORITE = '/account/favorite'
 const ADDRESS = '/account/address'
 const PASSWORD = '/account/password'
+const MORE = 'more'
 
 const AccountLayout = ({ children, pathname }) => {
   const router = useRouter()
+  const [showDrawer, setShowDrawer] = useState(false)
+
+  const navClickHandler = e => {
+    if(e !== MORE) {
+      router.push(e, e)
+      setShowDrawer(false)
+    }
+    else setShowDrawer(true)
+  }
+
+  const closeDrawerHandler = () => {
+    setShowDrawer(false)
+  }
+
+  useEffect(() => {
+    if(!showDrawer) document.body.style.removeProperty('overflow')
+  },[showDrawer])
 
   return(
     <>
@@ -23,11 +42,11 @@ const AccountLayout = ({ children, pathname }) => {
           <Row>
             <Nav 
               activeKey={pathname} 
-              onSelect={e => router.push(e, e)}
+              onSelect={navClickHandler}
               className="flex-column col-md-2 d-none d-lg-block pl-2 fs-14"
             >
               <Nav.Link className="text-truncate text-dark align-middle text-decoration-none px-0 mb-3">
-                <Avatar size="large" src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp" />
+                <Avatar size="large" src="https://www.inibaru.id/media/4608/large/normal/531b6a64-631b-4bd2-aa0b-9204707eb18d__large.jpg" />
                 <span className="pl-1 align-middle">Jhon Bakery Handler</span>
               </Nav.Link>
               
@@ -81,18 +100,85 @@ const AccountLayout = ({ children, pathname }) => {
 
           </Row>
 
-          <Row className="fixed-bottom mb-3 d-block d-sm-block d-md-block d-lg-none d-xl-none">
-            <Col>
-              <Button   
-                size="large"
-                shape="circle" 
-                icon={<i className="far fa-plus fa-lg" />} 
-                className="rounded-circle float-right mr-3 btn-dark"
-              />
-            </Col>
+          <BackTop visibilityHeight="100">
+          <Row className="fixed-bottom pt-1 pb-1 bg-white shadow-menu border-top d-lg-none justify-content-center">
+            <Nav
+              variant="pills"
+              activeKey={pathname} 
+              onSelect={navClickHandler}
+              className="justify-content-center text-center w-100 nav-mobile"
+            >
+              <Nav.Item className="fs-10">
+                <Nav.Link eventKey={PROFILE} className="mobile-btn">
+                  <i className="far fa-user-circle fs-24" />
+                  <br />
+                  Akun
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item className="fs-10">
+                <Nav.Link eventKey={ORDERS} className="mobile-btn">
+                  <i className="far fa-clipboard-list fs-24" />
+                  <br />
+                  Pesanan
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item className="fs-10">
+                <Nav.Link eventKey={FAVORITE} className="mobile-btn">
+                  <i className="far fa-heart fs-24" />
+                  <br />
+                  Favorit
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item className="fs-10">
+                <Nav.Link eventKey={REVIEW} className="mobile-btn">
+                  <i className="far fa-file-signature fs-24" />
+                  <br />
+                  Ulasan
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item className="fs-10">
+                <Nav.Link eventKey={MORE} className={`mobile-btn ${ADDRESS == pathname ? 'active' : PASSWORD == pathname ? 'active' : ''}`}>
+                  <i className="far fa-ellipsis-h fs-24" />
+                  <br />
+                  Lainnya
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
           </Row>
+          </BackTop>
 
         </Container>
+
+        <Drawer
+          closable
+          zIndex="1040"
+          title="Lainnya"
+          placement="bottom"
+          height="auto"
+          onClose={closeDrawerHandler}
+          visible={showDrawer}
+          className="d-block d-lg-none"
+        >
+          <Nav 
+            activeKey={pathname} 
+            onSelect={navClickHandler}
+            className="flex-column col-md-2 pl-2 fs-14"
+          >
+            <Nav.Link eventKey={ADDRESS} className="side-nav-link">
+              <span>
+                <i className="far fa-address-book mr-2" />
+                Daftar Alamat
+              </span>
+            </Nav.Link>
+
+            <Nav.Link eventKey={PASSWORD} className="side-nav-link">
+              <span>
+                <i className="far fa-lock mr-2" />
+                Atur Password
+              </span>
+            </Nav.Link>
+          </Nav>
+        </Drawer>
       </div>
 
       <style jsx>{`
@@ -105,8 +191,16 @@ const AccountLayout = ({ children, pathname }) => {
           color: rgba(0, 0, 0, 0.95);
           font-weight: 500;
         }
-        :global(.side-nav-link:hover){
+        :global(.side-nav-link:hover, .mobile-btn:hover){
           color: rgba(0, 0, 0, 0.95);
+        }
+        :global(.mobile-btn){
+          color: rgba(0, 0, 0, 0.60);
+        }
+        :global(.nav-pills.nav-mobile .mobile-btn.nav-link.active, .nav-pills.nav-mobile .show>.mobile-btn.nav-link){
+          color: rgba(0, 0, 0, 0.95);
+          font-weight: 500;
+          background-color: transparent;
         }
 
         @media only screen and (max-width: 575px){

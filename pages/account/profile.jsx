@@ -29,7 +29,7 @@ const Profile = () => {
       image: { 
         value: [{
           uid: -Math.abs(Math.random()),
-          url: `https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png`
+          url: `https://www.inibaru.id/media/4608/large/normal/531b6a64-631b-4bd2-aa0b-9204707eb18d__large.jpg`
         }], 
         isValid: true, 
         message: null 
