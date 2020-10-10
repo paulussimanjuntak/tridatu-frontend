@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Avatar, Drawer, BackTop } from 'antd'
+import { Avatar, Drawer } from 'antd'
 
 import { useRouter } from 'next/router'
 import Nav from 'react-bootstrap/Nav'
@@ -100,7 +100,6 @@ const AccountLayout = ({ children, pathname }) => {
 
           </Row>
 
-          <BackTop visibilityHeight="100">
           <Row className="fixed-bottom pt-1 pb-1 bg-white shadow-menu border-top d-lg-none justify-content-center">
             <Nav
               variant="pills"
@@ -145,7 +144,6 @@ const AccountLayout = ({ children, pathname }) => {
               </Nav.Item>
             </Nav>
           </Row>
-          </BackTop>
 
         </Container>
 
