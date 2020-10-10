@@ -473,6 +473,17 @@ const App = ({ Component, pageProps, store }) => {
           }
         }
 
+        @media only screen and (min-width: 768px){
+          .custom-gutters.lg-screen {
+            margin-right: -5px;
+            margin-left: -5px;
+          }
+          .custom-gutters.lg-screen > [class*="col-"], .custom-gutters.lg-screen > [class*="col"] {
+            padding-right: 5px;
+            padding-left: 5px;
+          }
+        }
+
         .product-search .ant-input-affix-wrapper{
           background-color: #fff;
           box-shadow: 0rem .3rem .8rem .0rem rgba(0,0,0,.15)!important;
