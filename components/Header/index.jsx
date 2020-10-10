@@ -169,16 +169,16 @@ const Header = () => {
             tabBarGutter={10}
             tabPosition="left" 
             defaultActiveKey="1" 
-            className="category-item-navbar-tabs-left" 
+            className="category-item-navbar-tabs-left noselect"
           >
             {category_data.map(data => (
               <Tabs.TabPane tab={data.category} key={data.category}>
                 <div className="westeros-c-column-container">
                   {data.sub.map(child => (
-                    <div className="westeros-c-column-container_item" key={child.title}>
-                      <b className="fs-16">{child.title}</b>
+                    <div className="westeros-c-column-container_item text-truncate" key={child.title}>
+                      <b className="fs-14">{child.title}</b>
                       {child.child.map((dataChild,i) => (
-                        <p className="mb-0 text-dark" key={i}>
+                        <p className="mb-0 text-truncate item-sub-category" key={i}>
                           <Link href="/products" as="/products">
                             <a className="text-reset"> {dataChild} </a>
                           </Link>
@@ -497,13 +497,19 @@ const Header = () => {
         }
 
         :global(.westeros-c-column-container){
-          columns: 182px;
+          columns: 120px;
           column-gap: 2em;
         }
         :global(.westeros-c-column-container_item){
           margin-bottom: 24px;
           page-break-inside: avoid;
           break-inside: avoid;
+        }
+        :global(.item-sub-category){
+          color: rgba(0,0,0,.55);
+        }
+        :global(.item-sub-category:hover){
+          color: rgba(0,0,0,.95);
         }
       `}</style>
     </>
