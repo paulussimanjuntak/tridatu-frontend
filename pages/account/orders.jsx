@@ -51,24 +51,39 @@ const Orders = () => {
               {[...Array(3)].map((_, i) => (
                 <OrderList key={i}
                   status="Belum Bayar"
-                  payBefore="Bayar sebelum 7 Oct 2020, 15:56 WIB"
+                  message="Bayar sebelum 7 Oct 2020, 15:56 WIB"
                 />
               ))}
             </Tabs.TabPane>
             <Tabs.TabPane tab="Dikemas" key={PACKED}>
               {searchComponent}
-              Dikemas
+              {[...Array(3)].map((_, i) => (
+                <OrderList key={i}
+                  status="Dikemas"
+                  kurir="SiCepat - Regular Package"
+                  message="Pesanan ini sedang dikemas oleh penjual"
+                />
+              ))}
             </Tabs.TabPane>
             <Tabs.TabPane tab="Dikirim" key={SENT}>
               {searchComponent}
-              Dikirim
+              {[...Array(3)].map((_, i) => (
+                <OrderList key={i}
+                  status="Dikirim"
+                  kurir="SiCepat - Regular Package"
+                  noResi="000504323762"
+                  message="Pesanan sedang dikirim oleh SiCepat - Regular Package"
+                />
+              ))}
             </Tabs.TabPane>
             <Tabs.TabPane tab="Selesai" key={DONE}>
               {searchComponent}
               {[...Array(3)].map((_, i) => (
                 <OrderList key={i}
                   status="Selesai"
-                  payBefore="[DENPASAR] Paket telah diterima"
+                  kurir="SiCepat - Regular Package"
+                  noResi="000504323762"
+                  message="[DENPASAR] Paket telah diterima"
                 />
               ))}
             </Tabs.TabPane>
@@ -77,7 +92,7 @@ const Orders = () => {
               {[...Array(3)].map((_, i) => (
                 <OrderList key={i}
                   status="Dibatalkan"
-                  payBefore="Pesanan ini telah dibatalkan"
+                  message="Pesanan ini telah dibatalkan"
                 />
               ))}
             </Tabs.TabPane>

@@ -4,10 +4,12 @@ import { Modal, Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb } 
 import { Comment, Avatar } from 'antd';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 
-import Slider from "react-slick";
+import Link from 'next/link'
+import Slider from 'react-slick';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
+import Card from 'react-bootstrap/Card'
 import ButtonBoot from 'react-bootstrap/Button'
 import Container from 'react-bootstrap/Container'
 
@@ -29,6 +31,7 @@ import PHOTOS from 'components/Products/photos'
 const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1)
   const [showShareModal, setShowShareModal] = useState(false)
+  const [showModalCart, setShowModalCart] = useState(false)
 
   const isAuth = useSelector(state => state.auth.auth)
 
@@ -43,6 +46,10 @@ const ProductDetail = () => {
     if(val === "plus"){
       setQuantity(quantity+1) 
     }
+  }
+
+  const showModalCartHandler = () => {
+    setShowModalCart(true)
   }
 
   return(
@@ -208,6 +215,7 @@ const ProductDetail = () => {
                       size="large"
                       className="btn-tridatu w-100 p-l-8-s p-r-8-s fs-14-s"
                       icon={<i className="far fa-cart-plus p-r-10 p-r-8-s" />} 
+                      onClick={showModalCartHandler}
                     >Tambah Ke Keranjang</Button>
                   </Form.Group>
                   <Form.Group as={Col} className="mb-0 col-auto">
@@ -414,6 +422,46 @@ const ProductDetail = () => {
         <ShareModal link="www.google.com" />
       </Modal>
 
+      <Modal
+        centered
+        footer={null}
+        visible={showModalCart}
+        onCancel={() => setShowModalCart(false)}
+        title="Berhasil Ditambahkan"
+        closeIcon={ <i className="fas fa-times" /> }
+        width="950px"
+      >
+        <Card className="card-item-popup">
+          <Card.Body className="p-3">
+            <div className="media">
+              <img src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp" className="mr-3 card-item-popup-img align-self-center" alt="Tridatu Bali ID" />
+              <div className="media-body align-self-center mr-3">
+                <p className="mb-0 text-dark truncate-2">Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih</p>
+                <Link href="/cart" as="/cart">
+                  <Button className="btn-tridatu d-block d-md-none mt-1" size="small">Lihat Keranjang</Button>
+                </Link>
+              </div>
+              <Link href="/cart" as="/cart">
+                <Button className="btn-tridatu align-self-center d-none d-md-block">Lihat Keranjang</Button>
+              </Link>
+            </div>
+          </Card.Body>
+        </Card>
+
+        <Card className="card-item-popup another-item">
+          <section className="another-product mb-0">
+            <h4 className="fs-16-s fs-18">Produk lainnya</h4>
+            <Row className="scrolling-wrapper flex-nowrap custom-gutters lg-screen">
+              {[...Array(6)].map((_, i) => (
+                <Col key={i} className="col-7 col-sm-5 col-md-3 col-lg-2">
+                  <CardProductMemo />
+                </Col>
+              ))}
+            </Row>
+          </section>
+        </Card>
+      </Modal>
+
       <style jsx>{`
         :global(.image-gallery-image){
           width: 443px;
@@ -553,6 +601,30 @@ const ProductDetail = () => {
         :global(.recomend-section .slick-prev:before, .recomend-section .slick-next:before){
           display: none;
         }
+
+        :global(.card-item-popup){
+          box-shadow: rgb(202, 211, 225) 0px 1px 4px 0px;
+          border: 0;
+        }
+        :global(.card-item-popup-img){
+          width: 65px;
+          height: 65px;
+          object-fit: cover;
+          border-radius: .2rem;
+        }
+        :global(.card-item-popup.another-item){
+          box-shadow: none; 
+          margin-top: 30px;
+        }
+        :global(.card-item-popup.another-item > .another-product .card){
+          margin-bottom: 15px !important;
+          box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 6px 0px !important;
+        }
+
+        :global(.scrolling-wrapper){
+          overflow-x: auto;
+        }
+         
       `}</style>
     </>
   )
