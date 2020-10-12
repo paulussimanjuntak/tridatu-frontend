@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { Drawer, Avatar } from 'antd';
+import { Drawer, Avatar, Button, Input, AutoComplete } from 'antd';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
+import Form from 'react-bootstrap/Form';
 
 import CategoryMenu from './CategoryMenu';
 
@@ -13,9 +16,17 @@ const routes = [
 
 const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
   const [showCategory, setShowCategory] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
 
   const showCategoryHandler = () => setShowCategory(true)
   const closeCategoryHandler = () => setShowCategory(false)
+
+  const showSearchHandler = () => {
+    setShowSearch(true)
+    setTimeout(() => {
+      close()
+    }, 200)
+  }
 
   let headerMobile;
   if(isAuth){
@@ -42,6 +53,13 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
         title={headerMobile}
       >
         <Nav className="flex-column mobile-menu">
+          <Button
+            onClick={showSearchHandler}
+            className={`${!isAuth && 'mt-4'}`}
+          >
+            Search
+          </Button>
+
           {!isAuth && (
             <>
               <Nav.Link onClick={login}>Login</Nav.Link>
@@ -76,6 +94,44 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
         </Nav>
       </Drawer>
 
+      <AnimatePresence>
+        {showSearch && (
+          <motion.div 
+            className={`modal ${showSearch && "show modal-open d-block"}`}
+            transition={{ duration: ".3" }}
+            initial={{ opacity: 0, }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="modal-dialog m-0">
+              <div className="modal-content rounded-0 border-0 vh-100">
+                <div className="modal-body">
+                  <Form inline>
+                    <Form.Row className="align-items-center w-100">
+                      <Col>
+                        <AutoComplete 
+                          className="w-100 search-mobile"
+                          autoFocus={true}
+                        >
+                          <Input
+                            placeholder="Search"
+                            className="jhghjgdhjsagjdgask"
+                            prefix={<i className="far fa-search" />}
+                          />
+                        </AutoComplete>
+                      </Col>
+                      <Col xs="auto" className="pr-0">
+                        <a className="text-tridatu fw-500" onClick={() => setShowSearch(false)}>Batal</a>
+                      </Col>
+                    </Form.Row>
+                  </Form>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Drawer
         placement="right"
         zIndex="1031"
@@ -94,6 +150,17 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
         :global(.mobile-menu > a){
           color: #343a40!important;
           border-bottom: 1px solid #dee2e6!important;
+        }
+
+        :global(.modal-search){
+          animation-duration: 100ms !important;
+        }
+        :global(.search-mobile > .ant-select-selector .ant-input-affix-wrapper:focus, 
+                .search-mobile.ant-select:not(.ant-select-disabled):hover .ant-select-selector,
+                .search-mobile.ant-select-focused:not(.ant-select-disabled).ant-select-single:not(.ant-select-customize-input) .ant-select-selector,
+                 .search-mobile.ant-select-focused.ant-select-single .ant-select-selector,
+                 .search-mobile .ant-input-affix-wrapper:focus, .search-mobile .ant-input-affix-wrapper-focused){
+          box-shadow: none !important;
         }
       `}</style>
     </>
