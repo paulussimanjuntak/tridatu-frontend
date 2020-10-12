@@ -5,6 +5,8 @@ import { Input, Badge, Menu, Dropdown, Avatar, Tabs } from "antd";
 
 import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
@@ -57,9 +59,16 @@ const notificationMenu = (
     <Menu.ItemGroup className="cart-item-navbar notification-item-navbar">
     {[...Array(10)].map((_,i) => (
       <Menu.Item key={i} className={`notification-item ${i%2 === 0 && 'unread'}`}>
-        <b className="text-wrap truncate-2">Tagihan Anda Sudah Ada</b>
-        <small className="text-wrap mb-0 text-secondary truncate-3">
-          Davis, tagihan IndiHome / Telepon Anda sudah ada. Bayar sekarang biar hati tenang.
+        <Row>
+          <Col className="text-truncate pr-1">
+            <span className="fs-13 fw-500">Tagihan Anda Sudah Ada</span>
+          </Col>
+          <Col className="col-auto pl-0">
+            <span className="text-secondary fs-10">11.30</span>
+          </Col>
+        </Row>
+        <small className="text-wrap mb-0 text-secondary truncate-2">
+          Hi Paulus, batas waktu pembayaranmu di Tokopedia hampir habis. Silakan melakukan pembayaran Rp 94.200 + biaya layanan di Gerai (Indomaret, Alfamart/Alfamidi/Lawson, Kioson, Kantorpos, JNE) terdekat menggunakan kode pembayaran AD085156565673 sebelum 7 Oct 14:19.
         </small>
       </Menu.Item>
     ))}
@@ -219,9 +228,13 @@ const Header = () => {
           </Navbar.Brand>
 
           <Navbar.Toggle className="border-0 ml-auto d-lg-none">
-            <Badge count={400} size="small" className="nav-notification">
-              <i className="far fa-bell fa-lg" />
-            </Badge>
+            <Link href="/notification" as="/notification">
+              <a>
+                <Badge count={400} size="small" className="nav-notification">
+                  <i className="far fa-bell fa-lg" />
+                </Badge>
+              </a>
+            </Link>
           </Navbar.Toggle>
           <Navbar.Toggle className="border-0 mx-2 pl-1 d-lg-none">
             <Link href="/cart" as="/cart">
@@ -246,7 +259,7 @@ const Header = () => {
 
               <Dropdown 
                 overlay={categoryMenu} 
-                trigger={['click']}
+                trigger={['hover']}
                 placement="bottomCenter" 
                 overlayClassName="position-fixed top-68 vw-100 category-dropdown"
                 visible={showCategoryDropdown}
@@ -280,6 +293,7 @@ const Header = () => {
                 placement="bottomCenter" 
                 overlayClassName="position-fixed top-50 w-340px"
                 overlayStyle={{top: '500px'}}
+                onClick={() => goToHandler("/notification")}
               >
                 <Nav.Link className="mx-2 d-none d-lg-block align-self-center">
                   <Badge count={100} size="small" className="nav-notification">
