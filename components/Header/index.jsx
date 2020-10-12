@@ -289,7 +289,7 @@ const Header = () => {
               <Dropdown 
                 arrow
                 overlay={notificationMenu} 
-                trigger={['click']}
+                trigger={['hover']}
                 placement="bottomCenter" 
                 overlayClassName="position-fixed top-50 w-340px"
                 overlayStyle={{top: '500px'}}
