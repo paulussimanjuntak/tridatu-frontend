@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card'
 
 import CartItemCheckout from 'components/Cart/CartItemCheckout'
 
-const OrderDetail = ({ notWaiting, notCanceled }) => {
+const OrderDetail = ({ notWaiting, notCanceled, kurir, noResi }) => {
   return(
     <>
       <Card.Footer className="bg-white border-top-5">
@@ -28,11 +28,18 @@ const OrderDetail = ({ notWaiting, notCanceled }) => {
                     Invoice
                   </a>
                 </p>
-                <p className="mb-0 title-no-order">
-                  No Resi: 
-                  <br className="d-block d-md-none" /> 
-                  <span className="data-no-order fs-14-s">{' '}000504323762</span>
-                </p>
+                {kurir && (
+                  <p className="mb-0 data-no-order fs-12 fs-14-s fw-500">
+                    {kurir}
+                  </p>
+                )}
+                {noResi && (
+                  <p className="mb-0 title-no-order">
+                    No Resi: 
+                    <br className="d-block d-md-none" /> 
+                    <span className="data-no-order fs-14-s">{' '}{noResi}</span>
+                  </p>
+                )}
               </Col>
             </Row>
           </>

@@ -9,7 +9,7 @@ import Alert from 'react-bootstrap/Alert'
 
 import OrderDetail from './OrderDetail'
 
-const OrderList = ({ status, payBefore }) => {
+const OrderList = ({ status, message, kurir, noResi }) => {
   const [showOrderDetail, setShowOrderDetail] = useState(false)
 
   const orderDetailHandler = () => setShowOrderDetail(!showOrderDetail)
@@ -23,7 +23,7 @@ const OrderList = ({ status, payBefore }) => {
   let badgeStatus = ""
   if(WAITING) badgeStatus = "warning"
   if(PACKED) badgeStatus = "info"
-  if(SENT) badgeStatus = "secondary"
+  if(SENT) badgeStatus = "primary"
   if(DONE) badgeStatus = "success"
   if(CANCELED) badgeStatus = "danger"
 
@@ -62,22 +62,22 @@ const OrderList = ({ status, payBefore }) => {
               </div>
               <div className="payment-card-row">
                 <Alert variant="dark" className="w-100 alert-payment mb-0">
-                  <i className="far fa-lightbulb-on mr-2" /> {payBefore}
+                  <i className="far fa-lightbulb-on mr-2" /> {message}
                 </Alert>
               </div>
               <div className="payment-card-row text-truncate">
                 <div className="payment-card-column">
-                  {DONE && <div className="payment-information-left">Nomor Invoice</div>}
+                  {(DONE || PACKED || SENT) && <div className="payment-information-left">Nomor Invoice</div>}
                   <div className="payment-information-left">Metode Pembayaran</div>
                   <div className="payment-information-left">Nomor Virtual Account</div>
                 </div>
                 <div className="payment-card-column">
-                  {DONE && <div className="payment-information-center">:</div>}
+                  {(DONE || PACKED || SENT) && <div className="payment-information-center">:</div>}
                   <div className="payment-information-center">:</div>
                   <div className="payment-information-center">:</div>
                 </div>
                 <div className="payment-card-column text-truncate">
-                  {DONE && <div className="payment-information-right text-truncate">INV/20191002/XIX/X/375442105</div>}
+                  {(DONE || PACKED || SENT) && <div className="payment-information-right text-truncate">INV/20191002/XIX/X/375442105</div>}
                   <div className="payment-information-right text-truncate">Mandiri Virtual Account</div>
                   <div className="payment-information-right">8870885156565673</div>
                 </div>
@@ -87,13 +87,17 @@ const OrderList = ({ status, payBefore }) => {
             {/*MOBILE INFORMATION*/}
             <Col className="d-block d-md-none">
               <Alert variant="warning" className="w-100 alert-payment payment-mobile">
-                <i className="far fa-lightbulb-on mr-2" /> Bayar sebelum 7 Oct 2020, 15:56 WIB
+                <i className="far fa-lightbulb-on mr-2" /> {message}
               </Alert>
               <div className="payment-information-mobile">
                 <p className="title-payment-information-mobile">Total</p>
                 <p className="total-amount-mobile">Rp 1.284.200</p>
               </div>
-              {DONE && (
+              <div className="payment-information-mobile">
+                <p className="title-payment-information-mobile">Tanggal Pembelian</p>
+                <p className="data-payment-information-mobile">6 Oct 2020</p>
+              </div>
+              {(DONE || PACKED || SENT) && (
                 <div className="payment-information-mobile">
                   <p className="title-payment-information-mobile">Nomor Invoice</p>
                   <p className="data-payment-information-mobile">INV/20191002/XIX/X/375442105</p>
@@ -138,6 +142,8 @@ const OrderList = ({ status, payBefore }) => {
               <OrderDetail
                 notWaiting={!WAITING}
                 notCanceled={!CANCELED}
+                kurir={kurir}
+                noResi={noResi}
               />
             </motion.div>
           )}
