@@ -453,6 +453,18 @@ const App = ({ Component, pageProps, store }) => {
           border-top: 5px solid rgb(243,244,245);
         }
 
+        .min-h-100{
+          min-height: 100%!important;
+        }
+
+        .max-vw-100{
+          max-width: 100vw!important;
+        }
+
+        .max-vh-100{
+          max-height: 100vh!important;
+        }
+
         .custom-gutters {
           margin-right: -15px;
           margin-left: -15px;
