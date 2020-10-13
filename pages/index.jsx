@@ -34,42 +34,42 @@ const Home = () => {
           </Form>
         </section>
 
-        <Row>
-          <Col lg={10} md={12}>
-            <section className="banner-section">
-              <h4 className="fs-20-s">Promo</h4>
-              <Slider {...bannerSettings}>
-                {banners.map((data, i) => (
-                  <Col key={i} className="px-0">
-                    <CardBannerMemo image={data} />
-                  </Col>
-                ))}
-              </Slider>
-            </section>
+        {/* <Row> */}
+        {/*   <Col lg={10} md={12}> */}
+        {/*     <section className="banner-section"> */}
+        {/*       <h4 className="fs-20-s">Promo</h4> */}
+        {/*       <Slider {...bannerSettings}> */}
+        {/*         {banners.map((data, i) => ( */}
+        {/*           <Col key={i} className="px-0"> */}
+        {/*             <CardBannerMemo image={data} /> */}
+        {/*           </Col> */}
+        {/*         ))} */}
+        {/*       </Slider> */}
+        {/*     </section> */}
 
-            <section className="brand-section">
-              <h4 className="fs-20-s mb-4">Brand</h4>
-              <Slider {...brandSettings}>
-                {[...Array(6)].map((_, i) => (
-                  <Col key={i} className="px-0">
-                    <CardBrandMemo />
-                  </Col>
-                ))}
-              </Slider>
-            </section>
-          </Col>
+        {/*     <section className="brand-section"> */}
+        {/*       <h4 className="fs-20-s mb-4">Brand</h4> */}
+        {/*       <Slider {...brandSettings}> */}
+        {/*         {[...Array(6)].map((_, i) => ( */}
+        {/*           <Col key={i} className="px-0"> */}
+        {/*             <CardBrandMemo /> */}
+        {/*           </Col> */}
+        {/*         ))} */}
+        {/*       </Slider> */}
+        {/*     </section> */}
+        {/*   </Col> */}
 
-          <Col lg={2} md={12}>
-            <section className="info-store">
-              <h4 className="fs-20-s info-store-title mb-3">Informasi Outlet</h4>
-              <Slider {...infoStoreSettings}>
-                {infoStores.map((data, i) => (
-                  <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
-                ))}
-              </Slider>
-            </section>
-          </Col>
-        </Row>
+        {/*   <Col lg={2} md={12}> */}
+        {/*     <section className="info-store"> */}
+        {/*       <h4 className="fs-20-s info-store-title mb-3">Informasi Outlet</h4> */}
+        {/*       <Slider {...infoStoreSettings}> */}
+        {/*         {infoStores.map((data, i) => ( */}
+        {/*           <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} /> */}
+        {/*         ))} */}
+        {/*       </Slider> */}
+        {/*     </section> */}
+        {/*   </Col> */}
+        {/* </Row> */}
 
         <section>
           <h4 className="fs-20-s mb-4">Paling Banyak Dilihat</h4>
