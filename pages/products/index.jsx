@@ -81,9 +81,11 @@ const ProductContainer = () => {
     let list = []
     for(let key in activeFilter){
       let tmp = []
-      if(activeFilter[key].hasOwnProperty("value")){
-        if(activeFilter[key].value.length > 0){
-          activeFilter[key].value.forEach(x => tmp.push({value: x, key: key}))
+      if(key !== 'sort'){
+        if(activeFilter[key].hasOwnProperty("value")){
+          if(activeFilter[key].value.length > 0){
+            activeFilter[key].value.forEach(x => tmp.push({value: x, key: key}))
+          }
         }
       }
 
