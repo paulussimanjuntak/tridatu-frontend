@@ -83,7 +83,7 @@ const Orders = () => {
                   status="Selesai"
                   kurir="SiCepat - Regular Package"
                   noResi="000504323762"
-                  message="[DENPASAR] Paket telah diterima"
+                  message="Pesanan tiba"
                 />
               ))}
             </Tabs.TabPane>

@@ -52,7 +52,14 @@ const Register = ({ show, handler, close, login }) => {
             <Form.Control type="password" placeholder="Confirmation Password" />
           </Form.Group>
 
-          <Button className="mt-4 btn-tridatu" block onClick={loginHandler}>Daftar</Button>
+          <div className="mt-4 text-secondary">
+            <span>Dengan mendaftar, saya menyetujui</span>
+            <a className="text-tridatu">{" "}Syarat dan Ketentuan</a>
+            <span>{" "}dan{" "}</span>
+            <a className="text-tridatu">Kebijakan Privasi</a>
+          </div>
+
+          <Button className="mt-2 btn-tridatu" block onClick={loginHandler}>Daftar</Button>
         </Form>
 
         <Divider className="mb-4" plain>

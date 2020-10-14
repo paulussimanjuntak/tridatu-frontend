@@ -1,5 +1,6 @@
+import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { Menu, Rate, Tag, InputNumber, Checkbox, Drawer, Tabs, Input, Select, Collapse } from 'antd';
+import { Menu, Rate, Tag, InputNumber, Checkbox, Drawer, Tabs, Select, Collapse } from 'antd';
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -27,14 +28,23 @@ const ratingList = ['4 Ketas', '3 Keatas']
 import { category_data } from 'components/Header/data'
 
 const ProductContainer = () => {
+  const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState(formFilter);
 
-  const { category, rating, brand } = activeFilter;
+  const { sort, category, rating, brand } = activeFilter;
 
   const showDrawer = () => { setVisible(true); };
   const onClose = () => { setVisible(false); };
 
+  const onSortChange = e => {
+    const data = { ...activeFilter, sort: {...sort, value: [e]} }
+    setActiveFilter(data)
+  }
+  const onSortMobileChange = e => {
+    const data = { ...activeFilter, sort: {...sort, value: [e]} }
+    setActiveFilter(data)
+  }
   const onCategoryChange = (e, fn) => {
     const data = { ...activeFilter, category: {...category, value: [e.key]} }
     const emptydata = { ...activeFilter, category: {...category, value: []} }
@@ -71,9 +81,11 @@ const ProductContainer = () => {
     let list = []
     for(let key in activeFilter){
       let tmp = []
-      if(activeFilter[key].hasOwnProperty("value")){
-        if(activeFilter[key].value.length > 0){
-          activeFilter[key].value.forEach(x => tmp.push({value: x, key: key}))
+      if(key !== 'sort'){
+        if(activeFilter[key].hasOwnProperty("value")){
+          if(activeFilter[key].value.length > 0){
+            activeFilter[key].value.forEach(x => tmp.push({value: x, key: key}))
+          }
         }
       }
 
@@ -94,24 +106,18 @@ const ProductContainer = () => {
     <>
       <Container className="pt-4 pb-2">
 
-        <section className="banner-section d-lg-none">
-          <Form inline className="mx-lg-2 w-100">
-            <div className="w-100 nav-search product-search">
-              <Input.Search size="large" placeholder="Search" />
-            </div>
-          </Form>
-        </section>
-
         <Row>
           <Col className="align-self-center">
-            <span className="text-secondary">Hasil pencarian dari "<span className="text-dark">Baju</span>"</span>
+            <span className="text-secondary fs-14-s">
+              Hasil pencarian dari "<span className="text-dark">{router.query.q ? router.query.q : "Semua"}</span>"
+            </span>
           </Col>
           <Col className="d-none d-lg-block">
             <Form inline className="float-right">
               <Form.Label className="my-1 mr-2">
                 Urutkan:
               </Form.Label>
-              <Select defaultValue={sortList[0]} style={{ width: 150 }}>
+              <Select value={sort.value} style={{ width: 150 }} onChange={onSortChange} dropdownClassName="idx-1020">
                 {sortList.map(x => (
                   <Select.Option key={x} value={x}>{x}</Select.Option>
                 ))}
@@ -298,6 +304,8 @@ const ProductContainer = () => {
             {sortList.map(tag => (
               <Tag.CheckableTag
                 key={tag}
+                checked={sort.value.indexOf(tag) > -1}
+                onChange={() => onSortMobileChange(tag)}
                 className="filter-tag filter-tag-mobile"
               >
                 {tag}
@@ -393,6 +401,9 @@ const ProductContainer = () => {
 
       <style jsx>{ProductsStyle}</style>
       <style jsx>{`
+        :global(.idx-1020){
+          z-index: 1020;
+        }
         :global(.filter-tag-mobile.ant-tag-checkable){
           border: 1px solid #d9d9d9;
         }
