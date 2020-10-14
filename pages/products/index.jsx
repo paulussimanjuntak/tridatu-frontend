@@ -115,7 +115,7 @@ const ProductContainer = () => {
               <Form.Label className="my-1 mr-2">
                 Urutkan:
               </Form.Label>
-              <Select value={sort.value} style={{ width: 150 }} onChange={onSortChange}>
+              <Select value={sort.value} style={{ width: 150 }} onChange={onSortChange} dropdownClassName="idx-1020">
                 {sortList.map(x => (
                   <Select.Option key={x} value={x}>{x}</Select.Option>
                 ))}
@@ -399,11 +399,11 @@ const ProductContainer = () => {
 
       <style jsx>{ProductsStyle}</style>
       <style jsx>{`
+        :global(.idx-1020){
+          z-index: 1020;
+        }
         :global(.filter-tag-mobile.ant-tag-checkable){
           border: 1px solid #d9d9d9;
-        }
-        :global(.filter-tag-mobile.ant-tag-checkable-checked){
-
         }
         :global(.rating-checkbox){
           width: 100%;
