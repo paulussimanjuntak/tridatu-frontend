@@ -1,12 +1,9 @@
 import Link from "next/link";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Slider from "react-slick";
-
-import { Input } from "antd";
 
 import CardProduct from "components/Card/Product";
 import CardBrand from "components/Card/Brand";
@@ -26,14 +23,6 @@ const Home = () => {
   return (
     <>
       <Container className="pt-4">
-        <section className="banner-section d-lg-none">
-          <Form inline className="mx-lg-2 w-100">
-            <div className="w-100 nav-search product-search">
-              <Input.Search size="large" placeholder="Search" />
-            </div>
-          </Form>
-        </section>
-
         <Row>
           <Col lg={10} md={12}>
             <section className="banner-section">

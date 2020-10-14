@@ -1,5 +1,6 @@
+import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { Menu, Rate, Tag, InputNumber, Checkbox, Drawer, Tabs, Input, Select, Collapse } from 'antd';
+import { Menu, Rate, Tag, InputNumber, Checkbox, Drawer, Tabs, Select, Collapse } from 'antd';
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -27,6 +28,7 @@ const ratingList = ['4 Ketas', '3 Keatas']
 import { category_data } from 'components/Header/data'
 
 const ProductContainer = () => {
+  const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState(formFilter);
 
@@ -94,17 +96,11 @@ const ProductContainer = () => {
     <>
       <Container className="pt-4 pb-2">
 
-        <section className="banner-section d-lg-none">
-          <Form inline className="mx-lg-2 w-100">
-            <div className="w-100 nav-search product-search">
-              <Input.Search size="large" placeholder="Search" />
-            </div>
-          </Form>
-        </section>
-
         <Row>
           <Col className="align-self-center">
-            <span className="text-secondary">Hasil pencarian dari "<span className="text-dark">Baju</span>"</span>
+            <span className="text-secondary fs-14-s">
+              Hasil pencarian dari "<span className="text-dark">{router.query.q ? router.query.q : "Semua"}</span>"
+            </span>
           </Col>
           <Col className="d-none d-lg-block">
             <Form inline className="float-right">

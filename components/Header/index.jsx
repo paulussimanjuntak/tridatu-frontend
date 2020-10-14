@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Input, Badge, Menu, Dropdown, Avatar, Tabs } from "antd";
+import { Input, Badge, Menu, Dropdown, Avatar, Tabs, AutoComplete } from "antd";
 
 import Link from "next/link";
 import Nav from "react-bootstrap/Nav";
@@ -27,6 +27,17 @@ const routes = [
   {link: "/account/orders", text: "Pesanan Saya"},
   {link: "/account/favorite", text: "Favorit"},
 ]
+
+const options = [
+  { value: 'baju', },
+  { value: 'baju anak', },
+  { value: 'baju wanita', },
+  { value: 'baju tidur', },
+  { value: 'baju renang', },
+  { value: 'baju formal', },
+  { value: 'baju kasual panjang', },
+  { value: 'baju kemeja jeans panjang', },
+];
 
 const accountMenu = (logoutHandler) => (
   <Menu className="d-none d-lg-block">
@@ -102,6 +113,7 @@ const cartMenu = (
 const Header = () => {
   const router = useRouter()
   const dispatch = useDispatch()
+  const [searchQuery, setSearchQuery] = useState('')
   const [showLogin, setShowLogin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
@@ -161,9 +173,31 @@ const Header = () => {
     setShowCategoryDropdown(flag)
   }
 
+  // Search navbar
+  const onSearchChange = e => {
+    const value = e.target.value;
+    setSearchQuery(value)
+  }
+  const onSelectSuggestionHandler = e => {
+    let url = `/products?q=${e}`
+    goToHandler(url)
+  }
+  const onPressEnter = e => {
+    e.preventDefault()
+    let url = `/products?q=${searchQuery}`
+    goToHandler(url)
+  }
+  // Search navbar
+
   useEffect(() => {
     if(!showMobileMenu) document.body.style.removeProperty('overflow')
   },[showMobileMenu])
+
+  useEffect(() => {
+    if(router.query.q){
+      setSearchQuery(router.query.q)
+    }
+  },[router.query.q])
 
   const categoryMenu = (
     <Menu
@@ -282,7 +316,19 @@ const Header = () => {
               
               <Form inline className="mx-lg-2 w-100">
                 <div className="w-100 nav-search">
-                  <Input.Search placeholder="Search" />
+                  <AutoComplete 
+                    className="w-100"
+                    dropdownClassName="position-fixed zidx-1060"
+                    options={options}
+                    value={searchQuery}
+                    onSelect={onSelectSuggestionHandler}
+                  >
+                    <Input.Search 
+                      placeholder="Search"
+                      onChange={onSearchChange}
+                      onPressEnter={onPressEnter}
+                    />
+                  </AutoComplete>
                 </div>
               </Form>
 
@@ -351,9 +397,14 @@ const Header = () => {
         login={showLoginHandler} 
         register={showRegisterHandler}
         logout={logoutHandler}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
 
       <style jsx>{`
+        :global(.zidx-1060){
+          z-index: 1060;
+        }
         :global(.top-50){
           top: 50px !important;
         }

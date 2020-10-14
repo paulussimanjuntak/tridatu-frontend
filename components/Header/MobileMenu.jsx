@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { Drawer, Avatar, Input, Grid } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -5,6 +6,7 @@ import Link from 'next/link';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
+import Card from 'react-bootstrap/Card'
 
 import CategoryMenu from './CategoryMenu';
 
@@ -16,8 +18,12 @@ const routes = [
   {link: "/account/favorite", text: "Favorit"},
 ]
 
-const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
+const dummyResponse = ['baju', 'baju anak', 'baju pria', 'baju wanita', 'baju tidur', 'baju kasual', 'baju kemeja panjang']
+
+const MobileMenu  = ({ visible, close, register, login, logout, isAuth, searchQuery, setSearchQuery }) => {
+  const router = useRouter()
   const screens = useBreakpoint();
+  // const [searchQuery, setSearchQuery] = useState('')
   const [showSearch, setShowSearch] = useState(false)
   const [showCategory, setShowCategory] = useState(false)
 
@@ -28,13 +34,13 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
     close()
     setTimeout(() => {
       setShowSearch(true)
+      document.body.classList.add("overflow-hidden");
     }, 100)
   }
 
   const closeSearchHandler = () => {
     setShowSearch(false)
     document.body.classList.remove("overflow-hidden");
-
   }
 
   let headerMobile;
@@ -63,10 +69,30 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
     mounted = false
   }
 
+  const onSearchChange = e => {
+    const value = e.target.value;
+    setSearchQuery(value)
+  }
+
+  const onPressEnter = e => {
+    e.preventDefault()
+    setShowSearch(false)
+    let url = `/products?q=${searchQuery}`
+    router.push(url, url)
+    document.body.classList.remove("overflow-hidden");
+  }
+
+  const onSelectSuggestionHandler = e => {
+    setSearchQuery(e.target.text)
+    setShowSearch(false)
+    let url = `/products?q=${e.target.text}`
+    router.push(url, url)
+    document.body.classList.remove("overflow-hidden");
+  }
+
   useEffect(() => {
     screenSize()
   },[screenSize])
-
 
   return(
     <>
@@ -83,8 +109,9 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
         <Nav className="flex-column mobile-menu">
           <div className={`${!isAuth && 'mt-4 mb-1'} w-100 nav-search`} onClick={showSearchHandler}>
             <Input
-              onFocus={showSearchHandler}
               placeholder="Search"
+              value={searchQuery}
+              onFocus={showSearchHandler}
               prefix={<i className="far fa-search text-secondary" />}
             />
           </div>
@@ -132,7 +159,7 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="modal-dialog modal-dialog-scrollable m-0 mw-100 min-h-100 mh-100">
+            <div className="modal-dialog m-0 mw-100 min-h-100 mh-100">
               <div className="modal-content rounded-0 border-0 max-vh-100">
 
                 <div className="modal-header border-0 rounded-0">
@@ -141,8 +168,12 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
                       <Col>
                         <div className="w-100 nav-search mobile-search">
                           <Input
-                            autoFocus={true}
+                            autoFocus
+                            allowClear
                             placeholder="Search"
+                            value={searchQuery}
+                            onChange={onSearchChange}
+                            onPressEnter={onPressEnter}
                             prefix={<i className="far fa-search text-secondary" />}
                           />
                         </div>
@@ -154,14 +185,23 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
                   </Form>
                 </div>
 
-                <div className="modal-body">
-                  {[...Array(5)].map((_, x) => (
-                    <div className="search-result-list " key={x}>
-                      <a className="w-100">Baju</a>
+                <Card.Body className="overflow-auto vh-100 max-vh-100 pt-0 px-3">
+                  {dummyResponse.map((data, x) => (
+                    <div className="search-result-list" key={x} onClick={onSelectSuggestionHandler}>
+                      <a className="w-100" text={data}>{data}</a>
                     </div>
                   ))}
-
-                </div>
+                  {dummyResponse.map((data, x) => (
+                    <div className="search-result-list" key={x} onClick={onSelectSuggestionHandler}>
+                      <a className="w-100">{data}</a>
+                    </div>
+                  ))}
+                  {dummyResponse.map((data, x) => (
+                    <div className="search-result-list" key={x} onClick={onSelectSuggestionHandler}>
+                      <a className="w-100">{data}</a>
+                    </div>
+                  ))}
+                </Card.Body>
 
               </div>
             </div>
@@ -208,7 +248,8 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth }) => {
           align-items: center; 
         }
         :global(.search-result-list a){
-          // color: rgba(49, 53, 59, 0.96);
+          color: rgba(49, 53, 59, 0.85);
+          font-size: 14px;
           line-height: 20px;
           display: flex;
         }

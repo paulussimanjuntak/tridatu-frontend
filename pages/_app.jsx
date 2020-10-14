@@ -184,14 +184,20 @@ const App = ({ Component, pageProps, store }) => {
         .ant-select:not(.ant-select-disabled):hover .ant-select-selector{
           border-color: #8c8c8c !important;
           box-shadow: 0 0 0 2px rgb(151 151 151 / 21%) !important;
+          border-radius: .25rem;
         }
         .ant-select-focused:not(.ant-select-disabled).ant-select-single:not(.ant-select-customize-input) .ant-select-selector{
           border-color: #8c8c8c !important;
           box-shadow: 0 0 0 2px rgb(151 151 151 / 21%) !important;
+          border-radius: .25rem;
         }
         .ant-select-focused.ant-select-single .ant-select-selector{
           border-color: #8c8c8c !important;
           box-shadow: 0 0 0 2px rgb(151 151 151 / 21%) !important;
+          border-radius: .25rem;
+        }
+        .ant-select-item-option-selected:not(.ant-select-item-option-disabled){
+          background-color: #f5f5f5;
         }
         /*ANT SELECT*/
 
