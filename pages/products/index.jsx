@@ -32,11 +32,19 @@ const ProductContainer = () => {
   const [visible, setVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState(formFilter);
 
-  const { category, rating, brand } = activeFilter;
+  const { sort, category, rating, brand } = activeFilter;
 
   const showDrawer = () => { setVisible(true); };
   const onClose = () => { setVisible(false); };
 
+  const onSortChange = e => {
+    const data = { ...activeFilter, sort: {...sort, value: [e]} }
+    setActiveFilter(data)
+  }
+  const onSortMobileChange = e => {
+    const data = { ...activeFilter, sort: {...sort, value: [e]} }
+    setActiveFilter(data)
+  }
   const onCategoryChange = (e, fn) => {
     const data = { ...activeFilter, category: {...category, value: [e.key]} }
     const emptydata = { ...activeFilter, category: {...category, value: []} }
@@ -107,7 +115,7 @@ const ProductContainer = () => {
               <Form.Label className="my-1 mr-2">
                 Urutkan:
               </Form.Label>
-              <Select defaultValue={sortList[0]} style={{ width: 150 }}>
+              <Select value={sort.value} style={{ width: 150 }} onChange={onSortChange}>
                 {sortList.map(x => (
                   <Select.Option key={x} value={x}>{x}</Select.Option>
                 ))}
@@ -294,6 +302,8 @@ const ProductContainer = () => {
             {sortList.map(tag => (
               <Tag.CheckableTag
                 key={tag}
+                checked={sort.value.indexOf(tag) > -1}
+                onChange={() => onSortMobileChange(tag)}
                 className="filter-tag filter-tag-mobile"
               >
                 {tag}
@@ -391,6 +401,9 @@ const ProductContainer = () => {
       <style jsx>{`
         :global(.filter-tag-mobile.ant-tag-checkable){
           border: 1px solid #d9d9d9;
+        }
+        :global(.filter-tag-mobile.ant-tag-checkable-checked){
+
         }
         :global(.rating-checkbox){
           width: 100%;

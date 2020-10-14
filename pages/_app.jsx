@@ -282,8 +282,8 @@ const App = ({ Component, pageProps, store }) => {
         .ant-tag-checkable:not(.ant-tag-checkable-checked):hover{
           color: #000;
         }
-        .ant-tag-checkable:active{
-          border-color: #d63031;
+        .ant-tag-checkable:active, .ant-tag-checkable-checked{
+          border-color: #d63031 !important;
           color: #d63031;
           background-color: #ffeaea;
         }
