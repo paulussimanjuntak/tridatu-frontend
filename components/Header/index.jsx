@@ -391,6 +391,7 @@ const Header = () => {
       <Login show={showLogin} handler={showRegisterHandler} close={closeModalHandler} login={loginHandler} />
       <Register show={showRegister} handler={showLoginHandler} close={closeModalHandler} login={loginHandler} />
       <MobileMenu 
+        routes={routes}
         isAuth={isAuth}
         visible={showMobileMenu} 
         close={closeMobileMenuHandler} 
