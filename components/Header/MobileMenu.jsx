@@ -12,15 +12,9 @@ import CategoryMenu from './CategoryMenu';
 
 const useBreakpoint = Grid.useBreakpoint;
 
-const routes = [
-  {link: "/account/profile", text: "Akun Saya"},
-  {link: "/account/orders", text: "Pesanan Saya"},
-  {link: "/account/favorite", text: "Favorit"},
-]
-
 const dummyResponse = ['baju', 'baju anak', 'baju pria', 'baju wanita', 'baju tidur', 'baju kasual', 'baju kemeja panjang']
 
-const MobileMenu  = ({ visible, close, register, login, logout, isAuth, searchQuery, setSearchQuery }) => {
+const MobileMenu  = ({ visible, close, register, login, logout, isAuth, searchQuery, setSearchQuery, routes }) => {
   const router = useRouter()
   const screens = useBreakpoint();
   // const [searchQuery, setSearchQuery] = useState('')
