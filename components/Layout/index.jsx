@@ -5,7 +5,7 @@ import CheckoutHeader from "components/Header/Checkout";
 import Footer from "components/Footer";
 
 import AccountLayout from "components/Account/Layout";
-import AdminLayout from "Admin/Layout";
+import AdminLayout from "components/Admin/Layout";
 
 const Layout = ({ children }) => {
   const router = useRouter();
