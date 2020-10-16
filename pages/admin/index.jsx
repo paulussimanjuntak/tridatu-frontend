@@ -3,7 +3,11 @@ import Container from 'react-bootstrap/Container';
 const Admin = () => {
   return(
     <>
-        Bill is a cat.
+      {[...Array(20)].map((_, x) => (
+        <p key={x}>
+          Bill is a cat.
+        </p>
+      ))}
     </>
   )
 }
