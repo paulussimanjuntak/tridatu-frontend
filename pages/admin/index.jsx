@@ -1,15 +1,11 @@
-import Container from 'react-bootstrap/Container';
+import Router from 'next/router'
 
-const Admin = () => {
-  return(
-    <>
-      {[...Array(20)].map((_, x) => (
-        <p key={x}>
-          Bill is a cat.
-        </p>
-      ))}
-    </>
-  )
+const Admin = () => null;
+
+Admin.getInitialProps = ctx => {
+  process.browser
+    ? Router.replace("/admin/dashboard", "/admin/dashboard") //Redirec from Client Side
+    : ctx.res.writeHead(302, { Location: "/admin/dashboard" }).end(); //Redirec from Server Side
 }
 
 export default Admin
