@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Layout, Menu, Dropdown, Avatar, Badge, Grid, Drawer } from 'antd';
@@ -5,11 +6,27 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 
 const useBreakpoint = Grid.useBreakpoint;
 
-const routes = [
-  {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
-  {link: "/admin/brand", text: "Brand", icon: "far fa-layer-group"},
-  {link: "/admin/promo", text: "Promo", icon: "far fa-ticket-alt"},
-]
+const routes = {
+  umum: [
+    {link: "/admin/dashboard", text: "Dashboard", icon: "far fa-house-flood"},
+    {link: "/", text: "Home", icon: "far fa-door-open"},
+  ],
+  produk: [
+    {link: "/admin/products", text: "Produk Saya", icon: "far fa-shopping-bag"},
+    {link: "/admin/products/new", text: "Tambah Produk", icon: "far fa-file-plus"},
+  ],
+  pengiriman: [
+    {link: "/admin/ship", text: "Pengiriman Saya", icon: "far fa-truck"},
+  ],
+  pesanan: [
+    {link: "/admin/sale", text: "Pesanan Saya", icon: "far fa-clipboard-list"},
+  ],
+  administrasi: [
+    {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
+    {link: "/admin/brand", text: "Brand", icon: "far fa-layer-group"},
+    {link: "/admin/promo", text: "Promo", icon: "far fa-home-alt"},
+  ],
+}
 
 const menu = (
   <Menu>
@@ -18,12 +35,39 @@ const menu = (
 )
 
 const AdminLayout = ({ children }) => {
-  const screens = useBreakpoint();
+  const router = useRouter()
+  const screens = useBreakpoint()
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [activeMenu, setActiveMenu] = useState([""])
+  const [breadcrumb, setBreadcrumb] = useState([{
+    icon: {},
+    title: "",
+    menu: "",
+  }])
   
   const onCollapse = () => {
     setCollapsed(!collapsed)
+  }
+
+  const onBreakpointChange = collapsed => {
+    setCollapsed(collapsed)
+  }
+
+  const onSelectSiderMenu = e => {
+    const groupTitle = e.item.props.text
+    const menuName = e.item.node.innerText
+    const icon = e.item.props.children[0]
+    const finalTitle = groupTitle.charAt(0).toUpperCase() + groupTitle.slice(1)
+    
+    router.push(e.key, e.key)
+    const data = {
+      ...breadcrumb,
+      title: finalTitle,
+      icon: icon,
+      menu: menuName,
+    }
+    setBreadcrumb([data])
   }
 
   const screenSize = () => {
@@ -36,9 +80,83 @@ const AdminLayout = ({ children }) => {
     mounted = false
   }
 
-  useEffect(() => {
-    screenSize()
-  }, [screenSize])
+  const SiderMenu = (collapsed) => (
+    <Layout.Sider
+      width={250}
+      theme="light"
+      breakpoint="lg"
+      trigger={null}
+      collapsible
+      collapsed={collapsed}
+      onBreakpoint={!isMobile && onBreakpointChange}
+      style={{
+        overflow: 'auto',
+        height: '100vh',
+        position: 'fixed',
+        boxShadow: 'rgba(0,0,0,.05) 0px 0px 28px 0px'
+      }}
+    >
+
+      <a href="/">
+        <div className="brand">
+          <div className="logo">
+              <AnimatePresence key={collapsed}>
+                <motion.img src="/tridatu-icon.png" alt="Tridatu Bali ID" 
+                  transition={{ duration: ".2" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                />
+              </AnimatePresence>
+              <AnimatePresence>
+              {!collapsed && (
+                <motion.span 
+                  transition={{ duration: ".3" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, width: "100%" }}
+                  exit={{ opacity: 0, width: "0" }}
+                  className="text-dark font-weight-bold align-self-center align-baseline-middle pl-2"
+                >
+                  Tridatu <span className="text-muted font-weight-bold pl-1">Bali ID</span>
+                </motion.span>
+              )}
+              </AnimatePresence>
+          </div>
+        </div>
+      </a>
+
+      <div className="sider-menu-container">
+        <div className="sider-menu-child">
+          <Menu
+            mode="inline"
+            theme="light"
+            className="sider-menu"
+            selectedKeys={activeMenu}
+            onSelect={onSelectSiderMenu}
+          >
+            {Object.entries(routes).map(([key, val]) => (
+              <Menu.ItemGroup 
+                key={key} 
+                className={`${collapsed && 'text-center'}`}
+                title={<span className="font-weight-bold fs-12"> {key.toUpperCase()} </span>}
+              >
+                {val.map(route => (
+                  <Menu.Item 
+                    text={key}
+                    key={route.link} 
+                    icon={<i className={`${route.icon} menu-item-icon`} />}
+                    className="text-left"
+                  >
+                    {!collapsed && <>{route.text}</>}
+                  </Menu.Item>
+                ))}
+              </Menu.ItemGroup>
+            ))}
+          </Menu>
+        </div>
+      </div>
+    </Layout.Sider>
+  )
 
   const rightMenu = [
     <Dropdown overlay={menu} placement="bottomCenter" key="user">
@@ -58,65 +176,13 @@ const AdminLayout = ({ children }) => {
     </Dropdown>
   )
 
-  const SiderMenu = (collapsed) => (
-    <Layout.Sider
-      width={250}
-      theme="light"
-      breakpoint="lg"
-      trigger={null}
-      collapsible
-      collapsed={collapsed}
-      onBreakpoint={(isMobile) => setCollapsed(isMobile)}
-      style={{
-        overflow: 'auto',
-        height: '100vh',
-        position: 'fixed',
-      }}
+  useEffect(() => {
+    screenSize()
+  }, [screenSize])
 
-    >
-      <div className="brand">
-        <div className="logo">
-          <AnimatePresence key={collapsed}>
-            <motion.img src="/tridatu-icon.png" alt="Tridatu Bali ID" 
-              transition={{ duration: ".2" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-          </AnimatePresence>
-          <AnimatePresence>
-          {!collapsed && (
-            <motion.span 
-              transition={{ duration: ".3" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, width: "100%" }}
-              exit={{ opacity: 0, width: "0" }}
-              className="text-dark font-weight-bold align-self-center align-baseline-middle pl-2"
-            >
-              Tridatu <span className="text-muted font-weight-bold pl-1">Bali ID</span>
-            </motion.span>
-          )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      <div className="sider-menu-container">
-        <div className="sider-menu-child">
-          <Menu
-            mode="inline"
-            theme="light"
-            className="sider-menu"
-          >
-            {routes.map(route => (
-              <Menu.Item key={route.link} icon={<i className={`${route.icon} pr-2 menu-item-icon`} />}>
-                {!collapsed && <>{route.text}</>}
-              </Menu.Item>
-            ))}
-          </Menu>
-        </div>
-      </div>
-    </Layout.Sider>
-  )
+  useEffect(() => {
+    setActiveMenu([router.pathname])
+  }, [router.pathname])
 
   return(
     <>
@@ -126,7 +192,7 @@ const AdminLayout = ({ children }) => {
             width={250}
             placement="left"
             closable={false}
-            visible={collapsed}
+            visible={isMobile && !collapsed}
             onClose={onCollapse}
             bodyStyle={{padding: 0}}
           >
@@ -150,7 +216,6 @@ const AdminLayout = ({ children }) => {
 
             <Layout.Content className={`layout-content ${collapsed ? 'content-collapsed' : 'content-fixed'}`}>
               {children}
-              <pre>{JSON.stringify(screens, null, 4)}</pre>
             </Layout.Content>
           </div>
         </Layout>
@@ -167,6 +232,7 @@ const AdminLayout = ({ children }) => {
           align-items: center;
           box-shadow: 4px 4px 40px 0 rgba(0,0,0,.05);
           transition: width 0.2s;
+          z-index: 2000;
         }
         :global(.header-fixed){
           width: calc(100% - 250px);
