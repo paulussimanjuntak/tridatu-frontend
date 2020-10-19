@@ -367,6 +367,9 @@ const AdminLayout = ({ children }) => {
           :global(.content-fixed, .content-collapsed){
             margin-left: 0px;
           }
+          :global(.layout-content){
+            padding: 0px;
+          }
         }
 
         @keyframes fadeLeftIn {
