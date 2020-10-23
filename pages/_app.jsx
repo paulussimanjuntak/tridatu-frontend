@@ -164,7 +164,28 @@ const App = ({ Component, pageProps, store }) => {
         .ant-input{
           border-radius: .25rem;
         }
+        .ant-input:hover{
+          border-color: #8c8c8c;
+        }
+        .ant-input:focus, .ant-input-focused{
+          border-color: #8c8c8c;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%);
+        }
         /*ANT INPUT*/
+
+        /*ANT CASCADER */
+        .ant-cascader-input.ant-input{
+          height: calc(1.5em + .75rem + 2px);
+        }
+        .ant-cascader-picker:focus .ant-cascader-input{
+          border-color: #8c8c8c;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%);
+        }
+        .ant-cascader-menu-item-active:not(.ant-cascader-menu-item-disabled),
+        .ant-cascader-menu-item-active:not(.ant-cascader-menu-item-disabled):hover{
+          background-color: #cccccc66;
+        }
+        /*ANT CASCADER */
 
         /*ANT SELECT*/
         .ant-select-selection-item{
@@ -198,6 +219,19 @@ const App = ({ Component, pageProps, store }) => {
         }
         .ant-select-item-option-selected:not(.ant-select-item-option-disabled){
           background-color: #f5f5f5;
+        }
+        .ant-select-multiple .ant-select-selector{
+          border-radius: .25rem;
+        }
+        .ant-select-focused{
+          border-radius: .25rem;
+          border-color: #8c8c8c;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%);
+        }
+        .ant-select-focused:not(.ant-select-disabled).ant-select-multiple .ant-select-selector{
+          border-radius: .25rem;
+          border-color: #8c8c8c;
+          box-shadow: 0 0 0 2px rgb(151 151 151 / 21%);
         }
         /*ANT SELECT*/
 
