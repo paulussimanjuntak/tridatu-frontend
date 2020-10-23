@@ -21,9 +21,12 @@ const routes = {
   pesanan: [
     {link: "/admin/sale", text: "Pesanan Saya", icon: "far fa-clipboard-list"},
   ],
+  brand: [
+    {link: "/admin/brand", text: "Brand", icon: "far fa-layer-group"},
+    {link: "/admin/brand/new", text: "Tambah Brand", icon: "far fa-layer-plus"},
+  ],
   administrasi: [
     {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
-    {link: "/admin/brand", text: "Brand", icon: "far fa-layer-group"},
     {link: "/admin/promo", text: "Promo", icon: "far fa-home-alt"},
   ],
 }

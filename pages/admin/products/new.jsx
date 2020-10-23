@@ -3,8 +3,9 @@ import { Form, Input, Select, InputNumber, Divider, Button, Cascader, Space, Upl
 import Card from 'react-bootstrap/Card'
 import Table from 'react-bootstrap/Table'
 
-import { formImage } from 'formdata/addProduct'
+import { formImage } from 'formdata/formImage'
 import { imageValidation, uploadButton } from 'lib/imageUploader'
+import AddStyleAdmin from 'components/Admin/addStyle'
 
 import { categoryData } from 'components/Header/categoryData'
 const brandData = ['Adidas', 'Billabong', 'Bershka', 'Converse', 'Deus', 'GAP', 'Giordano', 'Gucci', 'H&M', 'Mango', 'New Balance', 'Pull & Bear', 'Louis Vuitton', 'Levis', 'Nike', 'Top Man', 'Uniqlo', 'Supreme', 'Zara']
@@ -204,20 +205,11 @@ const NewProduct = () => {
       </Card>
 
       <Space>
+        <Button className="btn-tridatu">Simpan</Button>
         <Button>Batal</Button>
-        <Button>Simpan & Arsipkan</Button>
-        <Button className="btn-tridatu">Simpan & Tampilkan</Button>
       </Space>
-      
 
-      <style jsx global>{`
-        :global(.card-add-product){
-          margin-bottom: 20px;
-        }
-        :global(.ant-row.ant-form-item:last-of-type){
-          margin-bottom: 10px;
-        }
-      `}</style>
+      <style jsx>{AddStyleAdmin}</style>
     </>
   )
 }
