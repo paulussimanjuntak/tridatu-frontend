@@ -61,7 +61,7 @@ const NewProduct = () => {
 
           <Form form={form} layout="vertical">
             <Form.Item label="Nama Produk" required>
-              <Input placeholder="Nama Produk" className="cus-inp" />
+              <Input placeholder="Nama Produk" />
             </Form.Item>
             <Form.Item label="Deskripsi Produk" required>
               <Input.TextArea autoSize={{ minRows: 8 }} />

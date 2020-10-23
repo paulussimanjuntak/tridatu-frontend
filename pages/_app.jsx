@@ -164,12 +164,6 @@ const App = ({ Component, pageProps, store }) => {
         .ant-input{
           border-radius: .25rem;
         }
-        .cus-inp{
-          height: calc(1.5em + .75rem + 2px);
-        }
-        .ant-input.cus-inp{
-          height: calc(1.5em + .75rem + 2px);
-        }
         .ant-input:hover{
           border-color: #8c8c8c;
         }
