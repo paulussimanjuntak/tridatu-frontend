@@ -1,25 +1,34 @@
 import Link from "next/link";
+import Image from "next/image";
 import Card from "react-bootstrap/Card";
 
-const CardBrand = () => {
+const CardBrand = ({ name, image }) => {
   return (
     <>
       <Card className="border-0 shadow text-center">
         <Link href="/products" as="/products">
-          <a className="text-decoration-none text-dark">
-            <img
+          <a className="text-decoration-none text-dark text-center mx-auto brand-image">
+            <Image
               className="mx-auto d-block mt-2"
-              src="https://www.urbanrider.co.uk/media/catalog/product/cache/1/image/85e4522595efc69f496374d01ef2bf13/d/m/dmw41808e_shield_tee.jpg"
-              width="64"
-              height="64"
+              src={image}
+              width={64}
+              height={64}
               alt="Tridatu Bali ID"
             />
             <Card.Body>
-              <span className="font-weight-bold">Baju</span>
+              <span className="font-weight-bold">{name}</span>
             </Card.Body>
           </a>
         </Link>
       </Card>
+
+      <style jsx>{`
+      :global(.brand-image > div){
+        margin-left: auto!important;
+        margin-right: auto!important;
+        margin-bottom: 4px;
+      }
+      `}</style>
     </>
   );
 };

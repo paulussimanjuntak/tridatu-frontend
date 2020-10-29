@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
@@ -14,10 +15,10 @@ const CardBrandMemo = React.memo(CardBrand);
 const CardBannerMemo = React.memo(CardBanner);
 
 import { brandSettings, bannerSettings, infoStoreSettings, infoStoreSettingsMobile } from "lib/slickSetting";
+import { brandData } from "data/brand";
 
-// let banners = ['https://ecs7-p.tokopedia.net/img/cache/750/NsjrJu/2020/9/5/53863f31-bd90-437a-8a6d-da203de8682f.jpg', 'https://ecs7-p.tokopedia.net/img/cache/750/NsjrJu/2020/9/8/cafdfacb-e36c-49af-b917-d62b3e5e2131.jpg', 'https://ecs7-p.tokopedia.net/img/cache/750/NsjrJu/2020/9/8/c66dd503-4300-40a6-bb32-a785e14dd563.jpg','https://ecs7-p.tokopedia.net/img/cache/750/NsjrJu/2020/9/5/53863f31-bd90-437a-8a6d-da203de8682f.jpg', 'https://ecs7-p.tokopedia.net/img/cache/750/NsjrJu/2020/9/8/cafdfacb-e36c-49af-b917-d62b3e5e2131.jpg', 'https://ecs7-p.tokopedia.net/img/cache/750/NsjrJu/2020/9/8/c66dd503-4300-40a6-bb32-a785e14dd563.jpg']
-let banners = ['https://s4.bukalapak.com/rev-banner/flash_banner/852356698/s-628-412/desktop_BukamartIDC_a5b7b80c-4a86-4e19-9e4c-d9082e266604.jpeg','https://s4.bukalapak.com/rev-banner/flash_banner/852356698/s-628-412/desktop_BukamartIDC_a5b7b80c-4a86-4e19-9e4c-d9082e266604.jpeg','https://s4.bukalapak.com/rev-banner/flash_banner/852356698/s-628-412/desktop_BukamartIDC_a5b7b80c-4a86-4e19-9e4c-d9082e266604.jpeg','https://s4.bukalapak.com/rev-banner/flash_banner/852356698/s-628-412/desktop_BukamartIDC_a5b7b80c-4a86-4e19-9e4c-d9082e266604.jpeg','https://s4.bukalapak.com/rev-banner/flash_banner/852356698/s-628-412/desktop_BukamartIDC_a5b7b80c-4a86-4e19-9e4c-d9082e266604.jpeg',]
-let infoStores = ['https://s4.bukalapak.com/rev-banner/flash_banner/64904150/w-196/desktop_Megcheese_c12f8a2e-a778-4f9f-a236-6bcd04a93b33.jpeg','https://s4.bukalapak.com/rev-banner/flash_banner/64904150/w-196/desktop_Megcheese_c12f8a2e-a778-4f9f-a236-6bcd04a93b33.jpeg','https://s4.bukalapak.com/rev-banner/flash_banner/64904150/w-196/desktop_Megcheese_c12f8a2e-a778-4f9f-a236-6bcd04a93b33.jpeg','https://s4.bukalapak.com/rev-banner/flash_banner/64904150/w-196/desktop_Megcheese_c12f8a2e-a778-4f9f-a236-6bcd04a93b33.jpeg','https://s4.bukalapak.com/rev-banner/flash_banner/64904150/w-196/desktop_Megcheese_c12f8a2e-a778-4f9f-a236-6bcd04a93b33.jpeg']
+let banners = ['/static/images/banner/1.jpeg', '/static/images/banner/2.jpeg', '/static/images/banner/3.jpeg', '/static/images/banner/4.jpeg', '/static/images/banner/5.jpeg', '/static/images/banner/5.jpeg']
+let infoStores = ['/static/images/info-store/1.jpeg', '/static/images/info-store/2.jpeg', '/static/images/info-store/3.jpeg', '/static/images/info-store/4.jpeg', '/static/images/info-store/5.jpeg', '/static/images/info-store/6.jpeg', ]
 
 const Home = () => {
   return (
@@ -39,9 +40,9 @@ const Home = () => {
             <section className="brand-section">
               <h4 className="fs-20-s mb-4">Brand</h4>
               <Slider {...brandSettings}>
-                {[...Array(6)].map((_, i) => (
+                {brandData.map((data, i) => (
                   <Col key={i} className="px-0">
-                    <CardBrandMemo />
+                    <CardBrandMemo image={data.image} name={data.name} />
                   </Col>
                 ))}
               </Slider>
@@ -53,7 +54,10 @@ const Home = () => {
               <h4 className="fs-20-s info-store-title mb-3">Informasi Outlet</h4>
               <Slider {...infoStoreSettings}>
                 {infoStores.map((data, i) => (
-                  <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
+                  <div className="mb-1" key={i}>
+                    <Image width={160} height={142} src={data} className="info-store-img" alt="Tridatu Bali ID" />
+                  </div>
+                  // <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
                 ))}
               </Slider>
             </section>
@@ -64,7 +68,8 @@ const Home = () => {
           <h4 className="fs-20-s info-store-title mb-3">Informasi Outlet</h4>
           <Slider {...infoStoreSettingsMobile}>
             {infoStores.map((data, i) => (
-              <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
+              <Image width={151} height={151} src={data} className="info-store-img" alt="Tridatu Bali ID" key={i} />
+              // <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
             ))}
           </Slider>
         </section>
