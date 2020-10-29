@@ -26,7 +26,7 @@ const CardProductMemo = React.memo(CardProduct);
 import { renderLeftNav, renderRightNav, renderFullscreenButton } from 'components/Products/ImageGalleryButton'
 import { brandSettings } from "lib/slickSetting";
 
-import PHOTOS from 'components/Products/photos'
+import PHOTOS from 'data/detailPhotoProduct'
 
 const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1)
