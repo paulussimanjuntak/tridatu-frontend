@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Input, Badge, Menu, Dropdown, Avatar, Tabs, AutoComplete } from "antd";
 
 import Link from "next/link";
+import Image from "next/image";
 import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -249,8 +250,10 @@ const Header = () => {
         className="bg-white navbar-shadow-bottom py-2 noselect"
       >
         <Container>
-          <Navbar.Brand href="/" className="font-italic">
-            <img
+          <Navbar.Brand href="/" className="font-italic d-inline-flex">
+            <Image
+              height={42}
+              width={29}
               src="/tridatu-icon.png"
               className="d-inline-block align-top logo-navbar"
               alt="Tridatu Bali ID"

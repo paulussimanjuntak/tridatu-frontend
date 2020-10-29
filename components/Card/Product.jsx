@@ -1,19 +1,27 @@
 import { Rate } from "antd";
 
 import Link from "next/link";
+import Image from "next/image";
 import Card from "react-bootstrap/Card";
 
 const CardProduct = () => {
   return (
     <>
       <Card className="m-b-10-s m-b-10-m m-b-30-t border-0 shadow">
-        <Card.Img
-          variant="top"
-          src="https://www.specialbrandstore.com/wp-content/uploads/2017/08/3978-rvca-zap-va_1-330x0.jpg"
+        <Image 
+          width={270}
+          height={270}
+          src="/static/images/products/1.jpg"
           alt="Tridatu Bali"
-          height="200"
-          className="img-fit"
+          className="img-fit img-product"
         />
+        {/* <Card.Img */}
+        {/*   variant="top" */}
+        {/*   src="https://www.specialbrandstore.com/wp-content/uploads/2017/08/3978-rvca-zap-va_1-330x0.jpg" */}
+        {/*   alt="Tridatu Bali" */}
+        {/*   height="200" */}
+        {/*   className="img-fit" */}
+        {/* /> */}
         <span className="card-discount">70%</span>
         <i className="fas fa-heart card-wishlist" />
         <Link href="/products/Tshirt-Deus-Ex-Machina-02" as="/products/Tshirt-Deus-Ex-Machina-02">
@@ -71,6 +79,10 @@ const CardProduct = () => {
         .card-rating{
           font-size: 12px;
           line-height: 16px;
+        }
+        :global(.img-product){
+          border-top-left-radius: .25rem;
+          border-top-right-radius: .25rem;
         }
       `}</style>
     </>
