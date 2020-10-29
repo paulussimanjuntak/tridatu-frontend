@@ -318,7 +318,7 @@ const Header = () => {
                 <div className="w-100 nav-search">
                   <AutoComplete 
                     className="w-100"
-                    dropdownClassName="position-fixed zidx-1060"
+                    dropdownClassName="position-fixed list-suggestion"
                     options={options}
                     value={searchQuery}
                     onSelect={onSelectSuggestionHandler}
@@ -403,8 +403,12 @@ const Header = () => {
       />
 
       <style jsx>{`
-        :global(.zidx-1060){
+        :global(.list-suggestion){
           z-index: 1060;
+        }
+        :global(.list-suggestion .rc-virtual-list-scrollbar-thumb){
+          background: transparent!important;
+          display: none!important;
         }
         :global(.top-50){
           top: 50px !important;
@@ -433,22 +437,27 @@ const Header = () => {
         :global(.nav-notification .ant-badge-multiple-words){
           padding: 0 4px;
         }
-        :global(.nav-search .ant-input-affix-wrapper){
+        :global(.nav-search .ant-input-wrapper, .nav-search .ant-input-affix-wrapper){
           border: 0;
           border-radius: .25rem;
           background-color: #f1f3f5;
         }
-        :global(.nav-search .ant-input-affix-wrapper > input.ant-input){
+        :global(.nav-search .ant-input-wrapper > input.ant-input, .nav-search .ant-input-affix-wrapper > input.ant-input){
           background-color: transparent;
+          border: 0;
         }
-        :global(.nav-search .ant-input-affix-wrapper > .ant-input::placeholder){
+        :global(.nav-search .ant-input-wrapper > .ant-input::placeholder, .nav-search .ant-input-affix-wrapper > .ant-input::placeholder){
           color: rgba(0, 0, 0, 0.45);
+        }
+        :global(.nav-search .ant-input-wrapper > .ant-input-group-addon > .ant-input-search-button){
+          border: 0;
+          background: #f1f3f5;
+        }
+        :global(.nav-search .ant-input:focus, .nav-search .ant-input-focused, .nav-search > .ant-input-affix-wrapper:focus, .ant-input-affix-wrapper-focused){
+          box-shadow: unset;
         }
         :global(.nav-search .ant-input-affix-wrapper > .ant-input-suffix > .ant-input-search-icon::before){
           border-left: 0;
-        }
-        :global(.nav-search > .ant-input-affix-wrapper:focus, .ant-input-affix-wrapper-focused){
-          box-shadow: unset;
         }
 
         /*CATEGORY ITEM NAVBAR*/
