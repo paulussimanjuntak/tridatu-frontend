@@ -8,7 +8,8 @@ import { imageValidation, uploadButton } from 'lib/imageUploader'
 import AddStyleAdmin from 'components/Admin/addStyle'
 
 import { categoryData } from 'components/Header/categoryData'
-const brandData = ['Adidas', 'Billabong', 'Bershka', 'Converse', 'Deus', 'GAP', 'Giordano', 'Gucci', 'H&M', 'Mango', 'New Balance', 'Pull & Bear', 'Louis Vuitton', 'Levis', 'Nike', 'Top Man', 'Uniqlo', 'Supreme', 'Zara']
+
+import { brandData } from 'data/brand'
 
 const NewProduct = () => {
   const [isAddBrand, setIsAddBrand] = useState(false)
@@ -80,8 +81,14 @@ const NewProduct = () => {
                 dropdownRender={newBrandMenu}
               >
                 {brandList.map(val => (
-                  <Select.Option value={val} key={val}>{val}</Select.Option>
+                  <Select.Option value={val.name} key={val.name}>{val.name}</Select.Option>
                 ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Kondisi">
+              <Select placeholder="Kondisi produk">
+                <Select.Option value="Baru">Baru</Select.Option>
+                <Select.Option value="Bekas">Bekas</Select.Option>
               </Select>
             </Form.Item>
           </Form>
