@@ -27,7 +27,7 @@ const routes = {
   ],
   administrasi: [
     {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
-    {link: "/admin/promo", text: "Promo", icon: "far fa-home-alt"},
+    {link: "/admin/promo", text: "Promo", icon: "far fa-ticket-alt"},
   ],
 }
 
@@ -148,7 +148,7 @@ const AdminLayout = ({ children }) => {
                     text={key}
                     key={route.link} 
                     icon={<i className={`${route.icon} menu-item-icon`} />}
-                    className="text-left"
+                    className="text-left user-select-none"
                   >
                     {!collapsed && <>{route.text}</>}
                   </Menu.Item>

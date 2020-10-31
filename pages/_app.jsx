@@ -7,6 +7,7 @@ import withReduxStore from "lib/with-redux-store";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "antd/dist/antd.css";
+import "antd-button-color/dist/css/style.css";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -287,6 +288,14 @@ const App = ({ Component, pageProps, store }) => {
           border-color: #40a9ff !important;
           color: #fff;
         }
+        .ant-btn-dangerous:hover, .ant-btn-dangerous:focus{
+          color: #ff7875!important;
+          border-color: #ff7875!important;
+        }
+        .ant-btn-background-ghost.ant-btn-success:hover, .ant-btn-background-ghost.ant-btn-success:focus{
+          background: transparent!important;
+          border-color: rgba(40, 167, 69, 0.75)!important;
+        }
         /*ANT BUTTON*/
 
         /*ANT BREADCRUMB*/
@@ -328,6 +337,18 @@ const App = ({ Component, pageProps, store }) => {
           left: 0;
         }
         /*ANT UPLOAD*/
+
+        /*ANT TABLE*/
+        .custom-table .ant-table-tbody > tr.ant-table-row-selected > td{
+          background: #fff6f6;
+        }
+        .custom-table .ant-table-tbody > tr.ant-table-row-selected:hover > td{
+          background: #ffefef;
+        }
+        .custom-table .ant-table-tbody > tr > td{
+          vertical-align: top;
+        }
+        /*ANT TABLE*/
 
         /*SLICK-SLIDE*/
         .slick-slide {
@@ -451,6 +472,10 @@ const App = ({ Component, pageProps, store }) => {
 
         .va-inherit{
           vertical-align: inherit!important;
+        }
+
+        .va-sub{
+          vertical-align: sub!important;
         }
 
         .ls-n1{
