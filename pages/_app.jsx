@@ -525,6 +525,9 @@ const App = ({ Component, pageProps, store }) => {
         .va-sub {
           vertical-align: sub !important;
         }
+        .va-top{
+          vertical-align: top !important;
+        }
 
         .ls-n1 {
           letter-spacing: -1px;
@@ -553,6 +556,9 @@ const App = ({ Component, pageProps, store }) => {
           body {
             padding-top: 58px;
           }
+        }
+        .bor-rad-2rem {
+          border-radius: .2rem;
         }
 
         .bor-rad-25rem {

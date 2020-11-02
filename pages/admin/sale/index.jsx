@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import { Tabs, Table, Button } from 'antd'
+import { Tabs, Table, Button, Avatar } from 'antd'
 
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
+import Media from 'react-bootstrap/Media'
+
+import { dataSource, columns } from 'data/salesAdmin'
 
 const ALL = 'all'
 const WAITING = 'waiting'
@@ -19,7 +22,9 @@ const Sales = () => {
         <Card.Body className="p-3 border-bottom">
           <Tabs className="order-tabs">
             <Tabs.TabPane tab="Semua" key={ALL}>
-              <h1>Semua</h1>
+
+              <Table dataSource={dataSource} columns={columns} size="middle" scroll={{ x: '100vh', y: 300 }} rowClassName="va-top mb-3" />
+
             </Tabs.TabPane>
 
             <Tabs.TabPane tab="Belum Bayar" key={WAITING}>
