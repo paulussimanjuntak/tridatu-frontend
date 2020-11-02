@@ -25,9 +25,12 @@ const routes = {
     {link: "/admin/brand", text: "Brand", icon: "far fa-layer-group"},
     {link: "/admin/brand/new", text: "Tambah Brand", icon: "far fa-layer-plus"},
   ],
+  promo: [
+    {link: "/admin/voucher", text: "Voucher", icon: "far fa-ticket-alt"},
+    {link: "/admin/voucher/new", text: "Tambah Voucher", icon: "far fa-money-check"},
+  ],
   administrasi: [
     {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
-    {link: "/admin/promo", text: "Promo", icon: "far fa-ticket-alt"},
   ],
 }
 

@@ -1,4 +1,5 @@
-import { Row, Col } from 'antd'
+import { Row, Col, Button, Space, Popconfirm } from 'antd'
+import { QuestionCircleOutlined } from '@ant-design/icons'
 import Image from 'next/image'
 import Card from 'react-bootstrap/Card'
 
@@ -25,6 +26,14 @@ const Brand = () => {
                       className="img-fit"
                     />
                     <Card.Title className="mt-4 mb-0 fs-16-s">{brand.name}</Card.Title>
+                  </Card.Body>
+                  <Card.Body className="pt-0">
+                    <Space>
+                      <Button size="small">Ubah</Button>
+                      <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
+                        <Button size="small" type="primary" danger>Hapus</Button>
+                      </Popconfirm>
+                    </Space>
                   </Card.Body>
                 </Card>
               </Col>

@@ -1,22 +1,34 @@
+import { useRouter } from 'next/router';
+import { Typography, Space, Button, Popconfirm } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+
 import Link from 'next/link';
+import Image from 'next/image';
 import Card from "react-bootstrap/Card";
-import { Typography } from 'antd';
 
 const Paragraph = Typography.Paragraph ;
 
 const CardPromo = ({ image }) => {
+  const router = useRouter()
+
+  const isPromoAdmin = router.pathname.startsWith('/admin')
+
   return(
     <>
-      <Card className="mb-4 border-0 shadow">
-        <div className="promotion-image">
-          <Card.Img
-            variant="top"
-            src={image}
-            alt="Tridatu Bali"
-            height="10"
-            className="img-fit img-fluid"
-          />
-        </div>
+      <Card className={isPromoAdmin ? "mb-0" : "mb-4 border-0 shadow"}>
+        <Image 
+          width={600}
+          height={328}
+          src={image}
+          alt="Tridatu Bali"
+          className="img-fit radius-top-img-card"
+        />
+        {/* <Card.Img */}
+        {/*   variant="top" */}
+        {/*   src={image} */}
+        {/*   alt="Tridatu Bali" */}
+        {/*   className="img-fit img-fluid" */}
+        {/* /> */}
         <Card.Body className="p-3">
           <Card.Text className="text-dark truncate-2 fs-14-s">
             <Link href="/promo/belanja-diskon-serbu" as="/promo/belanja-diskon-serbu">
@@ -35,13 +47,26 @@ const CardPromo = ({ image }) => {
             <div className="promotion-code-detail">
               <div className="promotion-box-label">Kode Promo</div>
               <div className="promotion-box__value">
-                <Paragraph copyable className="copy-code">
+                <Paragraph copyable className="copy-code mb-0">
                   BRINUF4BRINUF4
                 </Paragraph>
               </div>
             </div>
           </div>
         </Card.Body>
+
+        {isPromoAdmin && (
+          <Card.Body className="border-top py-3">
+            <Space>
+              <Button size="small" danger>Live</Button>
+              <Button size="small" type="primary">Ubah</Button>
+              <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
+                <Button size="small" type="primary" danger>Hapus</Button>
+              </Popconfirm>
+            </Space>
+          </Card.Body>
+        )}
+
       </Card>
 
       <style jsx>{`
