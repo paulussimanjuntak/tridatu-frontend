@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Tabs, Input, Select, AutoComplete } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -59,7 +60,7 @@ const Promo = () => {
               <Form inline className="w-100 mb-3">
                 <div className="w-100 promo-search">
                   <AutoComplete className="w-100">
-                    <Input.Search size="large" placeholder="Cari promo"/>
+                    <Input size="large" suffix={<SearchOutlined className="text-black-50"/>} placeholder="Cari promo"/>
                   </AutoComplete>
                 </div>
               </Form>
@@ -111,9 +112,6 @@ const Promo = () => {
         :global(.promo-search .ant-input-search > .ant-input-group > .ant-input-group-addon .ant-input-search-button){
           border-top-right-radius: 0.25rem;
           border-bottom-right-radius: 0.25rem;
-        }
-        :global(.promo-search .ant-select:not(.ant-select-disabled):hover .ant-select-selector, .promo-search .ant-select-focused){
-          box-shadow: none !important;
         }
         @media only screen and (max-width: 480px){
           .slider-container{
