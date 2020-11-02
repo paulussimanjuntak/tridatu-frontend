@@ -162,6 +162,17 @@ const NewProduct = () => {
                 parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
               />
             </Form.Item>
+
+            <Form.Item label="Diskon">
+              <InputNumber
+                min={0}
+                max={100}
+                defaultValue={0}
+                className="w-100"
+                formatter={value => `${value}%`}
+                parser={value => value.replace('%', '')}
+              />
+            </Form.Item>
           </Form>
 
         </Card.Body>
