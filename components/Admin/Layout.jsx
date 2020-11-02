@@ -11,6 +11,10 @@ const routes = {
     {link: "/admin/dashboard", text: "Dashboard", icon: "far fa-house-flood"},
     {link: "/", text: "Home", icon: "far fa-door-open"},
   ],
+  administrasi: [
+    {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
+    {link: "/admin/category/new", text: "Tambah Kategori", icon: "far fa-folder-tree"},
+  ],
   produk: [
     {link: "/admin/products", text: "Produk Saya", icon: "far fa-shopping-bag"},
     {link: "/admin/products/new", text: "Tambah Produk", icon: "far fa-file-plus"},
@@ -28,9 +32,6 @@ const routes = {
   promo: [
     {link: "/admin/voucher", text: "Voucher", icon: "far fa-ticket-alt"},
     {link: "/admin/voucher/new", text: "Tambah Voucher", icon: "far fa-money-check"},
-  ],
-  administrasi: [
-    {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
   ],
 }
 
