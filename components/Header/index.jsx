@@ -455,8 +455,10 @@ const Header = () => {
         :global(.nav-search .ant-input-wrapper > .ant-input-group-addon > .ant-input-search-button){
           border: 0;
           background: #f1f3f5;
+          box-shadow: none;
         }
-        :global(.nav-search .ant-input:focus, .nav-search .ant-input-focused, .nav-search > .ant-input-affix-wrapper:focus, .ant-input-affix-wrapper-focused){
+        :global(.nav-search .ant-input:focus, .nav-search .ant-input-focused, .nav-search .ant-input-search .ant-input:focus){
+          border: 0;
           box-shadow: unset;
         }
         :global(.nav-search .ant-input-affix-wrapper > .ant-input-suffix > .ant-input-search-icon::before){

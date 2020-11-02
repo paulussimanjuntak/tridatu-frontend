@@ -165,10 +165,10 @@ const App = ({ Component, pageProps, store }) => {
         .ant-input{
           border-radius: .25rem;
         }
-        .ant-input:hover{
+        .ant-input:hover, .ant-input-search .ant-input:hover{
           border-color: #8c8c8c;
         }
-        .ant-input:focus, .ant-input-focused{
+        .ant-input:focus, .ant-input-focused, .ant-input-search .ant-input:focus{
           border-color: #8c8c8c;
           box-shadow: 0 0 0 2px rgb(151 151 151 / 21%);
         }
@@ -295,6 +295,9 @@ const App = ({ Component, pageProps, store }) => {
         .ant-btn-background-ghost.ant-btn-success:hover, .ant-btn-background-ghost.ant-btn-success:focus{
           background: transparent!important;
           border-color: rgba(40, 167, 69, 0.75)!important;
+        }
+        .ant-btn-dangerous.ant-btn-primary:hover, .ant-btn-dangerous.ant-btn-primary:focus{
+          color: #fff !important;
         }
         /*ANT BUTTON*/
 
