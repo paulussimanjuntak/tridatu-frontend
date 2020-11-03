@@ -24,11 +24,10 @@ const App = ({ Component, pageProps, store }) => {
       <Head>
         <meta charSet="UTF-8" />
         <title>Tridatu Bali ID</title>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta name="description" content="Tridatu Bali ID" />
         <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={process.env.NEXT_PUBLIC_DOMAIN} />
         <link rel="icon" href="/tridatu-icon.png" />
         <link rel="stylesheet" href="/static/fontawesome/css/all.min.css" />
         <link rel="stylesheet" href="/static/css/utility.min.css" />
@@ -522,6 +521,9 @@ const App = ({ Component, pageProps, store }) => {
           vertical-align: inherit !important;
         }
 
+        .va-super{
+          vertical-align: super !important;
+        }
         .va-sub {
           vertical-align: sub !important;
         }
