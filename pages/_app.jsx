@@ -205,7 +205,7 @@ const App = ({ Component, pageProps, store }) => {
         .ant-select-single:not(.ant-select-customize-input)
           .ant-select-selector
           .ant-select-selection-search-input {
-          height: calc(1.5em + 0.75rem + 2px);
+          // height: calc(1.5em + 0.75rem + 2px);
         }
         .ant-select-single .ant-select-selector .ant-select-selection-item,
         .ant-select-single
