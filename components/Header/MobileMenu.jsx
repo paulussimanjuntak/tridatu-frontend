@@ -154,7 +154,7 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth, searchQu
             exit={{ opacity: 0 }}
           >
             <div className="modal-dialog m-0 mw-100 min-h-100 mh-100">
-              <div className="modal-content rounded-0 border-0 max-vh-100">
+              <div className="modal-content rounded-0 border-0 mh-100">
 
                 <div className="modal-header border-0 rounded-0">
                   <Form inline className="mx-lg-2 w-100">

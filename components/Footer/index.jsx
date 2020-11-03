@@ -17,7 +17,8 @@ const Footer = () => {
                 <div className="col-md-12 col-lg-3 col-12 font-italic align-items-center mt-md-3 mt-4">
                   <h5>
                     <span>
-                      <img src="/tridatu-icon.png" className="img-fluid mb-1 " />
+                      <img src="/tridatu-icon.png" className="img-fluid mb-1" alt="Tridatu Bali ID" />
+              
                     </span>
                     <b className="text-dark">
                       Tridatu<span className="text-muted"> Bali ID</span>
