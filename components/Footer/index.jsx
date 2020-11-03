@@ -1,4 +1,5 @@
 import Container from 'react-bootstrap/Container'
+import Image from 'next/image'
 
 let year = new Date()
 year = year.getFullYear()
@@ -15,37 +16,51 @@ const Footer = () => {
               <div className="row justify-content-center">
 
                 <div className="col-md-12 col-lg-3 col-12 font-italic align-items-center mt-md-3 mt-4">
-                  <h5>
-                    <span>
-                      <img src="/tridatu-icon.png" className="img-fluid mb-1" alt="Tridatu Bali ID" />
-              
+                  <h5 className="mb-0">
+                    <span className="d-inline-block">
+                      <Image
+                        width={27}
+                        height={40}
+                        className="img-fit rounded"
+                        src="/tridatu-icon.png"
+                        alt="Tridatu Bali ID"
+                      />
                     </span>
-                    <b className="text-dark">
+                    <b className="text-dark va-super fs-26-t fs-24">
                       Tridatu<span className="text-muted"> Bali ID</span>
                     </b>
                   </h5>
-                  <p className="social mt-3 mb-3">
-                    <img
+                  <div className="social mt-3 mb-3">
+                    <Image
+                      width={23}
+                      height={23}
                       src={`${IMG_SOS}/facebook.png`}
                       className="social-img"
                       alt="tridatu-bali"
                     />
-                    <img
+                    <Image
+                      width={23}
+                      height={23}
                       src={`${IMG_SOS}/instagram.png`}
                       className="social-img"
                       alt="tridatu-bali"
                     />
-                    <img
+                    <Image
+                      width={23}
+                      height={23}
                       src={`${IMG_SOS}/twitter.png`}
                       className="social-img"
                       alt="tridatu-bali"
                     />
-                    <img
+                    <Image
+                      width={23}
+                      height={23}
                       src={`${IMG_SOS}/tiktok.png`}
                       className="social-img"
                       alt="tridatu-bali"
                     />
-                  </p>
+                  </div>
+                  <br />
                   <small className="copy-rights cursor-pointer">
                     Ⓒ {year} Tridatu Bali ID
                   </small>
@@ -85,39 +100,53 @@ const Footer = () => {
                   <ul className="list-unstyled multi-bank">
                     <li className="mt-md-3 mt-4 mb-2">Metode Pembayaran</li>
                     <div className="img-bank">
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/bank/payment-mandiri.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/bank/payment-permata.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/bank/payment-bni.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/bank/payment-bri.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/bank/payment-bca.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/bank/payment-go-pay.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/bank/payment-ovo.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
                     </div>
@@ -125,19 +154,25 @@ const Footer = () => {
                   <ul className="list-unstyled multi-bank">
                     <li className="mt-md-3 mt-4 mb-2">Metode Pengiriman</li>
                     <div className="img-bank">
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/shipping/shipping-kg-logistik.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/shipping/shipping-pick-up-in-store.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
-                      <img
+                      <Image
+                        width={48}
+                        height={48}
                         src="https://www.gramedia.com/assets/shipping/shipping-grab.png"
-                        className="w-48"
+                        className="payment-info"
                         alt="tridatu-bali"
                       />
                     </div>
@@ -159,12 +194,13 @@ const Footer = () => {
 
         .social {
           position: relative;
+          display: inline-flex;
         }
-        .social .social-img{
-          opacity: .6;
-          width: 23px;
-          height: 100%;
+        :global(.social > div){
           margin-right: 10px;
+        }
+        :global(.social .social-img){
+          opacity: .6;
         }
 
         .cursor-pointer {
@@ -203,9 +239,7 @@ const Footer = () => {
         footer {
           color: #757575 !important;
         }
-        .w-48 {
-          width: 48px !important;
-          height: 48px !important;
+        :global(.payment-info) {
           margin: 0px 2px;
         }
         .img-bank {
