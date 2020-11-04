@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Popconfirm, Button } from 'antd'
+import { Popconfirm, Button, Modal, Timeline } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import Col from 'react-bootstrap/Col'
@@ -9,10 +9,15 @@ import Alert from 'react-bootstrap/Alert'
 
 import OrderDetail from './OrderDetail'
 
+import { history } from 'data/productTracking'
+
 const OrderList = ({ status, message, kurir, noResi }) => {
   const [showOrderDetail, setShowOrderDetail] = useState(false)
+  const [showStatus, setShowStatus] = useState(false)
 
   const orderDetailHandler = () => setShowOrderDetail(!showOrderDetail)
+  const showStatusHandler = () => setShowStatus(true)
+  const closeStatusHandler = () => setShowStatus(false)
 
   const WAITING = status.toLowerCase() == "belum bayar"
   const PACKED = status.toLowerCase() == "dikemas"
@@ -28,7 +33,7 @@ const OrderList = ({ status, message, kurir, noResi }) => {
   if(CANCELED) badgeStatus = "danger"
 
   let howtopayBtn = <Button block className="btn-howtopay">Cara Pembayaran</Button>
-  if( !WAITING ) howtopayBtn = <></>
+  if( !WAITING ) howtopayBtn = <Button block className="btn-howtopay" onClick={showStatusHandler}>Status Pesanan</Button>
 
   return(
     <>
@@ -150,8 +155,34 @@ const OrderList = ({ status, message, kurir, noResi }) => {
         </AnimatePresence>
       </Card>
 
-      <style jsx>{`
+      <Modal
+        centered
+        visible={showStatus}
+        title={
+          <div className="text-center">
+            <span className="ant-modal-title">Status Pesanan</span>
+          </div>
+        }
+        className="modal-rad-10"
+        onOk={closeStatusHandler}
+        onCancel={closeStatusHandler}
+        closeIcon={<i className="fas fa-times" />}
+        footer={false}
+        bodyStyle={{paddingBottom: '0', maxHeight: '70vh', overflowY: 'auto' }}
+      >
+        <Timeline reverse={true}>
+          {history.map((data, i)=> (
+            <Timeline.Item dot={history.length === i+1 && <i className="fas fa-dot-circle text-tridatu-light" />} color="grey" key={i}>
+              <div className="text-content">
+                <p className="fw-500 mb-0">{data.desc}</p>
+                <small>{data.date}</small>
+              </div>
+            </Timeline.Item>
+          ))}
+        </Timeline>
+      </Modal>
 
+      <style jsx>{`
         :global(.order-list:not(:last-of-type)){
           margin-bottom: 10px; 
         }
@@ -246,6 +277,11 @@ const OrderList = ({ status, message, kurir, noResi }) => {
           color: #856404;
           background-color: #fffbec;
           margin-bottom: 8px;
+        }
+
+        .text-content{
+          color: #000000b3;
+          margin-bottom: 0;
         }
 
       `}</style>

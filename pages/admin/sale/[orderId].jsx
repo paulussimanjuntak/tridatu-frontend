@@ -4,6 +4,7 @@ import { Table, Row, Col, Timeline, Input, Modal, Button, Space } from 'antd'
 import Card from 'react-bootstrap/Card'
 import Media from 'react-bootstrap/Media'
 
+import { history } from 'data/productTracking'
 import { dataSourceDetail, columnsDetail } from 'data/salesAdmin'
 import formatNumber from 'lib/formatNumber'
 
@@ -110,30 +111,14 @@ const OrderDetail = () => {
             <Media.Body className="media-with-table">
               <h5 className="fs-16">Riwayat Pesanan</h5>
               <Timeline reverse={true} className="mt-4">
-                <Timeline.Item color="grey">
-                  <div className="text-content">
-                    <p className="fw-500 mb-0">Pesanan Dibuat</p>
-                    <small>04-11-2020 15:27</small>
-                  </div>
-                </Timeline.Item>
-                <Timeline.Item color="grey">
-                  <div className="text-content">
-                    <p className="fw-500 mb-0">Pembayaran sudah diverifikasi.</p>
-                    <small>04-11-2020 20:27</small>
-                  </div>
-                </Timeline.Item>
-                <Timeline.Item color="grey">
-                  <div className="text-content">
-                    <p className="fw-500 mb-0">Pesanan sedang diproses.</p>
-                    <small>05-11-2020 10:30</small>
-                  </div>
-                </Timeline.Item>
-                <Timeline.Item color="grey">
-                  <div className="text-content">
-                    <p className="fw-500 mb-0">Pesanan telah dikirim.</p>
-                    <small>05-11-2020 14:10</small>
-                  </div>
-                </Timeline.Item>
+                {history.map((data, i)=> (
+                  <Timeline.Item dot={history.length === i+1 && <i className="fas fa-dot-circle text-tridatu-light" />} color="grey" key={i}>
+                    <div className="text-content">
+                      <p className="fw-500 mb-0">{data.desc}</p>
+                      <small>{data.date}</small>
+                    </div>
+                  </Timeline.Item>
+                ))}
               </Timeline>
             </Media.Body>
           </Media>

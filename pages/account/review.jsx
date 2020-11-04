@@ -46,7 +46,7 @@ const Review = () => {
     <>
       <Card className="card-container">
         <Card.Body className="bg-transparent">
-          <Tabs>
+          <Tabs className="noselect">
             <Tabs.TabPane tab="Menunggu Diulas" key={WAITING}>
               {searchComponent}
               {[...Array(3)].map((_, i) => (
