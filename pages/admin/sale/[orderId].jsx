@@ -1,4 +1,6 @@
-import { Table, Row, Col } from 'antd'
+import { useState } from 'react'
+import { Table, Row, Col, Timeline, Input, Modal, Button, Space } from 'antd'
+
 import Card from 'react-bootstrap/Card'
 import Media from 'react-bootstrap/Media'
 
@@ -8,6 +10,11 @@ import formatNumber from 'lib/formatNumber'
 import AddStyleAdmin from 'components/Admin/addStyle'
 
 const OrderDetail = () => {
+  const [showModal, setShowModal] = useState(false)
+
+  const showModalHandler = () => setShowModal(true)
+  const closeModalHandler = () => setShowModal(false)
+  
   return(
     <>
       <Card className="border-0 shadow-sm card-add-product">
@@ -56,16 +63,27 @@ const OrderDetail = () => {
               </p>
             </Media.Body>
           </Media>
+
+          {/* Hanya saat pembayaran telah dikonfirmasi */}
+          <Media className="detail-order-media">
+            <i className="fal fa-conveyor-belt-alt align-self-start mr-3 text-tridatu w-22" />
+            <Media.Body>
+              <h5 className="fs-16">No. Resi</h5>
+              <Input placeholder="Masukkan No. Resi" />
+              <Button className="btn-tridatu mt-2" size="sm" onClick={showModalHandler}>Simpan</Button>
+            </Media.Body>
+          </Media>
+
         </Card.Body>
       </Card>
 
-      <Card className="border-0 shadow-sm card-add-product mb-0">
+      <Card className="border-0 shadow-sm card-add-product">
         <Card.Body className="border-bottom p-4">
           <Media className="detail-order-media">
             <i className="fal fa-money-check-alt align-self-start mr-3 text-tridatu w-22" />
             <Media.Body className="media-with-table">
               <h5 className="fs-16">Informasi Pembayaran</h5>
-              <Table dataSource={dataSourceDetail} columns={columnsDetail} pagination={false} size="middle" scroll={{ x: '100vh', y: 300 }} />
+              <Table dataSource={dataSourceDetail} columns={columnsDetail} pagination={false} size="middle" scroll={{ x: '100vh', y: 300 }} className="mt-3" />
             </Media.Body>
           </Media>
           <Row justify="end" gutter={[50, 16]}>
@@ -84,6 +102,67 @@ const OrderDetail = () => {
           </Row>
         </Card.Body>
       </Card>
+
+      <Card className="border-0 shadow-sm card-add-product mb-0">
+        <Card.Body className="border-bottom p-4">
+          <Media className="detail-order-media">
+            <i className="fal fa-file-alt align-self-start mr-3 text-tridatu w-22" />
+            <Media.Body className="media-with-table">
+              <h5 className="fs-16">Riwayat Pesanan</h5>
+              <Timeline reverse={true} className="mt-4">
+                <Timeline.Item color="grey">
+                  <div className="text-content">
+                    <p className="fw-500 mb-0">Pesanan Dibuat</p>
+                    <small>04-11-2020 15:27</small>
+                  </div>
+                </Timeline.Item>
+                <Timeline.Item color="grey">
+                  <div className="text-content">
+                    <p className="fw-500 mb-0">Pembayaran sudah diverifikasi.</p>
+                    <small>04-11-2020 20:27</small>
+                  </div>
+                </Timeline.Item>
+                <Timeline.Item color="grey">
+                  <div className="text-content">
+                    <p className="fw-500 mb-0">Pesanan sedang diproses.</p>
+                    <small>05-11-2020 10:30</small>
+                  </div>
+                </Timeline.Item>
+                <Timeline.Item color="grey">
+                  <div className="text-content">
+                    <p className="fw-500 mb-0">Pesanan telah dikirim.</p>
+                    <small>05-11-2020 14:10</small>
+                  </div>
+                </Timeline.Item>
+              </Timeline>
+            </Media.Body>
+          </Media>
+        </Card.Body>
+      </Card>
+
+      <Modal
+        centered
+        title={false}
+        footer={false}
+        closable={false}
+        visible={showModal}
+        zIndex={3000}
+        width={450}
+      >
+        <Media className="detail-order-media px-1 pt-3">
+          <i className="fal fa-exclamation-circle align-self-start mr-3 fa-2x text-warning" />
+          <Media.Body>
+            <h5 className="fs-16">Apakah kamu yakin?</h5>
+            <p className="fs-14">Dengan menyimpan No. Resi menyatakan bahwa barang telah dikirimkan oleh penjual, dan status pesanan akan berubah menjadi <b>Dikirim</b>.</p>
+
+            <Space className="float-right mt-2">
+              <Button onClick={closeModalHandler}>Batal</Button>
+              <Button type="primary" onClick={closeModalHandler}>Lanjutkan</Button>
+            </Space>
+
+          </Media.Body>
+        </Media>
+      </Modal>
 
       <style jsx>{AddStyleAdmin}</style>
       <style jsx>{`

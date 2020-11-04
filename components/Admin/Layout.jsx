@@ -12,10 +12,7 @@ const routes = {
     {link: "/", text: "Home", icon: "far fa-door-open"},
   ],
   pesanan: [
-    {link: "/admin/sale", text: "Pesanan Saya", icon: "far fa-clipboard-list"},
-  ],
-  pengiriman: [
-    {link: "/admin/ship", text: "Pengiriman Saya", icon: "far fa-truck"},
+    {link: "/admin/sale?type=all", text: "Pesanan Saya", icon: "far fa-clipboard-list"},
   ],
   administrasi: [
     {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
@@ -45,8 +42,10 @@ const isEmptyObject = obj => {
   return Object.keys(obj).length !== 0
 }
 
-const getCurrentPath = string => {
-  return string.split('/')[2]
+const getActiveMenu = (routes, router) => {
+  let getRoutes = routes.split('/')[2]
+  let getRouter = router.split('/')[2]
+  if(getRoutes) return getRoutes.startsWith(getRouter)
 }
 
 const AdminLayout = ({ children }) => {
@@ -160,9 +159,7 @@ const AdminLayout = ({ children }) => {
                     text={key}
                     key={route.link} 
                     icon={<i className={`${route.icon} menu-item-icon`} />}
-                    className={
-                      isEmptyObject(router.query) && (getCurrentPath(route.link) === getCurrentPath(router.pathname)) ? "text-left user-select-none ant-menu-item-selected" : "text-left user-select-none"
-                    }
+                    className={isEmptyObject(router.query) && getActiveMenu(route.link, router.pathname) ? "text-left user-select-none ant-menu-item-selected" : "text-left user-select-none"}
                   >
                     {!collapsed && <>{route.text}</>}
                   </Menu.Item>

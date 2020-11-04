@@ -40,7 +40,7 @@ export const columns = [
     render: data => (
       <>
         <p className="mb-n1">{data.paymentStatus}</p>
-        <small className='text-secondary'>Pembayaran sebelum {data.expired}</small>
+        <small className='text-secondary'>{data.expired}</small>
       </>
     )
   },
@@ -57,7 +57,7 @@ export const columns = [
     width: 150,
     render: orderId => (
       <Link href="sale/[orderId]" as={`sale/${orderId}`}>
-        <a className="text-tridatu">Lihat Rincian</a>
+        <a href={`sale/${orderId}`} target="_blank" className="text-tridatu">Lihat Rincian</a>
       </Link>
     ),
   },
@@ -90,7 +90,7 @@ export const dataSource = [
     },
     status: {
       paymentStatus: 'Perlu Dikirim',
-      expired: '03-11-2020'
+      expired: 'Kirimkan sebelum 05-11-2020'
     },
     deliveryService: 'J&T Express',
   },
@@ -113,12 +113,79 @@ export const dataSource = [
     },
     status: {
       paymentStatus: 'Belum Bayar',
-      expired: '03-11-2020'
+      expired: 'Pembayaran sebelum 03-11-2020'
     },
     deliveryService: 'Pos Kilat Khusus',
   },
 ];
 
+// ############################## //
+
+export const dataSourceWaiting = [
+  {
+    key: '1',
+    orderId: 58019368521176,
+    invoice: '-',
+    product: [
+      {
+        name: 'Flannel Uniqlo',
+        image: 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp',
+        color: 'Putih',
+        size: 'S',
+        amount: 4
+      }
+    ],
+    payment: {
+      total: 230000,
+      method: 'Indomaret'
+    },
+    status: {
+      paymentStatus: 'Belum Bayar',
+      expired: 'Pembayaran sebelum 03-11-2020'
+    },
+    deliveryService: 'Pos Kilat Khusus',
+  },
+];
+
+// ############################## //
+
+export const dataSourceToship = [
+  {
+    key: '1',
+    orderId: 58020916256845,
+    invoice: 'INV/20191002/XIX/X/375442105',
+    product: [
+      {
+        name: 'Jaket GAP Grey Jaket GAP Grey',
+        image: 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp',
+        color: 'Hitam',
+        size: 'M',
+        amount: 2
+      },
+      {
+        name: 'Flannel Uniqlo',
+        image: 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp',
+        color: 'Putih',
+        size: 'S',
+        amount: 4
+      }
+    ],
+    payment: {
+      total: 150000,
+      method: 'Transfer Bank'
+    },
+    status: {
+      paymentStatus: 'Perlu Dikirim',
+      expired: 'Kirimkan sebelum 05-11-2020'
+    },
+    deliveryService: 'J&T Express',
+  }
+];
+
+// ############################## //
+// ############################## //
+//   SALES DETAIL PAGES PRODUCT   //
+// ############################## //
 // ############################## //
 
 export const dataSourceDetail = [
