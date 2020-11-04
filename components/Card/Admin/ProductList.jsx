@@ -11,7 +11,7 @@ const ProductList = ({ item }) => {
         <Media.Body>
           <p className="align-top text-wrap mb-n1">{item.name}</p>
           <p className="mb-n1 fs-11 text-secondary">Variasi: {item.color}, {item.size}</p>
-          <small className="text-dark">x{item.amount}</small>
+          {item.amount && <small className="text-dark">x{item.amount}</small>}
         </Media.Body>
       </Media>
 
