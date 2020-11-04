@@ -11,6 +11,9 @@ const routes = {
     {link: "/admin/dashboard", text: "Dashboard", icon: "far fa-house-flood"},
     {link: "/", text: "Home", icon: "far fa-door-open"},
   ],
+  pesanan: [
+    {link: "/admin/sale?type=all", text: "Pesanan Saya", icon: "far fa-clipboard-list"},
+  ],
   administrasi: [
     {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
     {link: "/admin/category/new", text: "Tambah Kategori", icon: "far fa-folder-tree"},
@@ -18,12 +21,6 @@ const routes = {
   produk: [
     {link: "/admin/products", text: "Produk Saya", icon: "far fa-shopping-bag"},
     {link: "/admin/products/new", text: "Tambah Produk", icon: "far fa-file-plus"},
-  ],
-  pengiriman: [
-    {link: "/admin/ship", text: "Pengiriman Saya", icon: "far fa-truck"},
-  ],
-  pesanan: [
-    {link: "/admin/sale", text: "Pesanan Saya", icon: "far fa-clipboard-list"},
   ],
   brand: [
     {link: "/admin/brand", text: "Brand", icon: "far fa-layer-group"},
@@ -40,6 +37,16 @@ const menu = (
     <Menu.Item key="SignOut"> Keluar </Menu.Item>
   </Menu>
 )
+
+const isEmptyObject = obj => {
+  return Object.keys(obj).length !== 0
+}
+
+const getActiveMenu = (routes, router) => {
+  let getRoutes = routes.split('/')[2]
+  let getRouter = router.split('/')[2]
+  if(getRoutes) return getRoutes.startsWith(getRouter)
+}
 
 const AdminLayout = ({ children }) => {
   const router = useRouter()
@@ -152,7 +159,7 @@ const AdminLayout = ({ children }) => {
                     text={key}
                     key={route.link} 
                     icon={<i className={`${route.icon} menu-item-icon`} />}
-                    className="text-left user-select-none"
+                    className={isEmptyObject(router.query) && getActiveMenu(route.link, router.pathname) ? "text-left user-select-none ant-menu-item-selected" : "text-left user-select-none"}
                   >
                     {!collapsed && <>{route.text}</>}
                   </Menu.Item>

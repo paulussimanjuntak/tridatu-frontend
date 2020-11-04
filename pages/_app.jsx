@@ -419,6 +419,9 @@ const App = ({ Component, pageProps, store }) => {
         .text-tridatu:hover {
           color: #ff4d4f;
         }
+        .text-tridatu-light {
+          color: #ff4d4f;
+        }
 
         /*CUSTOM BUTTON*/
         .btn-tridatu {

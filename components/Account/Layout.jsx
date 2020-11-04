@@ -156,6 +156,7 @@ const AccountLayout = ({ children, pathname }) => {
           onClose={closeDrawerHandler}
           visible={showDrawer}
           className="d-block d-lg-none"
+          closeIcon={<i className="fas fa-times" />}
         >
           <Nav 
             activeKey={pathname} 
