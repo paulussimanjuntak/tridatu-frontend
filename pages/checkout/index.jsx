@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Divider } from 'antd'
+import { Button, Divider, Select, Space } from 'antd'
 
 import Link from 'next/link'
 import Col from 'react-bootstrap/Col'
@@ -8,9 +8,14 @@ import Card from 'react-bootstrap/Card'
 import Container from 'react-bootstrap/Container'
 
 import AddAddressModal from 'components/Modal/AddAddress'
+import SelectAddressModal from 'components/Modal/SelectAddress'
 import PromoModal from 'components/Cart/PromoModal'
 import CartItemCheckout from 'components/Cart/CartItemCheckout'
 import { PromoSelected, PromoButton } from 'components/Cart/PromoSelected'
+
+import formatNumber from 'lib/formatNumber'
+
+import { courierEstimation } from 'data/courierEstimation'
 
 import CartStyle from 'components/Cart/style'
 
@@ -20,6 +25,7 @@ const Checkout = () => {
   const [showPromoModal, setShowPromoModal] = useState(false)
   const [promo, setPromo] = useState({ code: '', isUsed: false })
   const [showAddressModal, setShowAddressModal] = useState(false)
+  const [showSelectAddressModal, setShowSelectAddressModal] = useState(false)
 
   const showAddressModalHandler = () => {
     setShowAddressModal(true)
@@ -27,6 +33,14 @@ const Checkout = () => {
 
   const closeAddressModalHandler = () => {
     setShowAddressModal(false)
+  }
+
+  const showSelectAddressModalHandler = () => {
+    setShowSelectAddressModal(true)
+  }
+
+  const closeSelectAddressModalHandler = () => {
+    setShowSelectAddressModal(false)
   }
 
   const showPromoModalHandler = () => {
@@ -71,7 +85,24 @@ Kuta Selatan, Kab. Badung, 80361
             </Card>
 
             <Card.Body className="border-0 p-0 mb-3">
-              <Button onClick={showAddressModalHandler}>Tambah alamat</Button>
+              <Space>
+                <Button style={{ height: 35 }} onClick={showSelectAddressModalHandler}>Pilih Alamat Lain</Button>
+
+                <Select placeholder="Pilih Kurir" className="select-courier" allowClear dropdownClassName="idx-1020" style={{ width: 200 }}>
+                  {courierEstimation.map(courier => (
+                    <Select.OptGroup label={courier.code.toUpperCase()} key={courier.code}>
+                      {courier.costs.map(services => (
+                        services.cost.map(cost => (
+                          <Select.Option value={services.service} key={courier.code + services.service}>
+                            <p className="mb-n1">{services.service} {cost.etd && <>({cost.etd} hari)</>}</p>
+                            <small className="text-secondary fs-12">Rp. {formatNumber(cost.value)}</small>
+                          </Select.Option>
+                        ))
+                      ))}
+                    </Select.OptGroup>
+                  ))}
+                </Select>
+              </Space>
             </Card.Body>
 
             <div className="border-bottom-5 mb-2" />
@@ -108,13 +139,7 @@ Kuta Selatan, Kab. Badung, 80361
                   </span>
                 </p>
                 <p className="font-weight-light checkout-summary-price fs-14 mb-1 text-truncate fs-12-s">
-                  Onkos Kirim
-                  <span className="float-right">
-                    Rp. 60.000
-                  </span>
-                </p>
-                <p className="font-weight-light checkout-summary-price fs-14 mb-1 text-truncate fs-12-s">
-                  Onkos Kirim
+                  Ongkos Kirim
                   <span className="float-right">
                     Rp. 60.000
                   </span>
@@ -151,6 +176,13 @@ Kuta Selatan, Kab. Badung, 80361
         </Row>
       </Container>
 
+      <SelectAddressModal
+        show={showSelectAddressModal}
+        submit={closeSelectAddressModalHandler}
+        close={closeSelectAddressModalHandler}
+        showAddAddress={showAddressModalHandler}
+      />
+
       <AddAddressModal
         show={showAddressModal}
         submit={closeAddressModalHandler}
@@ -179,6 +211,9 @@ Kuta Selatan, Kab. Badung, 80361
         }
         :global(.user-phone){
           letter-spacing : -1px;
+        }
+        :global(.select-courier .ant-select-selection-placeholder){
+          color: rgba(0, 0, 0, 0.85);
         }
       `}</style>
     </>

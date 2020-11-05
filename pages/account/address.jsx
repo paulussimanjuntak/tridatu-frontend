@@ -4,6 +4,7 @@ import { Button, Popconfirm, message, Divider } from 'antd'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
+import Badge from 'react-bootstrap/Badge'
 
 import AddAddressModal from 'components/Modal/AddAddress'
 
@@ -52,7 +53,9 @@ const Address = () => {
                 <Col lg={4}>
                   <div className="text-left">
                     <h4 className="fs-16 text-secondary mb-sm-0">Alamat Penerima</h4>
-                    <p className="fs-14 mb-0 fw-500">Rumah</p>
+                    <p className="fs-14 mb-0 fw-500">
+                      Rumah {i === 0 && <Badge variant="primary">Utama</Badge>}
+                    </p>
                     <p className="fs-14 mb-lg-0">Jl. By pass Ngurah Rai Komp Ruko Nusa Dua Nomor 23</p>
                   </div>
                 </Col>

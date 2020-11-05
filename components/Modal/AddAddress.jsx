@@ -1,4 +1,4 @@
-import { Button, Modal } from 'antd'
+import { Button, Modal, Checkbox } from 'antd'
 
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
@@ -58,9 +58,13 @@ const AddAddressModal = ({ show, submit, close }) => {
               </Form.Group>
             </Form.Row>
 
-            <Form.Group className="mb-0">
+            <Form.Group>
               <Form.Label>Alamat</Form.Label>
               <Form.Control as="textarea" rows={3} placeholder="Isi dengan nama jalan, nomor rumah, nomor kompleks, nama gedung, lantai atau nomor unit." />
+            </Form.Group>
+
+            <Form.Group className="mb-0">
+              <Checkbox className="noselect">Atur sebagai alamat utama</Checkbox>
             </Form.Group>
 
           </Form>

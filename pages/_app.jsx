@@ -71,6 +71,13 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*FORM CONTROL BOOTSTRAP*/
 
+        /*BADGE BOOTSTRAP*/
+        .badge-primary {
+          color: #d63031;
+          background-color: #d6303130;
+        }
+        /*BADGE BOOTSTRAP*/
+
         /*ANT RATE*/
         .ant-rate {
           color: #fbbc04;
@@ -574,6 +581,10 @@ const App = ({ Component, pageProps, store }) => {
           border-radius: 15px;
         }
 
+        .bor-rad-5px {
+          border-radius: 5px;
+        }
+
         .border-bottom-5 {
           border-bottom: 5px solid rgb(243, 244, 245) !important;
         }
@@ -592,6 +603,10 @@ const App = ({ Component, pageProps, store }) => {
 
         .max-vh-100 {
           max-height: 100vh !important;
+        }
+
+        .idx-1020{
+          z-index: 1020;
         }
 
         .custom-gutters {
