@@ -8,7 +8,7 @@ const useBreakpoint = Grid.useBreakpoint;
 
 const routes = {
   umum: [
-    {link: "/admin/dashboard", text: "Dashboard", icon: "far fa-house-flood"},
+    {link: "/admin", text: "Dashboard", icon: "far fa-house-flood"},
     {link: "/", text: "Home", icon: "far fa-door-open"},
   ],
   pesanan: [
