@@ -17,7 +17,7 @@ const CardBannerMemo = React.memo(CardBanner);
 import { brandSettings, bannerSettings, infoStoreSettings, infoStoreSettingsMobile } from "lib/slickSetting";
 import { brandData } from "data/brand";
 
-let banners = ['/static/images/banner/1.jpeg', '/static/images/banner/2.jpeg', '/static/images/banner/3.jpeg', '/static/images/banner/4.jpeg', '/static/images/banner/5.jpeg', '/static/images/banner/5.jpeg']
+let banners = ['/static/images/promo/Thumbnail-600x328.jpg', '/static/images/banner/2.jpeg', '/static/images/promo/Thumbnail-600x328.jpg', '/static/images/banner/4.jpeg', '/static/images/banner/5.jpeg', '/static/images/banner/5.jpeg']
 let infoStores = ['/static/images/info-store/1.jpeg', '/static/images/info-store/2.jpeg', '/static/images/info-store/3.jpeg', '/static/images/info-store/4.jpeg', '/static/images/info-store/5.jpeg', '/static/images/info-store/6.jpeg', ]
 
 const Home = () => {
@@ -55,7 +55,7 @@ const Home = () => {
               <Slider {...infoStoreSettings}>
                 {infoStores.map((data, i) => (
                   <div className="mb-1" key={i}>
-                    <Image width={160} height={142} src={data} className="info-store-img" alt="Tridatu Bali ID" />
+                    <Image width={145} height={145} src={data} className="info-store-img" alt="Tridatu Bali ID" />
                   </div>
                   // <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
                 ))}
@@ -121,6 +121,14 @@ const Home = () => {
           :global(.info-store > .info-store-title){
             font-size: 18px !important;
           }
+          :global(.banner-section){
+            margin-bottom: 2.4rem;
+          }
+        }
+        @media only screen and (max-width: 1199px){
+          :global(.info-store > .info-store-title){
+            font-size: 16px !important;
+          }
         }
         @media only screen and (min-width: 1200px){
           :global(.info-store-img){
@@ -128,10 +136,16 @@ const Home = () => {
           }
         }
 
+        @media only screen and (min-width: 1200px){
+          :global(.banner-section){
+            margin-bottom: 3rem;
+          }
+        }
+
         @media only screen and (min-width: 600px){
           :global(.banner-section .slick-list){
-            padding-top: 25px !important;
-            padding-bottom: 18px !important;
+            padding-top: 30px !important;
+            padding-bottom: 24px !important;
             padding-left: 20% !important;
             padding-right: 20% !important;
             margin-left: 0px;
