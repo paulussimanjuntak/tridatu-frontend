@@ -5,11 +5,11 @@ import Card from "react-bootstrap/Card";
 const CardBrand = ({ name, image }) => {
   return (
     <>
-      <Card className="border-0 shadow text-center">
+      <Card className="border-0 shadow text-center p-t-20">
         <Link href="/products" as="/products">
           <a className="text-decoration-none text-dark text-center mx-auto brand-image">
             <Image
-              className="mx-auto d-block mt-2"
+              className="mx-auto d-block"
               src={image}
               width={64}
               height={64}

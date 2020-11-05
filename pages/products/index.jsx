@@ -401,9 +401,6 @@ const ProductContainer = () => {
 
       <style jsx>{ProductsStyle}</style>
       <style jsx>{`
-        :global(.idx-1020){
-          z-index: 1020;
-        }
         :global(.filter-tag-mobile.ant-tag-checkable){
           border: 1px solid #d9d9d9;
         }

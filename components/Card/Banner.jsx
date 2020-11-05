@@ -9,8 +9,8 @@ const CardBanner = ({ image }) => {
         <Link href="/promo" as="/promo">
           <a className="text-decoration-none text-dark">
             <Image
-              width={628}
-              height={412}
+              width={620}
+              height={350}
               className="mx-auto d-block img-fit w-100 rounded"
               src={image}
               alt="Tridatu Bali ID"
