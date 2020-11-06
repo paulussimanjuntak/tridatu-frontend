@@ -35,6 +35,9 @@ const routes = {
     {link: "/admin/voucher", text: "Voucher", icon: "far fa-ticket-alt"},
     {link: "/admin/voucher/new", text: "Tambah Voucher", icon: "far fa-money-check"},
   ],
+  ulasan: [
+    {link: "/admin/review", text: "Ulasan Pembeli", icon: "far fa-smile-wink"},
+  ],
 }
 
 const menu = (
@@ -158,7 +161,7 @@ const AdminLayout = ({ children }) => {
       }}
     >
 
-      <a href="/">
+      <a href="/" className="text-decoration-none">
         <div className="brand">
           <div className="logo">
             <AnimatePresence key={collapsed}>
