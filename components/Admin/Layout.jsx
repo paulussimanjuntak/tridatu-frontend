@@ -4,6 +4,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Layout, Menu, Dropdown, Avatar, Badge, Grid, Drawer } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 
+import Image from "next/image";
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Media from 'react-bootstrap/Media';
+
 const useBreakpoint = Grid.useBreakpoint;
 
 const routes = {
@@ -37,6 +42,48 @@ const menu = (
     <Menu.Item key="SignOut"> Keluar </Menu.Item>
   </Menu>
 )
+
+const notificationMenu = (
+  <Menu>
+    <Menu.ItemGroup 
+      title={ <b className="text-dark">Notifikasi</b> }
+    />
+    <Menu.Divider />
+    <Menu.ItemGroup className="cart-item-navbar notification-item-navbar">
+    {[...Array(10)].map((_,i) => (
+      <Menu.Item key={i} className={`notification-item ${i%2 === 0 && 'unread'}`}>
+        <Row className="mx-0">
+          <Col className="text-truncate pr-1 pl-0">
+            <span className="fs-13 fw-500">Pesanan Baru</span>
+          </Col>
+          <Col className="col-auto pl-0 pr-0">
+            <span className="text-secondary fs-10">11.30</span>
+          </Col>
+        </Row>
+        <Media>
+          <Image 
+            width={40}
+            height={40}
+            src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp"
+            alt="Tridatu Bali"
+            className="bor-rad-2rem"
+          />
+          <Media.Body className="ml-2">
+            <small className="text-wrap mb-0 text-secondary truncate-2">
+              <b>#Nama</b> memesan <b>#produk</b>, pastikan stok produk tersebut tersedia dan produk belum dibayar.
+            </small>
+          </Media.Body>
+        </Media>
+      </Menu.Item>
+    ))}
+    </Menu.ItemGroup>
+    <Menu.Divider />
+    <Menu.ItemGroup 
+      className="text-center hover-pointer btn-notification-showmore"
+      title={ <span className="text-center fs-12 btn-notification-showmore-text">Tampilkan Semua</span> }
+    />
+  </Menu>
+);
 
 const isEmptyObject = obj => {
   return Object.keys(obj).length !== 0
@@ -114,15 +161,15 @@ const AdminLayout = ({ children }) => {
       <a href="/">
         <div className="brand">
           <div className="logo">
-              <AnimatePresence key={collapsed}>
-                <motion.img src="/tridatu-icon.png" alt="Tridatu Bali ID" 
-                  transition={{ duration: ".2" }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                />
-              </AnimatePresence>
-              <AnimatePresence>
+            <AnimatePresence key={collapsed}>
+              <motion.img src="/tridatu-icon.png" alt="Tridatu Bali ID" width="30" height="44"
+                transition={{ duration: ".2" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              />
+            </AnimatePresence>
+            <AnimatePresence>
               {!collapsed && (
                 <motion.span 
                   transition={{ duration: ".3" }}
@@ -134,7 +181,7 @@ const AdminLayout = ({ children }) => {
                   Tridatu <span className="text-muted font-weight-bold pl-1">Bali ID</span>
                 </motion.span>
               )}
-              </AnimatePresence>
+            </AnimatePresence>
           </div>
         </div>
       </a>
@@ -173,15 +220,31 @@ const AdminLayout = ({ children }) => {
   )
 
   const rightMenu = [
-    <Dropdown overlay={menu} placement="bottomCenter" key="user">
+    <Dropdown 
+      arrow
+      overlay={menu} 
+      trigger={['click']}
+      placement="bottomRight" 
+      key="user"
+      overlayClassName="position-fixed top-50 idx-2020"
+      overlayStyle={{top: '500px'}}
+    >
       <div className="nav-item-button">
-        <Avatar size={40} src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp" />
+        <Avatar size={30} src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp" />
       </div>
     </Dropdown>,
   ]
 
   rightMenu.unshift(
-    <Dropdown overlay={menu} placement="bottomCenter" key="notification">
+    <Dropdown 
+      arrow
+      overlay={notificationMenu} 
+      trigger={['click']}
+      placement="bottomRight" 
+      key="notification"
+      overlayClassName="position-fixed top-50 notification-admin idx-2020"
+      overlayStyle={{top: '500px'}}
+    >
       <div className="nav-item-button">
         <Badge count={400} size="small" className="nav-notification">
           <i className="far fa-bell fa-lg" />
@@ -373,6 +436,62 @@ const AdminLayout = ({ children }) => {
           color: #111111;
         }
         // LEFT SIDER
+        
+        // NOTIFICATION
+        :global(.cart-item-navbar){
+          max-height: 300px;
+          overflow: scroll;
+        }
+        :global(.cart-item-navbar > .ant-dropdown-menu-item-group-title){
+          padding: 0;
+        }
+        :global(.cart-item-navbar > .ant-dropdown-menu-item-group-list){
+          margin: 0;
+          max-height: 300px;
+        }
+
+        :global(.notification-item-navbar > .ant-dropdown-menu-item-group-list > .notification-item){
+          background: white;
+        }
+        :global(.notification-item-navbar > .ant-dropdown-menu-item-group-list > .notification-item:not(:last-child)){
+          border-bottom: 1px solid #dee2e6!important;
+        }
+        :global(.notification-item-navbar > .ant-dropdown-menu-item-group-list > .notification-item:hover){
+          background-color: #f5f5f5;
+        }
+        :global(.notification-item-navbar > .ant-dropdown-menu-item-group-list > .notification-item.unread){
+          background-color:#effaf3;
+        }
+
+        :global(.btn-notification-showmore, .btn-notification-showmore-text){
+          margin-top: -4px;
+          margin-bottom: -4px;
+          background: #fefefe;
+          transition: all .3s;
+        }
+        :global(.btn-notification-showmore-text){
+          color: rgba(0,0,0,.75);
+          transition: all .3s;
+          background: transparent;
+        }
+        :global(.btn-notification-showmore:hover){
+          background: #fafafa;
+        }
+        :global(.btn-notification-showmore-text:hover){
+          color: rgba(0,0,0,.95);
+        }
+        :global(.notification-admin){
+          width: 340px;
+        }
+
+        @media (max-width: 419px) {
+          :global(.notification-admin){
+            width: 100%;
+          }
+          :global(.notification-admin.ant-dropdown-placement-bottomRight > .ant-dropdown-arrow){
+            right: 95px;
+          }
+        }
 
         @media (max-width: 767px) {
           :global(.header-fixed, .header-collapsed){

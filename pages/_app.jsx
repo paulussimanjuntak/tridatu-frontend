@@ -615,8 +615,23 @@ const App = ({ Component, pageProps, store }) => {
           max-height: 100vh !important;
         }
 
+        .w-340px{
+          width: 340px !important;
+        }
+
+        .top-50{
+          top: 50px !important;
+        }
+        .top-68{
+          top: 68px !important;
+        }
+
         .idx-1020{
           z-index: 1020;
+        }
+
+        .idx-2020{
+          z-index: 2020;
         }
 
         .custom-gutters {
