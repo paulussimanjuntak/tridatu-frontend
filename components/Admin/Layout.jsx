@@ -402,4 +402,6 @@ const AdminLayout = ({ children }) => {
   )
 }
 
+AdminLayout.whyDidYouRender = true;
+
 export default AdminLayout

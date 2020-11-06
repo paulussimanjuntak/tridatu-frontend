@@ -218,4 +218,6 @@ const AccountLayout = ({ children, pathname }) => {
   )
 }
 
+AccountLayout.whyDidYouRender = true;
+
 export default AccountLayout

@@ -596,4 +596,6 @@ const Header = () => {
   );
 };
 
+Header.whyDidYouRender = true;
+
 export default Header;
