@@ -12,6 +12,7 @@
     "@welldone-software/why-did-you-render": "^5.0.0",
     "antd": "^4.7.3",
     "antd-button-color": "^1.0.3",
+    "axios": "^0.21.0",
     "bootstrap": "^4.5.2",
     "chart.js": "^2.9.4",
     "framer-motion": "^2.9.4",
