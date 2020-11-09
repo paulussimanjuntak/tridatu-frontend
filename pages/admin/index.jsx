@@ -1,10 +1,14 @@
 import { useRouter } from 'next/router'
-import { Row, Col, Tooltip } from 'antd'
+import { Row, Col, Tooltip, Table } from 'antd'
 
 import Chart from 'chart.js'
 import Card from 'react-bootstrap/Card'
 
 import { chartOptions, parseOptions } from 'components/Chart/chart-pro'
+import StatisticChart from 'components/Chart/Admin/Statistic'
+import SoldProductChart from 'components/Chart/Admin/SoldProduct'
+
+import { dataSourceBestProduct, columnsBestProduct } from 'data/salesAdmin'
 
 const statsData = [
   { 
@@ -48,7 +52,7 @@ const Dashboard = () => {
           <Row gutter={[16, 16]}>
             {statsData.map((data, i) => (
               <Col xl={6} lg={8} md={8} sm={12} xs={12} key={i}>
-                <Card className="shadow-sm h-100 hover-pointer" onClick={() => router.push(data.link)}>
+                <Card className="shadow-sm h-100 hover-pointer border-0 bor-rad-5px" onClick={() => router.push(data.link)}>
                   <Card.Body className="py-2 px-3">
                     <p className="fs-14 text-secondary fs-12-s">
                       <span className="pr-1">{data.title}</span>
@@ -57,7 +61,7 @@ const Dashboard = () => {
                       </Tooltip>
                     </p>
                   </Card.Body>
-                  <Card.Footer className="pt-0 pb-3 px-3 bg-white border-0">
+                  <Card.Footer className="pt-0 pb-3 px-3 bg-white border-0 bor-rad-5px">
                     <h3 className="align-self-center fs-22-s mb-0">{data.value}</h3>
                   </Card.Footer>
                 </Card>
@@ -67,20 +71,65 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-container">
-          <Card className="shadow">
-            <Card.Header className="bg-transparent">
-              <Row className="align-items-center">
-                <Col>
-                  <h6 className="text-uppercase ls-1 mb-1">Overview</h6>
-                  <h2 className="mb-0">Total Visitors</h2>
-                </Col>
-              </Row>
-            </Card.Header>
-            <Card.Body>
-              <div className="chart">
-              </div>
-            </Card.Body>
-          </Card>
+          <Row gutter={[16, 16]}>
+            <Col lg={16} md={14} sm={12} xs={24}>
+              <Card className="shadow-sm border-0 bor-rad-5px">
+                <Card.Header className="bg-transparent">
+                  <p className="text-uppercase mb-1 fs-12 text-secondary">Overview</p>
+                  <h6 className="mb-0">Statistik Penjualan</h6>
+                </Card.Header>
+                <Card.Body>
+                  <div className="h-350 position-relative">
+                    <StatisticChart />
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col lg={8} md={10} sm={12} xs={24}>
+              <Card className="shadow-sm border-0 bor-rad-5px">
+                <Card.Header className="bg-transparent">
+                  <p className="text-uppercase mb-1 fs-12 text-secondary">Performance</p>
+                  <h6 className="mb-0">Produk Terjual</h6>
+                </Card.Header>
+                <Card.Body>
+                  <div className="h-350 position-relative">
+                    <SoldProductChart />
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+
+        <div className="dashboard-container">
+          <Row gutter={[16, 16]}>
+
+            <Col lg={12} md={12} sm={12} xs={24}>
+              <Card className="shadow-sm border-0 bor-rad-5px">
+                <Card.Header className="bg-transparent p-t-20 p-b-20">
+                  <h6 className="mb-0">Produk Terlaris</h6>
+                </Card.Header>
+                <Card.Body>
+                  <div className="h-350">
+                    <Table dataSource={dataSourceBestProduct} columns={columnsBestProduct} pagination={false} size="middle" scroll={{ x: 500, y: 350 - 50 }} className="mt-0" />
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+
+            <Col lg={12} md={12} sm={12} xs={24}>
+              <Card className="shadow-sm border-0 bor-rad-5px">
+                <Card.Header className="bg-transparent p-t-20 p-b-20">
+                  <h6 className="mb-0">Ulasan Baru ?</h6>
+                </Card.Header>
+                <Card.Body>
+                  <div className="h-350">
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+
+          </Row>
         </div>
       </section>
 
@@ -90,12 +139,17 @@ const Dashboard = () => {
             padding: 20px;
           }
         }
-        .dashboard-container{
+        .dashboard-container:not(:last-of-type){
           margin-bottom: 20px;
+        }
+        .h-350{
+          height: 350px;
         }
       `}</style>
     </>
   )
 }
+
+Dashboard.whyDidYouRender = true;
 
 export default Dashboard

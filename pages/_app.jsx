@@ -1,9 +1,11 @@
+import React from "react";
 import { Provider } from "react-redux";
 
 import Head from "next/head";
 import Layout from "components/Layout";
 
 import withReduxStore from "lib/with-redux-store";
+import whyDidYouRender from "@welldone-software/why-did-you-render";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "antd/dist/antd.css";
@@ -17,6 +19,10 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import "react-circular-progressbar/dist/styles.css";
 
 import "suneditor/dist/css/suneditor.min.css";
+
+if (typeof window !== 'undefined' && process.env.NODE_ENV === "development") {
+  whyDidYouRender(React)
+}
 
 const App = ({ Component, pageProps, store }) => {
   return (
@@ -582,7 +588,11 @@ const App = ({ Component, pageProps, store }) => {
         }
 
         .bor-rad-5px {
-          border-radius: 5px;
+          border-radius: 5px !important;
+        }
+
+        .bor-rad-8px {
+          border-radius: 8px !important;
         }
 
         .border-bottom-5 {
@@ -605,8 +615,23 @@ const App = ({ Component, pageProps, store }) => {
           max-height: 100vh !important;
         }
 
+        .w-340px{
+          width: 340px !important;
+        }
+
+        .top-50{
+          top: 50px !important;
+        }
+        .top-68{
+          top: 68px !important;
+        }
+
         .idx-1020{
           z-index: 1020;
+        }
+
+        .idx-2020{
+          z-index: 2020;
         }
 
         .custom-gutters {

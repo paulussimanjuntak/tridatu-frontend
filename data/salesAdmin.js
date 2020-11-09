@@ -255,3 +255,82 @@ export const columnsDetail = [
     render: price => <p className="mb-n1">Rp. {formatNumber(price)}</p>
   },
 ];
+
+// ############################## //
+// ############################## //
+//     DASHBOARD PAGES PRODUCT    //
+// ############################## //
+// ############################## //
+
+export const dataSourceBestProduct = [
+  {
+    key: '1',
+    product: {
+      name: 'Jaket GAP Grey',
+      image: 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp',
+      color: 'Hitam',
+      size: 'M',
+    },
+    sold: 12,
+    stock: 30,
+  },
+  {
+    key: '2',
+    product: {
+      name: 'Kemeja Converse',
+      image: 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp',
+      color: 'Kuning',
+      size: 'XL',
+    },
+    sold: 8,
+    stock: 3,
+  },
+  {
+    key: '3',
+    product: {
+      name: 'Jaket Boomber',
+      image: 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp',
+      color: 'Hijau Army',
+      size: 'L',
+    },
+    sold: 3,
+    stock: 1,
+  },
+  {
+    key: '4',
+    product: {
+      name: 'Flannel Uniqlo',
+      image: 'https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp',
+      color: 'Putih',
+      size: 'L',
+    },
+    sold: 1,
+    stock: 23,
+  },
+];
+
+export const columnsBestProduct = [
+  {
+    key: 'product',
+    title: 'Produk',
+    dataIndex: 'product',
+    width: 100,
+    render: item => <ProductList item={item} />
+  },
+  {
+    key: 'sold',
+    title: 'Terjual',
+    dataIndex: 'sold',
+    width: 80,
+    align: 'center',
+    render: text => <span className="text-center">{text}</span>
+  },
+  {
+    key: 'stock',
+    title: 'Stok',
+    dataIndex: 'stock',
+    width: 80,
+    align: 'center',
+    render: text => <span className="text-center">{text}</span>
+  },
+];

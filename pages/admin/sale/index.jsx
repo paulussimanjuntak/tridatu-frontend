@@ -99,4 +99,6 @@ const Sales = () => {
   )
 }
 
+Sales.whyDidYouRender = true;
+
 export default Sales

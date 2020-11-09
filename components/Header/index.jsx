@@ -338,7 +338,7 @@ const Header = () => {
               <Dropdown 
                 arrow
                 overlay={notificationMenu} 
-                trigger={['hover']}
+                trigger={['click']}
                 placement="bottomCenter" 
                 overlayClassName="position-fixed top-50 w-340px"
                 overlayStyle={{top: '500px'}}
@@ -412,15 +412,6 @@ const Header = () => {
         :global(.list-suggestion .rc-virtual-list-scrollbar-thumb){
           background: transparent!important;
           display: none!important;
-        }
-        :global(.top-50){
-          top: 50px !important;
-        }
-        :global(.top-68){
-          top: 68px !important;
-        }
-        :global(.w-340px){
-          width: 340px !important;
         }
         :global(.navbar-shadow-bottom) {
           box-shadow: rgba(0, 0, 0, 0.18) 0px 1px 15px !important;
@@ -595,5 +586,7 @@ const Header = () => {
     </>
   );
 };
+
+Header.whyDidYouRender = true;
 
 export default Header;

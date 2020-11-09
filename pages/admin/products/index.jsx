@@ -7,6 +7,7 @@ import Card from 'react-bootstrap/Card'
 
 const ALL = 'all'
 const LIVE = 'live'
+const OUTOFSTOCK = 'outofstock'
 
 import { productsColumns, productsData } from 'data/productsAdmin'
 
@@ -57,6 +58,10 @@ const Products = () => {
 
             <Tabs.TabPane tab="Live" key={LIVE}>
               <p>live</p>
+            </Tabs.TabPane>
+
+            <Tabs.TabPane tab="Habis" key={OUTOFSTOCK}>
+              <p>Produk Habis</p>
             </Tabs.TabPane>
           </Tabs>
         </Card.Body>
