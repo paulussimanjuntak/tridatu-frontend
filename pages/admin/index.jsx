@@ -9,6 +9,7 @@ import StatisticChart from 'components/Chart/Admin/Statistic'
 import SoldProductChart from 'components/Chart/Admin/SoldProduct'
 
 import { dataSourceBestProduct, columnsBestProduct } from 'data/salesAdmin'
+import { columnsReviewDashboard, dataSourceReview, dataSourceReviewNorespond, dataSourceReviewResponded } from 'data/reviewAdmin'
 
 const statsData = [
   { 
@@ -111,7 +112,14 @@ const Dashboard = () => {
                 </Card.Header>
                 <Card.Body>
                   <div className="h-350">
-                    <Table dataSource={dataSourceBestProduct} columns={columnsBestProduct} pagination={false} size="middle" scroll={{ x: 500, y: 350 - 50 }} className="mt-0" />
+                    <Table 
+                      dataSource={dataSourceBestProduct} 
+                      columns={columnsBestProduct} 
+                      pagination={false} 
+                      scroll={{ x: 500, y: 350 - 50 }} 
+                      size="middle" 
+                      className="mt-0" 
+                    />
                   </div>
                 </Card.Body>
               </Card>
@@ -120,10 +128,19 @@ const Dashboard = () => {
             <Col lg={12} md={12} sm={12} xs={24}>
               <Card className="shadow-sm border-0 bor-rad-5px">
                 <Card.Header className="bg-transparent p-t-20 p-b-20">
-                  <h6 className="mb-0">Ulasan Baru ?</h6>
+                  <h6 className="mb-0">Ulasan Baru</h6>
                 </Card.Header>
                 <Card.Body>
                   <div className="h-350">
+                    <Table 
+                      dataSource={dataSourceReview} 
+                      columns={columnsReviewDashboard}
+                      pagination={false} 
+                      scroll={{ x: 500, y: 350 - 50 }} 
+                      size="middle" 
+                      className="mt-0" 
+                      rowClassName="va-top hover-pointer"
+                    />
                   </div>
                 </Card.Body>
               </Card>
