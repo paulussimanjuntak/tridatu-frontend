@@ -518,6 +518,13 @@ const App = ({ Component, pageProps, store }) => {
           font-weight: 500 !important;
         }
 
+        .truncate-4 {
+          -webkit-line-clamp: 4;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+        }
         .truncate-3 {
           -webkit-line-clamp: 3;
           overflow: hidden;
@@ -545,6 +552,9 @@ const App = ({ Component, pageProps, store }) => {
         }
         .va-top{
           vertical-align: top !important;
+        }
+        .ws-preline{
+          white-space: pre-line;
         }
 
         .ls-n1 {
