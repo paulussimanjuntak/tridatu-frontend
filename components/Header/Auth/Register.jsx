@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Modal, Divider } from "antd";
+import { Modal, Divider, notification } from "antd";
+import { AnimatePresence, motion } from "framer-motion";
+
+import axios from "lib/axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
@@ -7,36 +10,34 @@ import SocialLogin from "./SocialLogin";
 
 import { formRegister, formRegisterIsValid } from "formdata/formRegister";
 
-const Register = ({ show, handler, close, login }) => {
+const Register = ({ show, handler, close }) => {
+  const [loading, setLoading] = useState(false);
   const [register, setRegister] = useState(formRegister);
 
   const { username, email, password, confirm_password } = register;
 
-  const loginHandler = () => {
-    login();
-    close();
-  };
+  const closeModalHandler = () => {
+    close()
+    setRegister(formRegister)
+  }
 
   const inputChangeHandler = (e) => {
     const name = e.target.name;
     const value = e.target.value;
-
     const data = {
       ...register,
       [name]: {
         ...register[name],
-        value: value,
-        isValid: true,
-        message: null,
+        value: value, isValid: true, message: null,
       },
     };
-
     setRegister(data);
   };
 
   const submitHandler = (e) => {
     e.preventDefault();
     if(formRegisterIsValid(register, setRegister)){
+      setLoading(true);
       const data = {
         username: username.value,
         email: email.value,
@@ -44,7 +45,39 @@ const Register = ({ show, handler, close, login }) => {
         confirm_password: confirm_password.value
       }
 
-      console.log(data)
+      axios.post('/users/register', data)
+        .then(res => {
+          setLoading(false)
+          notification.success({
+            closeIcon: <i className="far fa-times" />,
+            message: 'Success',
+            description: res.data.detail,
+            placement: 'bottomRight',
+          });
+          closeModalHandler()
+        })
+        .catch(err => {
+          setLoading(false)
+          const errDetail = err.response.data.detail
+          if(typeof(errDetail) === "string"){
+            const state = JSON.parse(JSON.stringify(register));
+            state.email.value = state.email.value
+            state.email.isValid = false
+            state.email.message = errDetail
+            setRegister(state)
+          } else {
+            const state = JSON.parse(JSON.stringify(register));
+            errDetail.map(data => {
+              const key = data.loc[data.loc.length - 1]
+              if(state[key]){
+                state[key].value = state[key].value;
+                state[key].isValid = false;
+                state[key].message = data.msg;
+              }
+            })
+            setRegister(state)
+          }
+        })
     }
   };
 
@@ -55,8 +88,8 @@ const Register = ({ show, handler, close, login }) => {
         title=" "
         footer={null}
         visible={show}
-        onOk={close}
-        onCancel={close}
+        onOk={closeModalHandler}
+        onCancel={closeModalHandler}
         className="modal-login"
         zIndex="1030"
         closeIcon={<i className="fas fa-times" />}
@@ -129,7 +162,17 @@ const Register = ({ show, handler, close, login }) => {
           </div>
 
           <Button className="mt-2 btn-tridatu" block onClick={submitHandler}>
-            Daftar
+            Daftar 
+            <AnimatePresence>
+              {loading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="spinner-border spinner-border-sm ml-2" 
+                />
+              )}
+            </AnimatePresence>
           </Button>
         </Form>
 

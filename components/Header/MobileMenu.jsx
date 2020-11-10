@@ -112,7 +112,7 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth, searchQu
 
           {!isAuth && (
             <>
-              <Nav.Link onClick={login}>Login</Nav.Link>
+              <Nav.Link onClick={login}>Masuk</Nav.Link>
               <Nav.Link onClick={register}>Daftar</Nav.Link>
             </>
           )}

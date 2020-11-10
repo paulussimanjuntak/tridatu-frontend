@@ -32,8 +32,9 @@ const Products = () => {
                 rowSelection={{
                   type: 'checkbox',
                   ...rowSelection,
+                  columnWidth: '25px',
                 }}
-                scroll={{ x: 768 }}
+                scroll={{ x: '100vh'}}
                 rowClassName="va-sub" 
                 columns={productsColumns} 
                 dataSource={productsData} 

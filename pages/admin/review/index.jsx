@@ -9,19 +9,12 @@ import ModalDetailReview from 'components/Modal/Admin/DetailReview'
 
 import AddStyleAdmin from 'components/Admin/addStyle'
 import { columnsReview, dataSourceReview, dataSourceReviewNorespond, dataSourceReviewResponded } from 'data/reviewAdmin'
+import { formContentReview } from 'formdata/formReviewAdmin'
 
 const ALL = 'all'
 const NORESPOND = 'norespond'
 const RESPONDED = 'responded'
-const sortList = ['Terbaru', 'Terlama']
-
-const formContentReview = {
-  comment: null,
-  customer: { avatar: null, name: null },
-  product: { color: null, image: null, name: null, size: null, },
-  rating: 0,
-  reply: null
-}
+const sortList = ['Terbaru', 'Terlama', 'Rating Tertinggi', 'Ratting Terendah']
 
 const tableProps = {
   pagination: false,
@@ -42,7 +35,6 @@ const ReviewAdmin = () => {
 
   const onCloseModalDetailReview = () => {
     setShowDetailReview(false)
-    setContentReview(formContentReview)
   }
 
   const searchComponent = (

@@ -1,49 +1,49 @@
 import { useState } from "react";
-import { Modal, Divider, Row, Col, notification } from "antd";
+import { Modal, notification } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 
 import axios from "lib/axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-import SocialLogin from "./SocialLogin";
+import { formEmail, formEmailIsValid } from "formdata/formEmail";
 
-import { formLogin, formLoginIsValid } from "formdata/formLogin";
+const RESET = 'reset', RESEND = 'resend'
 
-const Login = ({ show, handler, close, switchToExtraAuth }) => {
+const ExtraAuth = ({ show, handler, close, type }) => {
   const [loading, setLoading] = useState(false);
-  const [login, setLogin] = useState(formLogin);
+  const [extraAuth, setExtraAuth] = useState(formEmail);
 
-  const { email, password } = login;
+  const { email } = extraAuth;
 
   const closeModalHandler = () => {
     close()
-    setLogin(formLogin)
+    setExtraAuth(formEmail)
   }
 
   const inputChangeHandler = (e) => {
     const name = e.target.name;
     const value = e.target.value;
     const data = {
-      ...login,
+      ...extraAuth,
       [name]: {
-        ...login[name],
+        ...extraAuth[name],
         value: value, isValid: true, message: null,
       },
     };
-    setLogin(data);
+    setExtraAuth(data);
   };
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (formLoginIsValid(login, setLogin)) {
+    if (formEmailIsValid(extraAuth, setExtraAuth)) {
       setLoading(true)
-      const data = {
-        email: email.value,
-        password: password.value,
-      };
+      const data = { email: email.value };
 
-      axios.post("/users/login", data)
+      let url = "/reset"
+      if(type === RESEND) url = "/users/resend-email"
+
+      axios.post(url, data)
         .then(res => {
           setLoading(false)
           notification.success({
@@ -58,13 +58,13 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
           setLoading(false)
           const errDetail = err.response.data.detail
           if(typeof(errDetail) === "string"){
-            const state = JSON.parse(JSON.stringify(login));
-            state.password.value = state.password.value
-            state.password.isValid = false
-            state.password.message = errDetail
-            setLogin(state)
+            const state = JSON.parse(JSON.stringify(extraAuth));
+            state.email.value = state.email.value
+            state.email.isValid = false
+            state.email.message = errDetail
+            setExtraAuth(state)
           } else {
-            const state = JSON.parse(JSON.stringify(login));
+            const state = JSON.parse(JSON.stringify(extraAuth));
             errDetail.map(data => {
               const key = data.loc[data.loc.length - 1]
               if(state[key]){
@@ -73,7 +73,7 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
                 state[key].message = data.msg;
               }
             })
-            setLogin(state)
+            setExtraAuth(state)
           }
         })
     }
@@ -93,17 +93,17 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
         closeIcon={<i className="fas fa-times" />}
       >
         <h4 className="fs-20-s">
-          Masuk
-          <a
-            href="#"
-            className="fs-12 float-right text-secondary pt-2"
-            onClick={handler}
-          >
-            Daftar
-          </a>
+          {type === RESET && "Atur ulang kata sandi"}
+          {type === RESEND && "Kirim ulang email verifikasi"}
         </h4>
 
-        <Form className="my-4">
+        <p className="text-muted fs-12-s">
+          Masukkan e-mail yang terdaftar. Kami akan mengirimkan
+          {type === RESET && " link untuk atur ulang kata sandi."}
+          {type === RESEND && " link verifikasi terbaru."}
+        </p>
+
+        <Form className="my-3 mb-3">
           <Form.Group>
             <Form.Label>Email</Form.Label>
             <Form.Control
@@ -116,33 +116,8 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
             {!email.isValid && ( <small className="form-text text-left text-danger mb-n1">{email.message}</small>)}
           </Form.Group>
 
-          <Form.Group>
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={password.value}
-              onChange={inputChangeHandler}
-            />
-            {!password.isValid && ( <small className="form-text text-left text-danger mb-n1">{password.message}</small>)}
-          </Form.Group>
-
-          <Row justify="space-between">
-            <Col md={12}>
-              <span className="text-dark hov_pointer" onClick={() => switchToExtraAuth("reset")}>
-                <a className="fs-12 text-reset text-muted">Lupa Password ?</a>
-              </span>
-            </Col>
-            <Col md={12} className="text-right">
-              <span className="text-dark hov_pointer" onClick={() => switchToExtraAuth("resend")}>
-                <a className="fs-12 text-reset text-muted">Kirim ulang verifikasi</a>
-              </span>
-            </Col>
-          </Row>
-
-          <Button className="mt-4 btn-tridatu" block onClick={submitHandler}>
-            Masuk
+          <Button className="mt-4 btn-tridatu mb-0" block onClick={submitHandler}>
+            Kirim
             <AnimatePresence>
               {loading && (
                 <motion.div
@@ -156,14 +131,19 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
           </Button>
         </Form>
 
-        <Divider className="mb-4" plain>
-          <span className="text-muted">atau masuk dengan</span>
-        </Divider>
+        <p className="text-muted mb-0 fs-12">
+          Belum punya akun?
+          <strong>
+            <span className="text-tridatu hover-pointer noselect" onClick={handler}>
+              {" "}
+              Daftar
+            </span>
+          </strong>
+        </p>
 
-        <SocialLogin text="Masuk" />
       </Modal>
     </>
   );
 };
 
-export default Login;
+export default ExtraAuth;
