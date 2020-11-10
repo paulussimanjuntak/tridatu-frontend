@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { Row, Col, Tooltip, Table } from 'antd'
 
@@ -7,9 +8,11 @@ import Card from 'react-bootstrap/Card'
 import { chartOptions, parseOptions } from 'components/Chart/chart-pro'
 import StatisticChart from 'components/Chart/Admin/Statistic'
 import SoldProductChart from 'components/Chart/Admin/SoldProduct'
+import ModalDetailReview from 'components/Modal/Admin/DetailReview'
 
 import { dataSourceBestProduct, columnsBestProduct } from 'data/salesAdmin'
-import { columnsReviewDashboard, dataSourceReview, dataSourceReviewNorespond, dataSourceReviewResponded } from 'data/reviewAdmin'
+import { columnsReviewDashboard, dataSourceReview } from 'data/reviewAdmin'
+import { formContentReview } from 'formdata/formReviewAdmin'
 
 const statsData = [
   { 
@@ -42,6 +45,17 @@ parseOptions(Chart, chartOptions());
 
 const Dashboard = () => {
   const router = useRouter()
+  const [showDetailReview, setShowDetailReview] = useState(false)
+  const [contentReview, setContentReview] = useState(formContentReview)
+
+  const onClickReviewRow = (record) => {
+    setContentReview(record)
+    setShowDetailReview(true)
+  }
+
+  const onCloseModalDetailReview = () => {
+    setShowDetailReview(false)
+  }
 
   return(
     <>
@@ -140,6 +154,11 @@ const Dashboard = () => {
                       size="middle" 
                       className="mt-0" 
                       rowClassName="va-top hover-pointer"
+                      onRow={(record) => {
+                        return {
+                          onClick: () => onClickReviewRow(record)
+                        }
+                      }}
                     />
                   </div>
                 </Card.Body>
@@ -149,6 +168,13 @@ const Dashboard = () => {
           </Row>
         </div>
       </section>
+
+      <ModalDetailReview 
+        show={showDetailReview}
+        close={onCloseModalDetailReview}
+        submit={onCloseModalDetailReview}
+        data={contentReview}
+      />
 
       <style jsx>{`
         @media(max-width: 767px) {

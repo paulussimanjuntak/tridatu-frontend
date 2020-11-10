@@ -7,11 +7,11 @@ export const productsColumns = [
     title: 'Nama Produk',
     dataIndex: 'product',
     key: 'product',
+    width: 200,
     render: item => (
-      <a className="text-truncate text-dark align-middle text-decoration-none">
-        <Avatar size={64} shape="square" src={item.image} />
-        <br />
-        <span className="align-middle text-wrap">{item.name}</span>
+      <a className="text-truncate text-dark text-decoration-none">
+        <Avatar size={50} shape="square" src={item.image} />
+        <span className="ml-2 text-wrap va-top">{item.name}</span>
       </a>
     ),
   },
@@ -19,12 +19,14 @@ export const productsColumns = [
     title: 'Harga',
     dataIndex: 'price',
     key: 'price',
+    width: 150,
     render: price => 'Rp.' + price,
   },
   {
     title: 'Variasi',
     dataIndex: 'variation',
     key: 'variation',
+    width: 100,
     render: items => {
       return items.map(item => {
         return item.detail.map(data => <p key={data.size}>{item.color}, {data.size}</p>)
@@ -35,6 +37,8 @@ export const productsColumns = [
     title: 'Stok' ,
     dataIndex: 'variation',
     key: 'stock',
+    align: 'center',
+    width: 100,
     render: items => {
       return items.map(item => {
         return item.detail.map(data => <p key={data.size}>{data.stock}</p>)
@@ -45,6 +49,8 @@ export const productsColumns = [
     title: 'Penjualan',
     dataIndex: 'variation',
     key: 'sales',
+    align: 'center',
+    width: 100,
     render: items => {
       return items.map(item => {
         return item.detail.map(data => <p key={data.size}>{data.sales}</p>)
@@ -54,6 +60,8 @@ export const productsColumns = [
   {
     title: 'Action',
     key: 'action',
+    align: 'center',
+    width: 130,
     render: () => (
       <Space size="small">
         <Tooltip title="Ubah">
