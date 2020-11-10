@@ -402,6 +402,14 @@ const App = ({ Component, pageProps, store }) => {
         }
         /*ANT DATE PICKER*/
 
+        /*ANT NOTIFICATION*/
+        .ant-notification{
+          margin-right: 12px;
+          bottom: 0!important;
+          z-index: 1030;
+        }
+        /*ANT NOTIFICATION*/
+
         /*SLICK-SLIDE*/
         .slick-slide {
           padding: 0px 15px;

@@ -14,6 +14,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 
 import Login from "../Header/Auth/Login";
+import ExtraAuth from "../Header/Auth/ExtraAuth";
 import Register from "../Header/Auth/Register";
 import MobileMenu from "./MobileMenu";
 
@@ -111,6 +112,8 @@ const cartMenu = (
   </Menu>
 );
 
+const formExtraAuth = { show: false, type: "" }
+
 const Header = () => {
   const router = useRouter()
   const dispatch = useDispatch()
@@ -119,19 +122,29 @@ const Header = () => {
   const [showRegister, setShowRegister] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
+  const [showExtraAuth, setShowExtraAuth] = useState(formExtraAuth)
 
   const isAuth = useSelector(state => state.auth.auth)
 
-  // LOGIN & REGISTER HANDLER
+  // LOGIN, RESET & REGISTER HANDLER
   const showLoginHandler = () => {
     setShowLogin(true)
     setShowRegister(false)
     setShowMobileMenu(false)
+    setShowExtraAuth(formExtraAuth)
   }
 
   const showRegisterHandler = () => {
     setShowRegister(true)
     setShowLogin(false)
+    setShowMobileMenu(false)
+    setShowExtraAuth(formExtraAuth)
+  }
+
+  const showExtraAuthHandler = (type) => {
+    setShowExtraAuth({show: true, type: type})
+    setShowLogin(false)
+    setShowRegister(false)
     setShowMobileMenu(false)
   }
 
@@ -139,8 +152,9 @@ const Header = () => {
     setShowLogin(false)
     setShowRegister(false)
     setShowMobileMenu(false)
+    setShowExtraAuth(formExtraAuth)
   }
-  // LOGIN & REGISTER HANDLER
+  // LOGIN, RESET & REGISTER HANDLER
   
   // MOBILE MENU HANDLER
   const showMobileMenuHandler = () => {
@@ -154,10 +168,6 @@ const Header = () => {
   }
   // MOBILE MENU HANDLER
 
-  const loginHandler = () => {
-    dispatch(actions.authSuccess())
-    setShowMobileMenu(false)
-  }
   const logoutHandler = () => {
     dispatch(actions.logout())
     setShowMobileMenu(false)
@@ -391,8 +401,26 @@ const Header = () => {
         </Container>
       </Navbar>
 
-      <Login show={showLogin} handler={showRegisterHandler} close={closeModalHandler} login={loginHandler} />
-      <Register show={showRegister} handler={showLoginHandler} close={closeModalHandler} login={loginHandler} />
+      <Login 
+        show={showLogin} 
+        handler={showRegisterHandler} 
+        close={closeModalHandler} 
+        switchToExtraAuth={showExtraAuthHandler}
+      />
+
+      <Register 
+        show={showRegister} 
+        handler={showLoginHandler} 
+        close={closeModalHandler} 
+      />
+
+      <ExtraAuth
+        type={showExtraAuth.type}
+        show={showExtraAuth.show}
+        handler={showRegisterHandler} 
+        close={closeModalHandler} 
+      />
+
       <MobileMenu 
         routes={routes}
         isAuth={isAuth}
