@@ -7,6 +7,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import SocialLogin from "./SocialLogin";
+import ErrorMessage from "components/ErrorMessage";
 
 import { formRegister, formRegisterIsValid } from "formdata/formRegister";
 
@@ -17,9 +18,9 @@ const Register = ({ show, handler, close }) => {
   const { username, email, password, confirm_password } = register;
 
   const closeModalHandler = () => {
-    close()
-    setRegister(formRegister)
-  }
+    close();
+    setRegister(formRegister);
+  };
 
   const inputChangeHandler = (e) => {
     const name = e.target.name;
@@ -28,7 +29,9 @@ const Register = ({ show, handler, close }) => {
       ...register,
       [name]: {
         ...register[name],
-        value: value, isValid: true, message: null,
+        value: value,
+        isValid: true,
+        message: null,
       },
     };
     setRegister(data);
@@ -36,48 +39,49 @@ const Register = ({ show, handler, close }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if(formRegisterIsValid(register, setRegister)){
+    if (formRegisterIsValid(register, setRegister)) {
       setLoading(true);
       const data = {
         username: username.value,
         email: email.value,
         password: password.value,
-        confirm_password: confirm_password.value
-      }
+        confirm_password: confirm_password.value,
+      };
 
-      axios.post('/users/register', data)
-        .then(res => {
-          setLoading(false)
+      axios
+        .post("/users/register", data)
+        .then((res) => {
+          setLoading(false);
           notification.success({
             closeIcon: <i className="far fa-times" />,
-            message: 'Success',
+            message: "Success",
             description: res.data.detail,
-            placement: 'bottomRight',
+            placement: "bottomRight",
           });
-          closeModalHandler()
+          closeModalHandler();
         })
-        .catch(err => {
-          setLoading(false)
-          const errDetail = err.response.data.detail
-          if(typeof(errDetail) === "string"){
+        .catch((err) => {
+          setLoading(false);
+          const errDetail = err.response.data.detail;
+          if (typeof errDetail === "string") {
             const state = JSON.parse(JSON.stringify(register));
-            state.email.value = state.email.value
-            state.email.isValid = false
-            state.email.message = errDetail
-            setRegister(state)
+            state.email.value = state.email.value;
+            state.email.isValid = false;
+            state.email.message = errDetail;
+            setRegister(state);
           } else {
             const state = JSON.parse(JSON.stringify(register));
-            errDetail.map(data => {
-              const key = data.loc[data.loc.length - 1]
-              if(state[key]){
+            errDetail.map((data) => {
+              const key = data.loc[data.loc.length - 1];
+              if (state[key]) {
                 state[key].value = state[key].value;
                 state[key].isValid = false;
                 state[key].message = data.msg;
               }
-            })
-            setRegister(state)
+            });
+            setRegister(state);
           }
-        })
+        });
     }
   };
 
@@ -88,6 +92,7 @@ const Register = ({ show, handler, close }) => {
         title=" "
         footer={null}
         visible={show}
+        maskClosable={false}
         onOk={closeModalHandler}
         onCancel={closeModalHandler}
         className="modal-login"
@@ -115,7 +120,7 @@ const Register = ({ show, handler, close }) => {
               value={username.value}
               onChange={inputChangeHandler}
             />
-            {!username.isValid && ( <small className="form-text text-left text-danger mb-n1">{username.message}</small>)}
+            <ErrorMessage item={username} />
           </Form.Group>
 
           <Form.Group>
@@ -127,7 +132,7 @@ const Register = ({ show, handler, close }) => {
               value={email.value}
               onChange={inputChangeHandler}
             />
-            {!email.isValid && ( <small className="form-text text-left text-danger mb-n1">{email.message}</small>)}
+            <ErrorMessage item={email} />
           </Form.Group>
 
           <Form.Group>
@@ -139,7 +144,7 @@ const Register = ({ show, handler, close }) => {
               value={password.value}
               onChange={inputChangeHandler}
             />
-            {!password.isValid && ( <small className="form-text text-left text-danger mb-n1">{password.message}</small>)}
+            <ErrorMessage item={password} />
           </Form.Group>
 
           <Form.Group>
@@ -151,7 +156,7 @@ const Register = ({ show, handler, close }) => {
               value={confirm_password.value}
               onChange={inputChangeHandler}
             />
-            {!confirm_password.isValid && ( <small className="form-text text-left text-danger mb-n1">{confirm_password.message}</small>)}
+            <ErrorMessage item={confirm_password} />
           </Form.Group>
 
           <div className="mt-4 text-secondary">
@@ -162,14 +167,14 @@ const Register = ({ show, handler, close }) => {
           </div>
 
           <Button className="mt-2 btn-tridatu" block onClick={submitHandler}>
-            Daftar 
+            Daftar
             <AnimatePresence>
               {loading && (
                 <motion.div
-                  initial={{ opacity: 0 }}
+                  initial={{ opacity: 1 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="spinner-border spinner-border-sm ml-2" 
+                  className="spinner-border spinner-border-sm ml-2"
                 />
               )}
             </AnimatePresence>
