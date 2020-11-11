@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 import { Divider, notification } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 
-import axios from "axios";
+import axios from "lib/axios";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 
+import ErrorMessage from "components/ErrorMessage";
+
+import { isValidForm } from "formdata/formValidation";
 import { formReset, formResetIsValid } from "formdata/formResetPassword";
 
 const ResetPassword = () => {
+  const router = useRouter();
+  const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [reset, setReset] = useState(formReset);
 
@@ -24,7 +30,9 @@ const ResetPassword = () => {
       ...reset,
       [name]: {
         ...reset[name],
-        value: value, isValid: true, message: null,
+        value: value,
+        isValid: true,
+        message: null,
       },
     };
     setReset(data);
@@ -32,30 +40,56 @@ const ResetPassword = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if(formResetIsValid(reset, setReset)){
+    if (formResetIsValid(reset, setReset) && isValidForm(reset)) {
       setLoading(true);
       const data = {
         email: email.value,
         password: password.value,
-        confirm_password: confirm_password.value
-      }
+        confirm_password: confirm_password.value,
+      };
 
-      axios.post('/reset', data)
-        .then(res => {
-          setLoading(false)
+      axios
+        .put(`/users/password-reset/${token}`, data)
+        .then((res) => {
+          setLoading(false);
+          setReset(formReset);
           notification.success({
-            closeIcon: <i className="far fa-tims" />,
-            message: 'Success',
+            closeIcon: <i className="far fa-times" />,
+            message: "Success",
             description: res.data.detail,
-            placement: 'bottomRight',
+            placement: "bottomRight",
           });
+          router.replace("/");
         })
-        .catch(err => {
-          console.log(err.response)
-          setLoading(false)
-        })
+        .catch((err) => {
+          setLoading(false);
+          const errDetail = err.response.data.detail;
+          if (typeof errDetail === "string") {
+            const state = JSON.parse(JSON.stringify(reset));
+            state.email.value = state.email.value;
+            state.email.isValid = false;
+            state.email.message = errDetail;
+            setReset(state);
+          } else {
+            const state = JSON.parse(JSON.stringify(reset));
+            errDetail.map((data) => {
+              const key = data.loc[data.loc.length - 1];
+              if (state[key]) {
+                state[key].value = state[key].value;
+                state[key].isValid = false;
+                state[key].message = data.msg;
+              }
+            });
+            setReset(state);
+          }
+        });
     }
   };
+
+  useEffect(() => {
+    const { token } = router.query;
+    setToken(token);
+  }, []);
 
   return (
     <>
@@ -65,7 +99,6 @@ const ResetPassword = () => {
             <h4>Reset Password</h4>
             <Divider />
             <Form className="my-4">
-
               <Form.Group>
                 <Form.Label>Email</Form.Label>
                 <Form.Control
@@ -75,7 +108,7 @@ const ResetPassword = () => {
                   value={email.value}
                   onChange={inputChangeHandler}
                 />
-                {!email.isValid && ( <small className="form-text text-left text-danger mb-n1">{email.message}</small>)}
+                <ErrorMessage item={email} />
               </Form.Group>
 
               <Form.Group>
@@ -87,7 +120,7 @@ const ResetPassword = () => {
                   value={password.value}
                   onChange={inputChangeHandler}
                 />
-                {!password.isValid && ( <small className="form-text text-left text-danger mb-n1">{password.message}</small>)}
+                <ErrorMessage item={password} />
               </Form.Group>
 
               <Form.Group>
@@ -99,18 +132,22 @@ const ResetPassword = () => {
                   value={confirm_password.value}
                   onChange={inputChangeHandler}
                 />
-                {!confirm_password.isValid && ( <small className="form-text text-left text-danger mb-n1">{confirm_password.message}</small>)}
+                <ErrorMessage item={confirm_password} />
               </Form.Group>
 
-              <Button className="mt-4 btn-tridatu" block onClick={submitHandler}>
+              <Button
+                className="mt-4 btn-tridatu"
+                block
+                onClick={submitHandler}
+              >
                 Ubah Password
                 <AnimatePresence>
                   {loading && (
                     <motion.div
-                      initial={{ opacity: 0 }}
+                      initial={{ opacity: 1 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="spinner-border spinner-border-sm ml-2" 
+                      className="spinner-border spinner-border-sm ml-2"
                     />
                   )}
                 </AnimatePresence>

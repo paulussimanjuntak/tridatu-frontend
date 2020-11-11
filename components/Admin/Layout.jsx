@@ -19,7 +19,7 @@ const routes = {
   pesanan: [
     {link: "/admin/sale?type=all", text: "Pesanan Saya", icon: "far fa-clipboard-list"},
   ],
-  administrasi: [
+  kategori: [
     {link: "/admin/category", text: "Kategori", icon: "far fa-sitemap"},
     {link: "/admin/category/new", text: "Tambah Kategori", icon: "far fa-folder-tree"},
   ],
@@ -35,8 +35,9 @@ const routes = {
     {link: "/admin/voucher", text: "Voucher", icon: "far fa-ticket-alt"},
     {link: "/admin/voucher/new", text: "Tambah Voucher", icon: "far fa-money-check"},
   ],
-  ulasan: [
+  administrasi: [
     {link: "/admin/review", text: "Ulasan Pembeli", icon: "far fa-smile-wink"},
+    {link: "/admin/outlet", text: "Informasi Outlet", icon: "far fa-store"},
   ],
 }
 

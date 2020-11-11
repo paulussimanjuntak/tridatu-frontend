@@ -7,8 +7,10 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import { formEmail, formEmailIsValid } from "formdata/formEmail";
+import ErrorMessage from "components/ErrorMessage";
 
-const RESET = 'reset', RESEND = 'resend'
+const RESET = "reset",
+  RESEND = "resend";
 
 const ExtraAuth = ({ show, handler, close, type }) => {
   const [loading, setLoading] = useState(false);
@@ -17,9 +19,9 @@ const ExtraAuth = ({ show, handler, close, type }) => {
   const { email } = extraAuth;
 
   const closeModalHandler = () => {
-    close()
-    setExtraAuth(formEmail)
-  }
+    close();
+    setExtraAuth(formEmail);
+  };
 
   const inputChangeHandler = (e) => {
     const name = e.target.name;
@@ -28,7 +30,9 @@ const ExtraAuth = ({ show, handler, close, type }) => {
       ...extraAuth,
       [name]: {
         ...extraAuth[name],
-        value: value, isValid: true, message: null,
+        value: value,
+        isValid: true,
+        message: null,
       },
     };
     setExtraAuth(data);
@@ -37,45 +41,46 @@ const ExtraAuth = ({ show, handler, close, type }) => {
   const submitHandler = (e) => {
     e.preventDefault();
     if (formEmailIsValid(extraAuth, setExtraAuth)) {
-      setLoading(true)
+      setLoading(true);
       const data = { email: email.value };
 
-      let url = "/reset"
-      if(type === RESEND) url = "/users/resend-email"
+      let url = "/users/password-reset/send";
+      if (type === RESEND) url = "/users/resend-email";
 
-      axios.post(url, data)
-        .then(res => {
-          setLoading(false)
+      axios
+        .post(url, data)
+        .then((res) => {
+          setLoading(false);
           notification.success({
             closeIcon: <i className="far fa-times" />,
-            message: 'Success',
+            message: "Success",
             description: res.data.detail,
-            placement: 'bottomRight',
+            placement: "bottomRight",
           });
-          closeModalHandler()
+          closeModalHandler();
         })
-        .catch(err => {
-          setLoading(false)
-          const errDetail = err.response.data.detail
-          if(typeof(errDetail) === "string"){
+        .catch((err) => {
+          setLoading(false);
+          const errDetail = err.response.data.detail;
+          if (typeof errDetail === "string") {
             const state = JSON.parse(JSON.stringify(extraAuth));
-            state.email.value = state.email.value
-            state.email.isValid = false
-            state.email.message = errDetail
-            setExtraAuth(state)
+            state.email.value = state.email.value;
+            state.email.isValid = false;
+            state.email.message = errDetail;
+            setExtraAuth(state);
           } else {
             const state = JSON.parse(JSON.stringify(extraAuth));
-            errDetail.map(data => {
-              const key = data.loc[data.loc.length - 1]
-              if(state[key]){
+            errDetail.map((data) => {
+              const key = data.loc[data.loc.length - 1];
+              if (state[key]) {
                 state[key].value = state[key].value;
                 state[key].isValid = false;
                 state[key].message = data.msg;
               }
-            })
-            setExtraAuth(state)
+            });
+            setExtraAuth(state);
           }
-        })
+        });
     }
   };
 
@@ -86,6 +91,7 @@ const ExtraAuth = ({ show, handler, close, type }) => {
         title=" "
         footer={null}
         visible={show}
+        maskClosable={false}
         onOk={closeModalHandler}
         onCancel={closeModalHandler}
         className="modal-login"
@@ -113,18 +119,22 @@ const ExtraAuth = ({ show, handler, close, type }) => {
               value={email.value}
               onChange={inputChangeHandler}
             />
-            {!email.isValid && ( <small className="form-text text-left text-danger mb-n1">{email.message}</small>)}
+            <ErrorMessage item={email} />
           </Form.Group>
 
-          <Button className="mt-4 btn-tridatu mb-0" block onClick={submitHandler}>
+          <Button
+            className="mt-4 btn-tridatu mb-0"
+            block
+            onClick={submitHandler}
+          >
             Kirim
             <AnimatePresence>
               {loading && (
                 <motion.div
-                  initial={{ opacity: 0 }}
+                  initial={{ opacity: 1 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="spinner-border spinner-border-sm ml-2" 
+                  className="spinner-border spinner-border-sm ml-2"
                 />
               )}
             </AnimatePresence>
@@ -134,13 +144,15 @@ const ExtraAuth = ({ show, handler, close, type }) => {
         <p className="text-muted mb-0 fs-12">
           Belum punya akun?
           <strong>
-            <span className="text-tridatu hover-pointer noselect" onClick={handler}>
+            <span
+              className="text-tridatu hover-pointer noselect"
+              onClick={handler}
+            >
               {" "}
               Daftar
             </span>
           </strong>
         </p>
-
       </Modal>
     </>
   );

@@ -7,6 +7,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import SocialLogin from "./SocialLogin";
+import ErrorMessage from "components/ErrorMessage";
 
 import { formLogin, formLoginIsValid } from "formdata/formLogin";
 
@@ -17,9 +18,9 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
   const { email, password } = login;
 
   const closeModalHandler = () => {
-    close()
-    setLogin(formLogin)
-  }
+    close();
+    setLogin(formLogin);
+  };
 
   const inputChangeHandler = (e) => {
     const name = e.target.name;
@@ -28,7 +29,9 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
       ...login,
       [name]: {
         ...login[name],
-        value: value, isValid: true, message: null,
+        value: value,
+        isValid: true,
+        message: null,
       },
     };
     setLogin(data);
@@ -37,45 +40,46 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
   const submitHandler = (e) => {
     e.preventDefault();
     if (formLoginIsValid(login, setLogin)) {
-      setLoading(true)
+      setLoading(true);
       const data = {
         email: email.value,
         password: password.value,
       };
 
-      axios.post("/users/login", data)
-        .then(res => {
-          setLoading(false)
+      axios
+        .post("/users/login", data)
+        .then((res) => {
+          setLoading(false);
           notification.success({
             closeIcon: <i className="far fa-times" />,
-            message: 'Success',
+            message: "Success",
             description: res.data.detail,
-            placement: 'bottomRight',
+            placement: "bottomRight",
           });
-          closeModalHandler()
+          closeModalHandler();
         })
-        .catch(err => {
-          setLoading(false)
-          const errDetail = err.response.data.detail
-          if(typeof(errDetail) === "string"){
+        .catch((err) => {
+          setLoading(false);
+          const errDetail = err.response.data.detail;
+          if (typeof errDetail === "string") {
             const state = JSON.parse(JSON.stringify(login));
-            state.password.value = state.password.value
-            state.password.isValid = false
-            state.password.message = errDetail
-            setLogin(state)
+            state.password.value = state.password.value;
+            state.password.isValid = false;
+            state.password.message = errDetail;
+            setLogin(state);
           } else {
             const state = JSON.parse(JSON.stringify(login));
-            errDetail.map(data => {
-              const key = data.loc[data.loc.length - 1]
-              if(state[key]){
+            errDetail.map((data) => {
+              const key = data.loc[data.loc.length - 1];
+              if (state[key]) {
                 state[key].value = state[key].value;
                 state[key].isValid = false;
                 state[key].message = data.msg;
               }
-            })
-            setLogin(state)
+            });
+            setLogin(state);
           }
-        })
+        });
     }
   };
 
@@ -86,6 +90,7 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
         title=" "
         footer={null}
         visible={show}
+        maskClosable={false}
         onOk={closeModalHandler}
         onCancel={closeModalHandler}
         className="modal-login"
@@ -113,7 +118,7 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
               value={email.value}
               onChange={inputChangeHandler}
             />
-            {!email.isValid && ( <small className="form-text text-left text-danger mb-n1">{email.message}</small>)}
+            <ErrorMessage item={email} />
           </Form.Group>
 
           <Form.Group>
@@ -125,18 +130,26 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
               value={password.value}
               onChange={inputChangeHandler}
             />
-            {!password.isValid && ( <small className="form-text text-left text-danger mb-n1">{password.message}</small>)}
+            <ErrorMessage item={password} />
           </Form.Group>
 
           <Row justify="space-between">
             <Col md={12}>
-              <span className="text-dark hov_pointer" onClick={() => switchToExtraAuth("reset")}>
+              <span
+                className="text-dark hov_pointer"
+                onClick={() => switchToExtraAuth("reset")}
+              >
                 <a className="fs-12 text-reset text-muted">Lupa Password ?</a>
               </span>
             </Col>
             <Col md={12} className="text-right">
-              <span className="text-dark hov_pointer" onClick={() => switchToExtraAuth("resend")}>
-                <a className="fs-12 text-reset text-muted">Kirim ulang verifikasi</a>
+              <span
+                className="text-dark hov_pointer"
+                onClick={() => switchToExtraAuth("resend")}
+              >
+                <a className="fs-12 text-reset text-muted">
+                  Kirim ulang verifikasi
+                </a>
               </span>
             </Col>
           </Row>
@@ -146,10 +159,10 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
             <AnimatePresence>
               {loading && (
                 <motion.div
-                  initial={{ opacity: 0 }}
+                  initial={{ opacity: 1 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="spinner-border spinner-border-sm ml-2" 
+                  className="spinner-border spinner-border-sm ml-2"
                 />
               )}
             </AnimatePresence>
