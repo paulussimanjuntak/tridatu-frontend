@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import Head from "next/head";
 import Layout from "components/Layout";
 
+import * as actions from "store/actions";
 import withReduxStore from "lib/with-redux-store";
 import whyDidYouRender from "@welldone-software/why-did-you-render";
 
@@ -696,9 +697,8 @@ const App = ({ Component, pageProps, store }) => {
 };
 
 App.getInitialProps = async ({ Component, ctx }) => {
-  const pageProps = Component.getInitialProps
-    ? await Component.getInitialProps(ctx)
-    : {};
+  const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
+  await ctx.store.dispatch(actions.authCheckState(ctx));
   return { pageProps };
 };
 

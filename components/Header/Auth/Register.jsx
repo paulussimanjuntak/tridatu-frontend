@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Modal, Divider, notification } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 
-import axios from "lib/axios";
+import axios, { jsonHeaderHandler } from "lib/axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
@@ -39,6 +39,7 @@ const Register = ({ show, handler, close }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
+    jsonHeaderHandler()
     if (formRegisterIsValid(register, setRegister)) {
       setLoading(true);
       const data = {

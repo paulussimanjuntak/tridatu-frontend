@@ -185,16 +185,6 @@ const MobileMenu  = ({ visible, close, register, login, logout, isAuth, searchQu
                       <a className="w-100" text={data}>{data}</a>
                     </div>
                   ))}
-                  {dummyResponse.map((data, x) => (
-                    <div className="search-result-list" key={x} onClick={onSelectSuggestionHandler}>
-                      <a className="w-100">{data}</a>
-                    </div>
-                  ))}
-                  {dummyResponse.map((data, x) => (
-                    <div className="search-result-list" key={x} onClick={onSelectSuggestionHandler}>
-                      <a className="w-100">{data}</a>
-                    </div>
-                  ))}
                 </Card.Body>
 
               </div>
