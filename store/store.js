@@ -4,7 +4,12 @@ import thunk from "redux-thunk";
 import reducers from "./reducers";
 
 const Store = (initialState) => {
-  const store = createStore(reducers, initialState, composeWithDevTools(applyMiddleware(thunk)));
+  let devtools = composeWithDevTools(applyMiddleware(thunk));
+  if(process.env.NODE_ENV === "production"){
+    devtools = applyMiddleware(thunk);
+  }
+
+  const store = createStore(reducers, initialState, devtools);
 
   if (module.hot) {
     module.hot.accept("./reducers", () => {

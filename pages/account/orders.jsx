@@ -1,3 +1,4 @@
+import { withAuth } from 'lib/withAuth'
 import { Tabs, Input, Select } from 'antd'
 
 import Col from 'react-bootstrap/Col'
@@ -129,4 +130,4 @@ const Orders = () => {
   )
 }
 
-export default Orders
+export default withAuth(Orders)

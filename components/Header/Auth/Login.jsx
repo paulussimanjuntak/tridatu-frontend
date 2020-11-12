@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Modal, Divider, Row, Col, notification } from "antd";
+import { useDispatch } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
+import { Modal, Divider, Row, Col, notification } from "antd";
 
 import axios from "lib/axios";
 import Form from "react-bootstrap/Form";
@@ -9,9 +10,11 @@ import Button from "react-bootstrap/Button";
 import SocialLogin from "./SocialLogin";
 import ErrorMessage from "components/ErrorMessage";
 
+import * as actions from "store/actions";
 import { formLogin, formLoginIsValid } from "formdata/formLogin";
 
 const Login = ({ show, handler, close, switchToExtraAuth }) => {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(formLogin);
 
@@ -50,6 +53,7 @@ const Login = ({ show, handler, close, switchToExtraAuth }) => {
         .post("/users/login", data)
         .then((res) => {
           setLoading(false);
+          dispatch(actions.getUser())
           notification.success({
             closeIcon: <i className="far fa-times" />,
             message: "Success",

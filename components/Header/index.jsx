@@ -125,6 +125,7 @@ const Header = () => {
   const [showExtraAuth, setShowExtraAuth] = useState(formExtraAuth)
 
   const isAuth = useSelector(state => state.auth.auth)
+  const user = useSelector(state => state.auth.user)
 
   // LOGIN, RESET & REGISTER HANDLER
   const showLoginHandler = () => {
@@ -378,11 +379,11 @@ const Header = () => {
 
               <span className="border-right mx-4"></span>
 
-              {isAuth ? (
+              {user ? (
                 <Dropdown overlay={() => accountMenu(logoutHandler)} placement="bottomRight">
-                  <a className="text-truncate text-dark align-middle text-decoration-none">
-                    <Avatar size="large" src="https://ecs7.tokopedia.net/img/cache/700/product-1/2019/5/18/3453155/3453155_bdfa5991-04e9-49a3-8246-34f9d270b180_1438_1438.webp" />
-                    <span className="pl-2 align-middle">Jhon Bakery Handler</span>
+                  <a className="text-truncate text-dark align-middle text-decoration-none" style={{width: 250}}>
+                    <Avatar size="large" src="/static/images/avatar/default.jpg" />
+                    <span className="pl-2 align-middle text-capitalize">{user.username}</span>
                   </a>
                 </Dropdown>
               ) : (

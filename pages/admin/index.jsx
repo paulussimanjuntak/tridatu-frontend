@@ -1,3 +1,4 @@
+import { withAuth } from 'lib/withAuth'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { Row, Col, Tooltip, Table } from 'antd'
@@ -195,4 +196,4 @@ const Dashboard = () => {
 
 Dashboard.whyDidYouRender = true;
 
-export default Dashboard
+export default withAuth(Dashboard)
