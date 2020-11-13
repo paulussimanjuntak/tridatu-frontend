@@ -197,7 +197,7 @@ const Footer = () => {
           display: inline-flex;
         }
         :global(.social > div){
-          margin-right: 10px;
+          margin-right: 10px !important;
         }
         :global(.social .social-img){
           opacity: .6;

@@ -1,6 +1,6 @@
 import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
-import { Select, Button, Upload } from 'antd'
+import { Select, Button, Upload, InputNumber, Input } from 'antd'
 
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -63,14 +63,24 @@ const Profile = () => {
 
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
                     <Form.Label>Email</Form.Label>
-                    <Form.Control type="email" placeholder="Email" />
+                    <Form.Control type="email" placeholder="email@example.com" disabled />
                   </Form.Group>
                 </Form.Row>
 
                 <Form.Row>
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
                     <Form.Label>Nomor Telepon</Form.Label>
-                    <Form.Control type="number" placeholder="Nomor Telepon" />
+                    {/*
+                    <InputNumber
+                      min={0}
+                      max={100}
+                      formatter={value => `+62${value}`}
+                      parser={value => value.replace('+62', '')}
+                      className="w-100"
+                    />
+                    */}
+                    {/* <Form.Control type="number" placeholder="Nomor Telepon" /> */}
+                    <Input addonBefore="+62" placeholder="Nomor Telepon" /> {/*Hight is not sameh*/}
                   </Form.Group>
 
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
@@ -78,6 +88,7 @@ const Profile = () => {
                     <Select className="w-100" placeholder="Pilih jenis kelamin">
                       <Select.Option value="Laki-laki">Laki-laki</Select.Option>
                       <Select.Option value="Perempuan">Perempuan</Select.Option>
+                      <Select.Option value="Lainnya">Lainnya</Select.Option>
                     </Select>
                   </Form.Group>
                 </Form.Row>

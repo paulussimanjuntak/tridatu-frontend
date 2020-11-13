@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Input, Badge, Menu, Dropdown, Avatar, Tabs, AutoComplete } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -337,10 +338,11 @@ const Header = () => {
                     value={searchQuery}
                     onSelect={onSelectSuggestionHandler}
                   >
-                    <Input.Search 
+                    <Input
                       placeholder="Search"
                       onChange={onSearchChange}
                       onPressEnter={onPressEnter}
+                      suffix={<SearchOutlined className="text-black-50"/>}
                     />
                   </AutoComplete>
                 </div>
