@@ -1,7 +1,8 @@
+import { Col, Row } from "antd";
 import Link from "next/link";
 import Image from "next/image";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import RowB from "react-bootstrap/Row";
+import ColB from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Slider from "react-slick";
@@ -24,15 +25,15 @@ const Home = () => {
   return (
     <>
       <Container className="pt-4">
-        <Row>
-          <Col lg={10} md={12}>
+        <RowB>
+          <ColB lg={10} md={12}>
             <section className="banner-section">
               <h4 className="fs-20-s">Promo</h4>
               <Slider {...bannerSettings}>
                 {banners.map((data, i) => (
-                  <Col key={i} className="px-0">
+                  <ColB key={i} className="px-0">
                     <CardBannerMemo image={data} />
-                  </Col>
+                  </ColB>
                 ))}
               </Slider>
             </section>
@@ -41,15 +42,15 @@ const Home = () => {
               <h4 className="fs-20-s mb-4">Brand</h4>
               <Slider {...brandSettings}>
                 {brandData.map((data, i) => (
-                  <Col key={i} className="px-0">
+                  <ColB key={i} className="px-0">
                     <CardBrandMemo image={data.image} name={data.name} />
-                  </Col>
+                  </ColB>
                 ))}
               </Slider>
             </section>
-          </Col>
+          </ColB>
 
-          <Col lg={2} md={12} sm={12} className="d-none d-lg-block">
+          <ColB lg={2} md={12} sm={12} className="d-none d-lg-block">
             <section className="info-store">
               <h4 className="fs-20-s info-store-title mb-3">Informasi Outlet</h4>
               <Slider {...infoStoreSettings}>
@@ -57,32 +58,31 @@ const Home = () => {
                   <div className="mb-1" key={i}>
                     <Image width={145} height={145} src={data} className="info-store-img" alt="Tridatu Bali ID" />
                   </div>
-                  // <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
                 ))}
               </Slider>
             </section>
-          </Col>
-        </Row>
+          </ColB>
+        </RowB>
 
         <section className="info-store d-block d-lg-none">
           <h4 className="fs-20-s info-store-title mb-3">Informasi Outlet</h4>
           <Slider {...infoStoreSettingsMobile}>
             {infoStores.map((data, i) => (
               <Image width={151} height={151} src={data} className="info-store-img" alt="Tridatu Bali ID" key={i} />
-              // <img src={data} className="mb-2 info-store-img" alt="Tridatu Bali ID" key={i} />
             ))}
           </Slider>
         </section>
         
         <section>
           <h4 className="fs-20-s mb-4">Paling Banyak Dilihat</h4>
-          <Row className="row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 custom-gutters">
+          <Row gutter={[16, 16]}>
             {[...Array(10)].map((_, i) => (
-              <Col key={i}>
+              <Col key={i} lg={5} md={6} sm={8} xs={12} className="modif-col">
                 <CardProductMemo />
               </Col>
             ))}
           </Row>
+
           <div className="text-center mb-5 mt-3">
             <Link href="/products" as="/products">
               <Button size="lg" className="btn-dark-tridatu-outline d-none d-lg-block mx-auto">Lihat Semua Produk</Button>
@@ -176,6 +176,14 @@ const Home = () => {
           }
           :global(.slick-prev){
             left: -10px;
+          }
+        }
+
+        @media (min-width: 992px){
+          :global(.ant-col-lg-5.modif-col){
+            display: block;
+            flex: 0 0 20%;
+            max-width: 20%;
           }
         }
       `}</style>
