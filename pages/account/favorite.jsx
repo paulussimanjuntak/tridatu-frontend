@@ -1,6 +1,6 @@
-import { Input, Select } from 'antd'
-import Col from 'react-bootstrap/Col'
-import Row from 'react-bootstrap/Row'
+import { Input, Select, Row, Col } from 'antd'
+import ColB from 'react-bootstrap/Col'
+import RowB from 'react-bootstrap/Row'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 
@@ -16,14 +16,14 @@ const Favorite = () => {
   const searchComponent = (
     <Form>
       <Form.Row>
-        <Form.Group as={Col} lg={8} md={6}>
+        <Form.Group as={ColB} lg={8} md={6}>
           <Input 
             className="account-search h-100"
             placeholder="Cari produk favoritmu" 
             prefix={<i className="far fa-search" />}
           />
         </Form.Group>
-        <Form.Group as={Col} lg={4} md={6}>
+        <Form.Group as={ColB} lg={4} md={6}>
           <Select 
             placeholder="Urutkan" 
             style={{ width: "100%"}}
@@ -49,20 +49,32 @@ const Favorite = () => {
         </Card.Header>
         <Card.Body>
           {searchComponent}
-          <Row className="row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 custom-gutters lg-screen">
+
+          <Row gutter={[10, 10]}>
             {[...Array(10)].map((_, i) => (
-              <Col key={i}>
+              <Col key={i} lg={5} md={6} sm={8} xs={12} className="modif-col">
                 <CardProductMemo />
               </Col>
             ))}
           </Row>
-          <Row className="mt-4 mt-md-2">
-            <Col className="align-self-center text-center">
+
+          <RowB className="mt-4">
+            <ColB className="align-self-center text-center">
               <Pagination />
-            </Col>
-          </Row>
+            </ColB>
+          </RowB>
         </Card.Body>
       </Card>
+
+      <style jsx>{`
+        @media (min-width: 992px){
+          :global(.ant-col-lg-5.modif-col){
+            display: block;
+            flex: 0 0 20%;
+            max-width: 20%;
+          }
+        }
+      `}</style>
     </>
   )
 }

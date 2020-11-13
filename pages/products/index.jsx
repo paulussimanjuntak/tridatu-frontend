@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { Menu, Rate, Tag, InputNumber, Checkbox, Drawer, Tabs, Select, Collapse } from 'antd';
+import { Menu, Rate, Tag, InputNumber, Checkbox, Drawer, Tabs, Select, Collapse, Col, Row } from 'antd';
 
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import RowB from "react-bootstrap/Row";
+import ColB from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
@@ -106,13 +106,13 @@ const ProductContainer = () => {
     <>
       <Container className="pt-4 pb-2">
 
-        <Row>
-          <Col className="align-self-center">
+        <RowB>
+          <ColB className="align-self-center">
             <span className="text-secondary fs-14-s">
               Hasil pencarian dari "<span className="text-dark">{router.query.q ? router.query.q : "Semua"}</span>"
             </span>
-          </Col>
-          <Col className="d-none d-lg-block">
+          </ColB>
+          <ColB className="d-none d-lg-block">
             <Form inline className="float-right">
               <Form.Label className="my-1 mr-2">
                 Urutkan:
@@ -123,14 +123,14 @@ const ProductContainer = () => {
                 ))}
               </Select>
             </Form>
-          </Col>
-        </Row>
+          </ColB>
+        </RowB>
       </Container>
       <hr />
 
       <Container className="pb-3 pt-3">
-        <Row>
-          <Col className="col-3 d-none d-lg-block ">
+        <RowB>
+          <ColB className="col-3 d-none d-lg-block ">
             <h6>Filter</h6>
             <Card className="border-0 shadow-filter">
               <Menu
@@ -216,9 +216,9 @@ const ProductContainer = () => {
 
               </Menu>
             </Card>
-          </Col> 
+          </ColB> 
 
-          <Col>
+          <ColB>
             <h4 className="mb-2 d-none d-lg-block">Produk</h4>
             {renderFilterList().length > 0 && (
               <div className="mb-3 d-none d-lg-block noselect">
@@ -228,24 +228,34 @@ const ProductContainer = () => {
               </div>
             )}
 
-            <Row className="row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 custom-gutters">
+            <Row gutter={[16, 16]}>
               {[...Array(10)].map((_, i) => (
-                <Col key={i}>
+                <Col key={i} lg={6} md={8} sm={12} xs={12}>
                   <CardProductMemo />
                 </Col>
               ))}
             </Row>
 
-            <Row className="mt-4">
-              <Col className="align-self-center text-center">
-                <Pagination />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+            {/*
+            <RowB className="row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 custom-gutters">
+              {[...Array(10)].map((_, i) => (
+                <ColB key={i}>
+                  <CardProductMemo />
+                </ColB>
+              ))}
+            </RowB>
+            */}
 
-        <Row className="fixed-bottom text-center mb-3 d-lg-none">
-          <Col>
+            <RowB className="mt-4">
+              <ColB className="align-self-center text-center">
+                <Pagination />
+              </ColB>
+            </RowB>
+          </ColB>
+        </RowB>
+
+        <RowB className="fixed-bottom text-center mb-3 d-lg-none">
+          <ColB>
             <ButtonBoot variant="dark" className="badge-pill px-3 py-2 fs-14 shadow" onClick={showDrawer}>
               {renderFilterList().length > 0 ? (
                 <Badge variant="light" className="mr-2">{renderFilterList().length}</Badge>
@@ -256,8 +266,8 @@ const ProductContainer = () => {
               )}
               Filter
             </ButtonBoot>
-          </Col>
-        </Row>
+          </ColB>
+        </RowB>
       </Container>
 
       {/*FILTER MOBILE*/}

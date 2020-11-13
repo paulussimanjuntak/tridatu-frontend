@@ -7,7 +7,7 @@ import Card from "react-bootstrap/Card";
 const CardProduct = () => {
   return (
     <>
-      <Card className="m-b-10-s m-b-10-m m-b-30-t border-0 shadow">
+      <Card className="border-0 shadow">
         <Image 
           width={270}
           height={270}
@@ -15,21 +15,14 @@ const CardProduct = () => {
           alt="Tridatu Bali"
           className="img-fit img-product"
         />
-        {/* <Card.Img */}
-        {/*   variant="top" */}
-        {/*   src="https://www.specialbrandstore.com/wp-content/uploads/2017/08/3978-rvca-zap-va_1-330x0.jpg" */}
-        {/*   alt="Tridatu Bali" */}
-        {/*   height="200" */}
-        {/*   className="img-fit" */}
-        {/* /> */}
-        <span className="card-discount">70%</span>
-        <i className="fas fa-heart card-wishlist" />
+        <span className="card-discount noselect">70%</span>
+        <i className="fas fa-heart card-wishlist hover-pointer" />
         <Link href="/products/Tshirt-Deus-Ex-Machina-02" as="/products/Tshirt-Deus-Ex-Machina-02">
           <a className="text-decoration-none text-secondary">
             <Card.Body className="p-2">
-                  <p className="fs-14 mb-2 font-weight-light text-break truncate-2">
-                    Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih, M
-                  </p>
+              <p className="fs-14 mb-2 font-weight-light text-break truncate-2">
+                Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih, M
+              </p>
               <p className="fs-12 font-weight-light mb-2">
                 <span className="text-danger">
                   <s>Rp. 150.000</s>
