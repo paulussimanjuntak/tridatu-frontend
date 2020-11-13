@@ -236,16 +236,6 @@ const ProductContainer = () => {
               ))}
             </Row>
 
-            {/*
-            <RowB className="row-cols-2 row-cols-md-3 row-cols-lg-3 row-cols-xl-4 custom-gutters">
-              {[...Array(10)].map((_, i) => (
-                <ColB key={i}>
-                  <CardProductMemo />
-                </ColB>
-              ))}
-            </RowB>
-            */}
-
             <RowB className="mt-4">
               <ColB className="align-self-center text-center">
                 <Pagination />
