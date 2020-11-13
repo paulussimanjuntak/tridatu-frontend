@@ -130,4 +130,4 @@ const Orders = () => {
   )
 }
 
-export default withAuth(Orders)
+export default Orders

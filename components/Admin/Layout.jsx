@@ -202,7 +202,7 @@ const AdminLayout = ({ children }) => {
             {Object.entries(routes).map(([key, val]) => (
               <Menu.ItemGroup 
                 key={key} 
-                className={`${collapsed && 'text-center'}`}
+                className={`${collapsed && 'text-center'} mobile-last-item`}
                 title={<span className="font-weight-bold fs-12"> {key.toUpperCase()} </span>}
               >
                 {val.map(route => (
@@ -506,6 +506,9 @@ const AdminLayout = ({ children }) => {
           }
           :global(.layout-content){
             padding: 0px;
+          }
+          :global(.mobile-last-item:last-of-type){
+            margin-bottom: 80px;
           }
         }
 
