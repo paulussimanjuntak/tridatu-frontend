@@ -3,6 +3,8 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import reducers from "./reducers";
 
+import { installInterceptors } from "lib/axios";
+
 const Store = (initialState) => {
   let devtools = composeWithDevTools(applyMiddleware(thunk));
   if(process.env.NODE_ENV === "production"){
@@ -10,6 +12,7 @@ const Store = (initialState) => {
   }
 
   const store = createStore(reducers, initialState, devtools);
+  installInterceptors(store);
 
   if (module.hot) {
     module.hot.accept("./reducers", () => {
