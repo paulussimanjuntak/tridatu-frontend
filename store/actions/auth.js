@@ -1,6 +1,7 @@
 import nookies from "nookies";
 import axios, { jsonHeaderHandler, refreshHeader } from "lib/axios";
 import * as actionType from "./actionTypes";
+import Router from "next/router";
 
 /*
  * LOGOUT
@@ -60,7 +61,8 @@ export const authCheckState = (ctx) => {
     if (csrf_access_token && csrf_refresh_token) {
       dispatch(getUser()); // when csrf_access_token && csrf_refresh_token is true it will get the user data
     } else {
-      dispatch(logout()); // if not it will logout and delete the cookies and global state
+      axios.delete("/users/delete-cookies")
+      process.browser && Router.reload()
     }
   };
 };
@@ -73,31 +75,44 @@ export const logout = () => {
     const cookies = nookies.get();
     const { csrf_access_token, csrf_refresh_token } = cookies;
 
-    if (csrf_access_token) {
-      axios
-        .delete("/users/access-revoke", jsonHeaderHandler())
+    const access_revoke = "/users/access-revoke";
+    const refresh_revoke = "/users/refresh-revoke";
+
+    if (csrf_access_token && csrf_refresh_token) {
+
+      let headerAccessConfig = { headers: { "X-CSRF-TOKEN": csrf_access_token, } };
+      let headerRefreshConfig = { headers: { "X-CSRF-TOKEN": csrf_refresh_token, } };
+
+      const req_access_revoke = axios.delete(access_revoke, headerAccessConfig);
+      const req_refresh_revoke = axios.delete(refresh_revoke, headerRefreshConfig);
+
+      return Promise.all([req_access_revoke, req_refresh_revoke])
         .then(() => {
-          nookies.destroy(null, "csrf_access_token");
+          axios.delete("/users/delete-cookies")
+          console.log("RESPONSE")
         })
-        .catch(() => {
-          nookies.destroy(null, "csrf_access_token");
-        })
-        .then(() => {
-          dispatch(authLogout());
-        });
-    }
-    if (csrf_refresh_token) {
-      axios
-        .delete("/users/refresh-revoke", refreshHeader())
-        .then(() => {
-          nookies.destroy(null, "csrf_refresh_token");
-        })
-        .catch(() => {
-          nookies.destroy(null, "csrf_refresh_token");
+        .catch((err) => {
+          axios.delete("/users/delete-cookies")
+          console.log("ERROR", err.response)
+          Promise.reject([req_access_revoke, req_refresh_revoke])
         })
         .then(() => {
-          dispatch(authLogout());
-        });
+          axios.delete("/users/delete-cookies")
+          dispatch(authLogout())
+          process.browser && Router.reload()
+        })
+    } 
+    else {
+      if(csrf_access_token){
+        axios.delete(access_revoke, jsonHeaderHandler())
+      }
+      else if(csrf_refresh_token){
+        axios.delete(refresh_revoke, refreshHeader())
+      }
+      axios.delete("/users/delete-cookies")
+      dispatch(authLogout())
+      process.browser && Router.reload()
+      console.log("FROM ACTIONS LOGOUT ELSE")
     }
   };
 };
