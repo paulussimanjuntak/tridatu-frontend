@@ -1,4 +1,3 @@
-import { withAuth } from "lib/withAuth";
 import { useState } from "react";
 import { Button, Modal, notification } from "antd";
 import { AnimatePresence, motion } from "framer-motion";
@@ -248,4 +247,4 @@ const Password = () => {
   );
 };
 
-export default withAuth(Password);
+export default Password;

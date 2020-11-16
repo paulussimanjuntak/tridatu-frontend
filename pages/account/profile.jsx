@@ -1,4 +1,3 @@
-import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
 import { Select, Button, Upload, InputNumber, Input } from 'antd'
 
@@ -80,7 +79,7 @@ const Profile = () => {
                     />
                     */}
                     {/* <Form.Control type="number" placeholder="Nomor Telepon" /> */}
-                    <Input addonBefore="+62" placeholder="Nomor Telepon" /> {/*Hight is not sameh*/}
+                    <Input addonBefore="+62" placeholder="Nomor Telepon" className="input-h-35" /> {/*Hight is not sameh*/}
                   </Form.Group>
 
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
@@ -154,6 +153,10 @@ const Profile = () => {
 
         :global(.border-right-profile){
           border-right: 1px solid #dee2e6!important;
+        }
+
+        :global(.input-h-35 .ant-input){
+          height: 35px;
         }
 
         @media only screen and (max-width: 992px){

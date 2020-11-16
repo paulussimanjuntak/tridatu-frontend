@@ -190,6 +190,10 @@ const App = ({ Component, pageProps, store }) => {
           border-color: #8c8c8c;
           box-shadow: 0 0 0 2px rgb(151 151 151 / 21%);
         }
+
+        .ant-input-group-addon{
+          border-radius: .25rem;
+        }
         /*ANT INPUT*/
 
         /*ANT CASCADER */
@@ -698,7 +702,7 @@ const App = ({ Component, pageProps, store }) => {
 
 App.getInitialProps = async ({ Component, ctx }) => {
   const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
-  await ctx.store.dispatch(actions.authCheckState(ctx));
+  //await ctx.store.dispatch(actions.authCheckState(ctx));
   return { pageProps };
 };
 

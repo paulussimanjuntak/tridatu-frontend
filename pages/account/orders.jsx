@@ -1,4 +1,3 @@
-import { withAuth } from 'lib/withAuth'
 import { Tabs, Input, Select } from 'antd'
 
 import Col from 'react-bootstrap/Col'
