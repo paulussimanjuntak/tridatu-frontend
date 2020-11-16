@@ -194,6 +194,10 @@ const App = ({ Component, pageProps, store }) => {
         .ant-input-group-addon{
           border-radius: .25rem;
         }
+
+        .ant-select-selection-search-input{
+          height: 100%!important;
+        }
         /*ANT INPUT*/
 
         /*ANT CASCADER */

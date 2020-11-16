@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Badge from 'react-bootstrap/Badge'
+import Pagination from "components/Pagination";
 
 import AddAddressModal from 'components/Modal/AddAddress'
 
@@ -92,8 +93,13 @@ const Address = () => {
               <Divider className="d-last-none" />
             </React.Fragment>
           ))}
+          
+
         </Card.Body>
 
+        <Card.Body className="text-center">
+          <Pagination />
+        </Card.Body>
       </Card>
 
       <AddAddressModal

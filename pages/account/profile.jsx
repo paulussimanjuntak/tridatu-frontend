@@ -79,7 +79,7 @@ const Profile = () => {
                     />
                     */}
                     {/* <Form.Control type="number" placeholder="Nomor Telepon" /> */}
-                    <Input addonBefore="+62" placeholder="Nomor Telepon" className="input-h-35" /> {/*Hight is not sameh*/}
+                    <Input addonBefore="+62" placeholder="Nomor Telepon" className="input-h-35" />
                   </Form.Group>
 
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
@@ -108,13 +108,13 @@ const Profile = () => {
                   onPreview={imagePreview}
                   fileList={avatarImage.value}
                   showUploadList={{showRemoveIcon: false, showPreviewIcon: true}}
-                  beforeUpload={(file) => imageValidation(file, "www.google.com", "avatar", "formHeader")}
                 >
                   {avatarImage.value.length >= 1 ? null : uploadButton(loading)}
                 </Upload>
                 <Upload
-                  onChange={onAvatarChangeHandler}
                   showUploadList={false}
+                  onChange={onAvatarChangeHandler}
+                  beforeUpload={(file) => imageValidation(file, "file", "/users/update-avatar", "put", () => setLoading())}
                 >
                   <Button>Pilih Foto</Button>
                 </Upload>
