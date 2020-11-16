@@ -1,4 +1,3 @@
-import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
 import { Select, Button, Upload, InputNumber, Input } from 'antd'
 
