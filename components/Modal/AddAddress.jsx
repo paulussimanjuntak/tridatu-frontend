@@ -1,10 +1,27 @@
-import { Button, Modal, Checkbox } from 'antd'
+import { useState, useEffect } from 'react'
+import { Button, Modal, Checkbox, Select, Input } from 'antd'
 
+import axios from 'lib/axios'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 
 const AddAddressModal = ({ show, submit, close }) => {
+  const [qAddress, setQAddress] = useState("")
+  const [addressList, setAddressList] = useState([])
+  const [postalCode, setPostalCode] = useState([])
+
+  const fetchAddress = value => {
+    if(value.length < 4) return
+
+    axios.get(`/address/search/city-or-district?q=${value}`)
+      .then(res => {
+        console.log(res.data)
+        setAddressList(res.data)
+      })
+      .catch(err => console.log(err.response))
+  }
+
   return(
     <>
       <Modal
@@ -42,19 +59,44 @@ const AddAddressModal = ({ show, submit, close }) => {
 
               <Form.Group as={Col}>
                 <Form.Label>Nomor Telepon</Form.Label>
-                <Form.Control type="number" placeholder="081234567890" />
+                <Input addonBefore="+62" placeholder="Nomor Telepon" className="input-h-35" />
               </Form.Group>
             </Form.Row>
 
             <Form.Row>
               <Form.Group as={Col} md={8} sm={12}>
                 <Form.Label>Kota atau Kecamatan</Form.Label>
-                <Form.Control type="text" placeholder="Tulis Nama Alamat / Kota / Kecamatan tujuan pengiriman" />
+                <Select
+                  showSearch
+                  labelInValue
+                  className="w-100"
+                  placeholder="Tulis Nama Alamat / Kota / Kecamatan tujuan pengiriman"
+                  onSearch={fetchAddress}
+                >
+                  {addressList.map((data, i) => (
+                    <Select.Option key={i} value={data.value}>
+                      <div onClick={() => setPostalCode(data.postal_code)}>
+                        {data.value}
+                      </div>
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Group>
 
               <Form.Group as={Col} md={4} sm={12}>
                 <Form.Label>Kode Pos</Form.Label>
-                <Form.Control type="text" placeholder="Kode Pos" />
+                <Select
+                  showSearch
+                  labelInValue
+                  className="w-100 height-100"
+                  placeholder="Kode Pos"
+                >
+                  {postalCode.map((data, i) => (
+                    <Select.Option key={i} value={data}>
+                      {data}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Group>
             </Form.Row>
 
@@ -70,6 +112,12 @@ const AddAddressModal = ({ show, submit, close }) => {
           </Form>
         </Card.Body>
       </Modal>
+
+      <style jsx>{`
+        :global(.input-h-35 .ant-input){
+          height: 35px;
+        }
+      `}</style>
     </>
   )
 }

@@ -194,6 +194,10 @@ const App = ({ Component, pageProps, store }) => {
         .ant-input-group-addon{
           border-radius: .25rem;
         }
+
+        .ant-select-selection-search-input{
+          height: 100%!important;
+        }
         /*ANT INPUT*/
 
         /*ANT CASCADER */
@@ -702,7 +706,7 @@ const App = ({ Component, pageProps, store }) => {
 
 App.getInitialProps = async ({ Component, ctx }) => {
   const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
-  // await ctx.store.dispatch(actions.authCheckState(ctx));
+  await ctx.store.dispatch(actions.authCheckState(ctx));
   return { pageProps };
 };
 
