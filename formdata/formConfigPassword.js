@@ -19,17 +19,17 @@ export const formConfigPasswordIsValid = (state, setState, isUpdate) => {
   let isGood = true
 
   if(isUpdate){
-    if(!isLength(old_password.value, { min: 6, max: undefined })){
+    if(!isLength(old_password.value, { min: 6, max: 100 })){
       isGood = false;
       old_password.isValid = false;
-      old_password.message = "ensure this value has at least 6 characters";
+      old_password.message = "ensure this value has at least 6 - 100 characters";
     }
   }
 
-  if(!isLength(password.value, { min: 6, max: undefined })){
+  if(!isLength(password.value, { min: 6, max: 100 })){
     isGood = false;
     password.isValid = false;
-    password.message = "ensure this value has at least 6 characters";
+    password.message = "ensure this value has at least 6 - 100 characters";
   }
 
   if(!isEqual(password.value, confirm_password.value)){
@@ -38,10 +38,10 @@ export const formConfigPasswordIsValid = (state, setState, isUpdate) => {
     password.message = "Password must match with confirmation.";
   }
 
-  if(!isLength(confirm_password.value, { min: 6, max: undefined })){
+  if(!isLength(confirm_password.value, { min: 6, max: 100 })){
     isGood = false;
     confirm_password.isValid = false;
-    confirm_password.message = "ensure this value has at least 6 characters";
+    confirm_password.message = "ensure this value has at least 6 - 100 characters";
   }
 
   if(isUpdate){
@@ -57,13 +57,13 @@ export const formVerifyPasswordIsValid = (state, setState) => {
   const verify_password = { ...state.verify_password }
   let isGood = true
 
-  if(!isLength(verify_password.value, { min: 6, max: undefined })){
+  if(!isLength(verify_password.value, { min: 6, max: 100 })){
     isGood = false;
     verify_password.isValid = false;
-    verify_password.message = "ensure this value has at least 6 characters";
+    verify_password.message = "ensure this value has at least 6 - 100 characters";
   }
 
-  if(!isGood) setState({ ...state, verify_password})
+  if(!isGood) setState({ ...state, verify_password })
 
   return isGood
 }

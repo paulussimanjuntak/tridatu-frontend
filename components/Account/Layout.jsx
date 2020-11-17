@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { Avatar, Drawer } from 'antd'
 
@@ -18,6 +19,8 @@ const MORE = 'more'
 const AccountLayout = ({ children, pathname }) => {
   const router = useRouter()
   const [showDrawer, setShowDrawer] = useState(false)
+
+  const user = useSelector(state => state.auth.user)
 
   const navClickHandler = e => {
     if(e !== MORE) {
@@ -46,8 +49,8 @@ const AccountLayout = ({ children, pathname }) => {
               className="flex-column col-md-2 d-none d-lg-block pl-2 fs-14"
             >
               <Nav.Link className="text-truncate text-dark align-middle text-decoration-none px-0 mb-3">
-                <Avatar size="large" src="https://www.inibaru.id/media/4608/large/normal/531b6a64-631b-4bd2-aa0b-9204707eb18d__large.jpg" />
-                <span className="pl-1 align-middle">Jhon Bakery Handler</span>
+                <Avatar size="large" src={user && `${process.env.NEXT_PUBLIC_API_URL}/static/avatars/${user.avatar}`} />
+                <span className="pl-1 align-middle">{user && user.username}</span>
               </Nav.Link>
               
               <Nav.Link eventKey={PROFILE} className="side-nav-link">

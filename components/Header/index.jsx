@@ -25,6 +25,11 @@ import * as actions from "store/actions";
 
 import { category_data } from './data'
 
+/*
+ * TODO
+ * remove isAuth on each components
+ */
+
 const routes = [
   {link: "/account/profile", text: "Akun Saya"},
   {link: "/account/orders", text: "Pesanan Saya"},
@@ -125,7 +130,6 @@ const Header = () => {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
   const [showExtraAuth, setShowExtraAuth] = useState(formExtraAuth)
 
-  const isAuth = useSelector(state => state.auth.auth)
   const user = useSelector(state => state.auth.user)
 
   // LOGIN, RESET & REGISTER HANDLER
@@ -384,7 +388,7 @@ const Header = () => {
               {user ? (
                 <Dropdown overlay={() => accountMenu(logoutHandler)} placement="bottomRight">
                   <a className="text-truncate text-dark align-middle text-decoration-none" style={{width: 250}}>
-                    <Avatar size="large" src="/static/images/avatar/default.jpg" />
+                    <Avatar size="large" src={user && `${process.env.NEXT_PUBLIC_API_URL}/static/avatars/${user.avatar}`} />
                     <span className="pl-2 align-middle text-capitalize">{user.username}</span>
                   </a>
                 </Dropdown>
@@ -426,7 +430,7 @@ const Header = () => {
 
       <MobileMenu 
         routes={routes}
-        isAuth={isAuth}
+        isAuth={false}
         visible={showMobileMenu} 
         close={closeMobileMenuHandler} 
         login={showLoginHandler} 

@@ -1,44 +1,138 @@
+import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
-import { Select, Button, Upload, InputNumber, Input } from 'antd'
+import { Select, Button, Upload, Input } from 'antd'
+import { useDispatch, useSelector } from "react-redux";
+import { LoadingOutlined } from "@ant-design/icons";
 
+import axios, { jsonHeaderHandler, resNotification, signature_exp } from 'lib/axios'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
+import * as actions from "store/actions";
+import ErrorMessage from "components/ErrorMessage";
 
+import { formImage } from 'formdata/formImage'
+import { formProfile, formProfileIsValid } from 'formdata/formProfile'
 import { uploadButton, imagePreview, imageValidation } from 'lib/imageUploader'
 
-const Profile = () => {
-  const [loading, setLoading] = useState(false)
-  const [avatar, setAvatar] = useState({
-    image: { value: [], isValid: true, message: null }
-  })
+const genderList = ['Laki-laki', 'Perempuan', 'Lainnya']
 
-  const onAvatarChangeHandler = ({file: newFile}) => {
-    const tmp = []
-    tmp.push(newFile)
-    const data = {
-      ...avatar, 
-      image: {value: tmp, isValid: true, message: null}
+const Profile = () => {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false)
+  const [loadingProfie, setLoadingProfie] = useState(false)
+  const [avatar, setAvatar] = useState(formImage)
+  const [profile, setProfile] = useState(formProfile)
+  const [oldData, setOldData] = useState(formProfile)
+
+  const user = useSelector(state => state.auth.user)
+
+  const { username, email, phone, gender } = profile;
+  const avatarImage = avatar.image;
+  const oldUsername = oldData.username.value;
+  const oldPhone = oldData.phone.value;
+  const oldGender = oldData.gender.value;
+
+  let saveDisable = (oldUsername === username.value) && (oldPhone === phone.value) && (oldGender === gender.value)
+
+  const inputChangeHandler = (e, item) => {
+    const name = !item && e.target.name;
+    const value = !item && e.target.value;
+
+    if(item){
+      const data = {
+        ...profile,
+        [item]: { ...profile[item], value: e, isValid: true, message: null }
+      }
+      setProfile(data)
     }
-    setAvatar(data)
+    else {
+      const data = {
+        ...profile,
+        [name]: { ...profile[name], value: value, isValid: true, message: null }
+      }
+      setProfile(data)
+    }
+  }
+
+  const onSubmitHandler = e => {
+    e.preventDefault()
+    if(formProfileIsValid(profile, setProfile)){
+      setLoadingProfie(true)
+      const data = {
+        username: username.value,
+        phone: "+62" + phone.value,
+        gender: gender.value
+      }
+
+      axios.put('/users/update-account', data, jsonHeaderHandler())
+        .then(res => {
+          setLoadingProfie(false)
+          resNotification("success", res.data.detail)
+          dispatch(actions.getUser())
+        })
+        .catch(err => {
+          const errDetail = err.response.data.detail;
+          if(errDetail === signature_exp){
+            axios.put('/users/update-account', data, jsonHeaderHandler())
+              .then(res => {
+                setLoadingProfie(false)
+                resNotification("success", res.data.detail)
+                dispatch(actions.getUser())
+              })
+              .catch(() => {
+                setLoadingProfie(false)
+                axios.delete("/users/delete-cookies")
+              })
+          }
+          if (typeof errDetail !== "string") {
+            setLoadingProfie(false)
+            const state = JSON.parse(JSON.stringify(profile));
+            errDetail.map((data) => {
+              const key = data.loc[data.loc.length - 1];
+              if (state[key]) {
+                state[key].value = state[key].value;
+                state[key].isValid = false;
+                state[key].message = data.msg;
+              }
+            });
+            setProfile(state);
+          } 
+          setLoadingProfie(false)
+        })
+    }
   }
 
   useEffect(() => {
-    const avatarData = {
-      image: { 
-        value: [{
-          uid: -Math.abs(Math.random()),
-          url: `https://www.inibaru.id/media/4608/large/normal/531b6a64-631b-4bd2-aa0b-9204707eb18d__large.jpg`
-        }], 
-        isValid: true, 
-        message: null 
-      },
+    if(user !== null){
+      let phone = "";
+      if(user.phone){
+        phone = user.phone.split(" ")[user.phone.split(" ").length - 1]
+        phone = phone.split("-").join("")
+      }
+      const data = {
+        ...profile,
+        username: { value: user.username, isValid: true, message: null },
+        email: { value: user.email, isValid: true, message: null },
+        phone: { value: phone, isValid: true, message: null },
+        gender: { value: user.gender, isValid: true, message: null },
+      };
+      setProfile(data)
+      setOldData(data)
+      const avatarData = {
+        image: { 
+          value: [{
+            uid: -Math.abs(Math.random()),
+            url: `${process.env.NEXT_PUBLIC_API_URL}/static/avatars/${user.avatar}`
+          }], 
+          isValid: true, 
+          message: null 
+        },
+      }
+      setAvatar(avatarData)
     }
-    setAvatar(avatarData)
-  },[])
-
-  const avatarImage = avatar.image;
+  },[user])
 
   return(
     <>
@@ -53,46 +147,63 @@ const Profile = () => {
           <Col lg={8} className="border-right-profile fs-14 order-lg-1 order-md-12 order-12">
             <Card.Body>
               <Form>
-
                 <Form.Row>
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
                     <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" placeholder="Username" />
+                    <Form.Control 
+                      type="text" 
+                      name="username" 
+                      placeholder="Username"
+                      value={username.value}
+                      onChange={e => inputChangeHandler(e)}
+                    />
+                    <ErrorMessage item={username} />
                   </Form.Group>
 
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
                     <Form.Label>Email</Form.Label>
-                    <Form.Control type="email" placeholder="email@example.com" disabled />
+                    <Form.Control 
+                      disabled 
+                      type="email" 
+                      placeholder={email.value ? email.value : "user@example.com"}
+                    />
                   </Form.Group>
                 </Form.Row>
 
                 <Form.Row>
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
                     <Form.Label>Nomor Telepon</Form.Label>
-                    {/*
-                    <InputNumber
-                      min={0}
-                      max={100}
-                      formatter={value => `+62${value}`}
-                      parser={value => value.replace('+62', '')}
-                      className="w-100"
+                    <Input 
+                      name="phone" 
+                      addonBefore="+62" 
+                      className="input-h-35" 
+                      placeholder="Nomor Telepon" 
+                      value={phone.value}
+                      onChange={e => inputChangeHandler(e)}
                     />
-                    */}
-                    {/* <Form.Control type="number" placeholder="Nomor Telepon" /> */}
-                    <Input addonBefore="+62" placeholder="Nomor Telepon" className="input-h-35" />
+                    <ErrorMessage item={phone} />
                   </Form.Group>
 
                   <Form.Group as={Col} lg={6} md={6} sm={12}>
                     <Form.Label>Jenis Kelamin</Form.Label>
-                    <Select className="w-100" placeholder="Pilih jenis kelamin">
-                      <Select.Option value="Laki-laki">Laki-laki</Select.Option>
-                      <Select.Option value="Perempuan">Perempuan</Select.Option>
-                      <Select.Option value="Lainnya">Lainnya</Select.Option>
+                    <Select 
+                      name="gender" 
+                      className="w-100" 
+                      placeholder="Pilih jenis kelamin"
+                      value={gender.value}
+                      onChange={e => inputChangeHandler(e, "gender")}
+                    >
+                      {genderList.map(gen => (
+                        <Select.Option key={gen} value={gen}>{gen}</Select.Option>
+                      ))}
                     </Select>
+                    <ErrorMessage item={gender} />
                   </Form.Group>
                 </Form.Row>
                 
-               <Button className="btn-tridatu">Simpan</Button> 
+                <Button className="btn-tridatu" onClick={onSubmitHandler} style={{ width: 80 }} disabled={saveDisable}>
+                  {loadingProfie ? <LoadingOutlined /> : "Simpan"}
+                </Button> 
 
               </Form>
             </Card.Body>
@@ -112,11 +223,13 @@ const Profile = () => {
                   {avatarImage.value.length >= 1 ? null : uploadButton(loading)}
                 </Upload>
                 <Upload
+                  accept="image/*"
                   showUploadList={false}
-                  onChange={onAvatarChangeHandler}
-                  beforeUpload={(file) => imageValidation(file, "file", "/users/update-avatar", "put", () => setLoading())}
+                  beforeUpload={(file) => imageValidation(file, "file", "/users/update-avatar", "put", setLoading, () => dispatch(actions.getUser()))}
                 >
-                  <Button>Pilih Foto</Button>
+                  <Button style={{ width: 91 }} disabled={loading}>
+                    {loading ? <LoadingOutlined /> : "Pilih Foto"}
+                  </Button>
                 </Upload>
                 <p className="fs-12 mb-0 mt-3 text-secondary mt-0">
                   Ukuran gambar: maks. 4 MB
@@ -169,4 +282,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default withAuth(Profile)

@@ -78,14 +78,12 @@ const Password = () => {
             description: res.data.detail,
             placement: "bottomRight",
           });
-          console.log("success update password => ", res.data)
         })
         .catch((err) => {
           setLoading(false);
           const errDetail = err.response.data.detail;
           const freshRequired = "Fresh token required";
           if (typeof errDetail === "string" && errDetail === freshRequired) {
-            console.log("err update password FRESS REQUIRED => ", err.response)
             setShowConfirmPassword(true);
           }
           else if (typeof errDetail === "string" && errDetail) {

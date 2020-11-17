@@ -41,7 +41,6 @@ export const getUser = () => {
     dispatch(getUserStart());
     axios.get("/users/my-user")
       .then(res => {
-        console.log("GET_USER_SUCCESS => ", res.data)
         dispatch(getUserSuccess(res.data))
       })
       .catch(err => {
@@ -49,7 +48,6 @@ export const getUser = () => {
         if(err.response.data.detail == signature_exp){
           axios.get("/users/my-user")
             .then(res => {
-              console.log("2 x GET_USER_SUCCESS => ", res.data)
               dispatch(getUserSuccess(res.data))
             })
             .catch(() => {
@@ -57,7 +55,6 @@ export const getUser = () => {
               dispatch(getUserFail())
             })
         }
-        console.log("GET_USER_FAIL => ", err.response)
         dispatch(getUserFail())
       })
   };
@@ -102,11 +99,9 @@ export const logout = () => {
       return Promise.all([req_access_revoke, req_refresh_revoke])
         .then(() => {
           axios.delete("/users/delete-cookies")
-          console.log("RESPONSE")
         })
-        .catch((err) => {
+        .catch(() => {
           axios.delete("/users/delete-cookies")
-          console.log("ERROR", err.response)
           Promise.reject([req_access_revoke, req_refresh_revoke])
         })
         .then(() => {
@@ -125,7 +120,6 @@ export const logout = () => {
       axios.delete("/users/delete-cookies")
       dispatch(authLogout())
       process.browser && Router.reload()
-      console.log("FROM ACTIONS LOGOUT ELSE")
     }
   };
 };

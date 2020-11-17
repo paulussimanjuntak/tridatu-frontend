@@ -20,10 +20,10 @@ export const formResetIsValid = (state, setState) => {
     email.message = "value is not a valid email address";
   }
 
-  if(!isLength(password.value, { min: 6, max: undefined })){
+  if(!isLength(password.value, { min: 6, max: 100 })){
     isGood = false;
     password.isValid = false;
-    password.message = "ensure this value has at least 6 characters";
+    password.message = "ensure this value has at least 6 - 100 characters";
   }
 
   if(!isEqual(password.value, confirm_password.value)){
@@ -32,10 +32,10 @@ export const formResetIsValid = (state, setState) => {
     password.message = "Password must match with confirmation.";
   }
 
-  if(!isLength(confirm_password.value, { min: 6, max: undefined })){
+  if(!isLength(confirm_password.value, { min: 6, max: 100 })){
     isGood = false;
     confirm_password.isValid = false;
-    confirm_password.message = "ensure this value has at least 6 characters";
+    confirm_password.message = "ensure this value has at least 6 - 100 characters";
   }
 
   if(!isGood) setState({ ...state, email, password, confirm_password })
