@@ -1,9 +1,11 @@
-import { withAuth } from "lib/withAuth";
+// import { withAuth } from "lib/withAuth";
 import { useState } from "react";
-import { Button, Modal, notification } from "antd";
+import { Button, Modal } from "antd";
+import { useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
+import { LoadingOutlined } from "@ant-design/icons";
 
-import axios, { jsonHeaderHandler } from "lib/axios";
+import axios, { jsonHeaderHandler, resNotification, signature_exp } from "lib/axios";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -13,11 +15,14 @@ import ErrorMessage from "components/ErrorMessage";
 import { formConfigPassword, formVerifyPassword, formConfigPasswordIsValid, formVerifyPasswordIsValid } from "formdata/formConfigPassword";
 
 const Password = () => {
-  const isUpdate = true;
   const [loading, setLoading] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formPassword, setFormPassword] = useState(formConfigPassword);
   const [verifyPassword, setVerifyPassword] = useState(formVerifyPassword);
+
+  const user = useSelector(state => state.auth.user)
+
+  const isUpdate = user !== null ? user.password : false;
 
   const { old_password, password, confirm_password } = formPassword;
   const { verify_password } = verifyPassword;
@@ -52,9 +57,8 @@ const Password = () => {
   }
 
   const submitHandler = (e) => {
-    e.preventDefault();
-    // if (formConfigPasswordIsValid(formPassword, setFormPassword, isUpdate)) {
-    if (true) {
+    e.persist()
+    if (formConfigPasswordIsValid(formPassword, setFormPassword, isUpdate)) {
       setLoading(true);
       let url = "/users/add-password";
       let method = "post";
@@ -73,12 +77,7 @@ const Password = () => {
         .then((res) => {
           setLoading(false);
           setFormPassword(formConfigPassword)
-          notification.success({
-            closeIcon: <i className="far fa-times" />,
-            message: "Success",
-            description: res.data.detail,
-            placement: "bottomRight",
-          });
+          resNotification("success", res.data.detail)
         })
         .catch((err) => {
           setLoading(false);
@@ -117,11 +116,53 @@ const Password = () => {
   };
 
   const submitVerifyPassword = (e) => {
-    e.preventDefault();
+    e.persist()
     if (formVerifyPasswordIsValid(verifyPassword, setVerifyPassword)){
+      setLoading(true);
       const data = {
         password: verify_password.value
       }
+
+      axios.post("/users/fresh-token", data, jsonHeaderHandler())
+        .then(() => {
+          submitHandler(e)
+          setLoading(true);
+          setShowConfirmPassword(false)
+          setVerifyPassword(formVerifyPassword)
+        })
+        .catch(err => {
+          const errDetail = err.response.data.detail;
+          if (typeof errDetail === "string" && errDetail === signature_exp) {
+            axios.post("/users/fresh-token", data, jsonHeaderHandler())
+              .then(() => {
+                submitHandler(e)
+                setLoading(true);
+                setShowConfirmPassword(false);
+                setVerifyPassword(formVerifyPassword)
+              })
+          }
+          if (typeof errDetail === "string" && errDetail !== signature_exp) {
+            setLoading(false);
+            const state = JSON.parse(JSON.stringify(verifyPassword));
+            state.verify_password.value = state.verify_password.value;
+            state.verify_password.isValid = false;
+            state.verify_password.message = errDetail;
+            setVerifyPassword(state);
+          } 
+          if (typeof errDetail !== "string") {
+            setLoading(false);
+            const state = JSON.parse(JSON.stringify(verifyPassword));
+            errDetail.map((data) => {
+              let key = data.loc[data.loc.length - 1] === "password" ? "verify_password" : "verify_password";
+              if (state[key]) {
+                state[key].value = state[key].value;
+                state[key].isValid = false;
+                state[key].message = data.msg;
+              }
+            });
+            setVerifyPassword(state);
+          }
+        })
     }
   }
 
@@ -181,18 +222,8 @@ const Password = () => {
               </Form.Group>
             </Form.Row>
 
-            <Button className="btn-tridatu" onClick={submitHandler}>
-              Simpan 
-              <AnimatePresence>
-                {loading && (
-                  <motion.div
-                    initial={{ opacity: 1 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="spinner-border spinner-border-sm ml-2"
-                  />
-                )}
-              </AnimatePresence>
+            <Button className="btn-tridatu" onClick={submitHandler} style={{ width: 80 }}>
+              {!showConfirmPassword && loading ? <LoadingOutlined /> : "Simpan"}
             </Button>
           </Form>
         </Card.Body>
@@ -237,7 +268,7 @@ const Password = () => {
             block
             onClick={submitVerifyPassword}
           >
-            Konfirmasi Password
+            {showConfirmPassword && loading ? <LoadingOutlined /> : "Konfirmasi Password"}
           </Button>
         </Form>
 
@@ -246,4 +277,4 @@ const Password = () => {
   );
 };
 
-export default withAuth(Password);
+export default Password;
