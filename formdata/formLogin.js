@@ -17,10 +17,10 @@ export const formLoginIsValid = (state, setState) => {
     email.message = "value is not a valid email address";
   }
 
-  if(!isLength(password.value, { min: 6, max: undefined })){
+  if(!isLength(password.value, { min: 6, max: 100 })){
     isGood = false;
     password.isValid = false;
-    password.message = "ensure this value has at least 6 characters";
+    password.message = "ensure this value has at least 6 - 100 characters";
   }
 
   if(!isGood) setState({ ...state, email, password })

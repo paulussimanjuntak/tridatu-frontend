@@ -16,10 +16,10 @@ export const formRegisterIsValid = (state, setState) => {
   const confirm_password = { ...state.confirm_password }
   let isGood = true
 
-  if(!isLength(username.value, { min: 3, max: undefined })){
+  if(!isLength(username.value, { min: 3, max: 100 })){
     isGood = false;
     username.isValid = false;
-    username.message = "ensure this value has at least 3 characters";
+    username.message = "ensure this value has at least 3 - 100 characters";
   }
 
   if(!isEmail(email.value)){
@@ -28,10 +28,10 @@ export const formRegisterIsValid = (state, setState) => {
     email.message = "value is not a valid email address";
   }
 
-  if(!isLength(password.value, { min: 6, max: undefined })){
+  if(!isLength(password.value, { min: 6, max: 100 })){
     isGood = false;
     password.isValid = false;
-    password.message = "ensure this value has at least 6 characters";
+    password.message = "ensure this value has at least 6 - 100 characters";
   }
 
   if(!isEqual(password.value, confirm_password.value)){
@@ -40,10 +40,10 @@ export const formRegisterIsValid = (state, setState) => {
     password.message = "Password must match with confirmation.";
   }
 
-  if(!isLength(confirm_password.value, { min: 6, max: undefined })){
+  if(!isLength(confirm_password.value, { min: 6, max: 100 })){
     isGood = false;
     confirm_password.isValid = false;
-    confirm_password.message = "ensure this value has at least 6 characters";
+    confirm_password.message = "ensure this value has at least 6 - 100 characters";
   }
 
   if(!isGood) setState({ ...state, username, email, password, confirm_password })
