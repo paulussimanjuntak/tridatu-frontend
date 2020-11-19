@@ -1,4 +1,3 @@
-import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Tabs, Table, Input, Select } from 'antd'
@@ -102,4 +101,4 @@ const Sales = () => {
 
 Sales.whyDidYouRender = true;
 
-export default withAuth(Sales)
+export default Sales
