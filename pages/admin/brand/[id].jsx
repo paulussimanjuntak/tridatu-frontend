@@ -79,7 +79,6 @@ const EditBrand = ({ brandData }) => {
           dispatch(actions.getBrand())
         })
         .catch(err => {
-          console.log(err.response)
           const errDetail = err.response.data.detail;
           const errName = "The name has already been taken."
           if(errDetail == signature_exp){
@@ -228,7 +227,6 @@ EditBrand.getInitialProps = async ctx => {
       }
     } 
     catch (err) {
-      console.log("Brand data", err.response.status)
       if(err.response.status == 404){
         if(process.browser){
           Router.replace(brandUrl, brandUrl)
