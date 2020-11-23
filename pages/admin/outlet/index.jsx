@@ -1,8 +1,8 @@
 import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { Form, Upload, Row, Col } from 'antd'
-import { AnimatePresence } from 'framer-motion'
+import { Form, Upload, Row, Col, Empty } from 'antd'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import Card from 'react-bootstrap/Card'
 
@@ -79,15 +79,26 @@ const OutletInformation = () => {
 
       <section className="outlet-section">
         <h5 className="fs-16-s">Daftar Outlet</h5>
-        <Row gutter={[16, 16]}>
-          <AnimatePresence>
-            {outlets.map(data => (
-              <Col xl={4} lg={6} md={8} sm={8} xs={12} key={data.id}>
-                <CardOutlet data={data} deleteHandler={() => deleteOutletHandler(data.id)} />
-              </Col>
-            ))}
-          </AnimatePresence>
-        </Row>
+        {outlets && outlets.length > 0 ? (
+          <Row gutter={[16, 16]}>
+            <AnimatePresence>
+              {outlets.map(data => (
+                <Col xl={4} lg={6} md={8} sm={8} xs={12} key={data.id}>
+                  <CardOutlet data={data} deleteHandler={() => deleteOutletHandler(data.id)} />
+                </Col>
+              ))}
+            </AnimatePresence>
+          </Row>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: ".2" }}
+          >
+            <Empty className="my-5" description={<span className="text-secondary">Kamu belum memiliki outlet</span>} /> 
+          </motion.div>
+        )}
       </section>
 
       <style jsx>{`
