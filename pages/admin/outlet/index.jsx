@@ -22,7 +22,7 @@ const OutletInformation = () => {
 
   const outlets = useSelector(state => state.outlet.outlet)
 
-  const { image } = imageList
+  const { file } = imageList
 
   const deleteOutletHandler = id => {
     axios.delete(`/outlets/delete/${id}`, jsonHeaderHandler())
@@ -61,10 +61,10 @@ const OutletInformation = () => {
                 accept="image/*"
                 listType="picture-card"
                 className="avatar-uploader"
-                fileList={image.value}
+                fileList={file.value}
                 beforeUpload={(file) => imageValidation(file, "file", "/outlets/create", "post", setLoading, () => dispatch(actions.getOutlet()))}
               >
-                {image.value.length >= 1 ? null : uploadButton(loading)}
+                {file.value.length >= 1 ? null : uploadButton(loading)}
               </Upload>
             </Form.Item>
 
