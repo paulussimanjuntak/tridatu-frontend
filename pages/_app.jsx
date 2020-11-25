@@ -625,6 +625,14 @@ const App = ({ Component, pageProps, store }) => {
           border-top: 5px solid rgb(243, 244, 245);
         }
 
+        .h-33{
+          height: 33px;
+        }
+
+        .h-35{
+          height: 35px;
+        }
+
         .min-h-100 {
           min-height: 100% !important;
         }
