@@ -59,6 +59,25 @@ const getItemSubCategoriesFail = (error) => {
   }
 }
 
+/* ALL CATEGORIES */
+const getAllCategoriesStart = () => {
+  return { type: actionType.GET_ALLCATEGORIES_START };
+};
+
+export const getAllCategoriesSuccess = (allCategories) => {
+  return {
+    type: actionType.GET_ALLCATEGORIES_SUCCESS,
+    allCategories: allCategories,
+  };
+};
+
+const getAllCategoriesFail = (error) => {
+  return {
+    type: actionType.GET_ALLCATEGORIES_FAIL,
+    error: error
+  }
+}
+
 export const getCategories = (with_sub) => {
   return dispatch => {
     dispatch(getCategoriesStart())
@@ -98,3 +117,15 @@ export const getItemSubCategories = () => {
   }
 }
 
+export const getAllCategories = () => {
+  return dispatch => {
+    dispatch(getAllCategoriesStart())
+    axios.get(`/categories/`)
+      .then(res => {
+        dispatch(getAllCategoriesSuccess(res.data))
+      })
+      .catch(err => {
+        dispatch(getAllCategoriesFail(err.response))
+      })
+  }
+}

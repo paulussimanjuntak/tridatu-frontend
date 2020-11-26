@@ -21,6 +21,7 @@ const AddCategory = () => {
   const dispatch = useDispatch()
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState(CATEGORIES)
   const [categories, setCategories] = useState(formCategories)
   const [subCategories, setSubCategories] = useState(formSubCategories)
   const [itemSubCategories, setItemSubCategories] = useState(formItemSubCategories)
@@ -243,6 +244,10 @@ const AddCategory = () => {
   const resetCategoriesData = () => {
     dispatch(actions.getCategoriesSuccess([]))
   }
+  const onTabClick = key => {
+    resetCategoriesData()
+    setActiveTab(key)
+  }
 
   const cancelHandler = (initialState, setState) => {
     setState(initialState)
@@ -252,7 +257,7 @@ const AddCategory = () => {
     <>
       <Card className="border-0 shadow-none card-add-product">
         <Card.Body className="p-3 border-bottom">
-          <Tabs className="order-tabs noselect">
+          <Tabs className="order-tabs noselect" activeKey={activeTab} onTabClick={onTabClick}>
 
             <Tabs.TabPane tab="Tambah Kategori" key={CATEGORIES}>
               <Form form={form} layout="vertical">

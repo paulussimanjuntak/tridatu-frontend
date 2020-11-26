@@ -5,6 +5,7 @@ const initialState = {
   categories: [],
   subcategories: [],
   itemsubcategories: [],
+  allCategories: [],
   loading: false,
   error: null,
 };
@@ -75,6 +76,28 @@ const getItemSubCategoriesFail = (state, action) => {
   });
 };
 
+/* ALL CATEGORIES */
+const getAllCategoriesStart = (state, _) => {
+  return updateObject(state, {
+    error: null,
+    loading: true,
+  });
+};
+
+const getAllCategoriesSuccess = (state, action) => {
+  return updateObject(state, {
+    allCategories: action.allCategories,
+    loading: false,
+  });
+};
+
+const getAllCategoriesFail = (state, action) => {
+  return updateObject(state, {
+    error: action.error,
+    loading: false,
+  });
+};
+
 const reducer = (state = initialState, action) => {
   switch(action.type){
     /* CATEGORIES */
@@ -100,6 +123,14 @@ const reducer = (state = initialState, action) => {
       return getItemSubCategoriesSuccess(state, action)
     case actionType.GET_ITEMSUBCATEGORIES_FAIL:
       return getItemSubCategoriesFail(state, action)
+
+    /* ALL CATEGORIES */
+    case actionType.GET_ALLCATEGORIES_START:
+      return getAllCategoriesStart(state, action)
+    case actionType.GET_ALLCATEGORIES_SUCCESS:
+      return getAllCategoriesSuccess(state, action)
+    case actionType.GET_ALLCATEGORIES_FAIL:
+      return getAllCategoriesFail(state, action)
 
     default:
       return state

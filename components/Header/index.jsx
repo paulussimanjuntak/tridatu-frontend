@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Input, Badge, Menu, Dropdown, Avatar, Tabs, AutoComplete } from "antd";
+import { Input, Badge, Menu, Dropdown, Avatar, Tabs, AutoComplete, Empty } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 import Link from "next/link";
@@ -223,6 +223,9 @@ const Header = () => {
     >
       <Menu.Item key="1" className="category-item-navbar">
         <Container>
+          {allCategories.length == 0 && (
+            <Empty className="my-5" description={<span className="text-secondary">Kategori tidak tersedia</span>} />
+          )}
           <Tabs 
             tabBarGutter={10}
             tabPosition="left" 

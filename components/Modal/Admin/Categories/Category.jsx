@@ -105,7 +105,7 @@ const EditCategory = ({ show, close, currentCategory }) => {
           </Button>,
         ]}
       >
-        <Card className="border-0 comment-card">
+        <Card className="border-0">
           <Form form={form} layout="vertical">
             <Form.Item label="Nama Kategori" required>
               <Input 
@@ -120,24 +120,6 @@ const EditCategory = ({ show, close, currentCategory }) => {
         </Card>
       </Modal>
 
-      <style jsx>{`
-        .title-detail-review{
-          font-size: 12px;
-          font-weight: 500;
-          color: rgba(0, 0, 0, 0.54);
-          margin-bottom 5px;
-        }
-        :global(.comment-card){
-          height: 100%;
-          overflow: scroll;
-          max-height: 110px;
-          white-space: pre-line;
-          margin-bottom: 15px;
-        }
-        :global(.comment-card:last-of-type){
-          margin-bottom: 0px;
-        }
-      `}</style>
     </>
   )
 }
