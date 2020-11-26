@@ -415,7 +415,7 @@ const App = ({ Component, pageProps, store }) => {
         .ant-notification{
           margin-right: 12px;
           bottom: 0!important;
-          z-index: 1030;
+          z-index: 3030;
         }
         /*ANT NOTIFICATION*/
 

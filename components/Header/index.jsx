@@ -23,13 +23,6 @@ import CartItem from 'components/Cart/CartItemNavbar'
 
 import * as actions from "store/actions";
 
-import { category_data } from './data'
-
-/*
- * TODO
- * remove isAuth on each components
- */
-
 const routes = [
   {link: "/account/profile", text: "Akun Saya"},
   {link: "/account/orders", text: "Pesanan Saya"},
@@ -131,6 +124,7 @@ const Header = () => {
   const [showExtraAuth, setShowExtraAuth] = useState(formExtraAuth)
 
   const user = useSelector(state => state.auth.user)
+  const allCategories = useSelector(state => state.categories.allCategories)
 
   // LOGIN, RESET & REGISTER HANDLER
   const showLoginHandler = () => {
@@ -216,6 +210,10 @@ const Header = () => {
     }
   },[router.query.q])
 
+  useEffect(() => {
+    dispatch(actions.getAllCategories())
+  },[])
+
   const categoryMenu = (
     <Menu
       className="d-none d-lg-block"
@@ -231,16 +229,16 @@ const Header = () => {
             defaultActiveKey="1" 
             className="category-item-navbar-tabs-left noselect"
           >
-            {category_data.map(data => (
-              <Tabs.TabPane tab={data.category} key={data.category}>
+            {allCategories.map(category => (
+              <Tabs.TabPane tab={category.name_category} key={category.id_category}>
                 <div className="westeros-c-column-container">
-                  {data.sub.map(child => (
-                    <div className="westeros-c-column-container_item text-truncate" key={child.title}>
-                      <b className="fs-14">{child.title}</b>
-                      {child.child.map((dataChild,i) => (
-                        <p className="mb-0 text-truncate item-sub-category" key={i}>
+                  {category.sub_categories.map(sub => (
+                    <div className="westeros-c-column-container_item text-truncate" key={sub.id_sub_category}>
+                      <b className="fs-14">{sub.name_sub_category}</b>
+                      {sub.item_sub_categories.map(item => (
+                        <p className="m-b-3 text-truncate item-sub-category" key={item.id_item_sub_category}>
                           <Link href="/products" as="/products">
-                            <a className="text-reset"> {dataChild} </a>
+                            <a className="text-reset"> {item.name_item_sub_category} </a>
                           </Link>
                         </p>
                       ))}
@@ -430,7 +428,6 @@ const Header = () => {
 
       <MobileMenu 
         routes={routes}
-        isAuth={false}
         visible={showMobileMenu} 
         close={closeMobileMenuHandler} 
         login={showLoginHandler} 
