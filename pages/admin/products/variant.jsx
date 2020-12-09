@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Table, Input, Form } from 'antd';
+import { Table, Input, Form, InputNumber, Row, Col } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons'
 
 import Card from 'react-bootstrap/Card'
@@ -7,9 +7,17 @@ import Media from 'react-bootstrap/Media'
 import ButtonColor from "antd-button-color"
 import isIn from 'validator/lib/isIn'
 import isEmpty from 'validator/lib/isEmpty'
+import isLength from 'validator/lib/isLength'
 const formItemLayout = { wrapperCol: { xs: { span: 24 }, sm: { span: 24 }, md: { span: 18 }, lg: { span: 14 }, xl: { span: 12 }, }, };
 
 const FormError = ({ children }) => <small className="form-text text-left text-danger mb-0">{children}</small>
+
+/*
+ * TODO:
+ * Remove variant ✅
+ * Update all table value ✅
+ * Remove variant group ✅
+ */
 
 const createNewArr = (data) => {
   return data
@@ -61,22 +69,19 @@ const initCol = [
   },
 ]
 
-const additional = {
-  price: 0,
-  stock: 0
-}
-
+const additional = { price: 0, stock: 0, code: "" }
 
 const TableVariant = () => {
   const [count, setCount] = useState(0)
-  const [totalVariant, setTotalVariant] = useState({ va1: 1, va2: 1 })
   const [columns, setColumns] = useState(initCol)
   const [dataSource, setDataSource] = useState([])
+  // const [totalVariant, setTotalVariant] = useState({ va1: 1, va2: 1 })
   const [vaOption, setVaOption] = useState({ va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 })
   const [isActiveVariation, setIsActiveVariation] = useState({ active: false, countVariation: 0 })
+  const [infoVariant, setInfoVariant] = useState(additional)
 
   const { countVariation } = isActiveVariation
-  const { va1, va2 } = totalVariant
+  // const { va1, va2 } = totalVariant
   const { va1Option, va2Option, va1Total, va2Total } = vaOption
 
   const checkDuplicate = (value, option) => {
@@ -103,11 +108,18 @@ const TableVariant = () => {
     const option = (e.prefixName || e.__INTERNAL__.name)
     let variant = "Pilihan"
     if(option === "head_title") variant = "Nama"
+
+    const validate = value => {
+      if(isEmpty(value || "", { ignore_whitespace:true })) return Promise.reject(<FormError>{variant} tidak boleh kosong.</FormError>)
+      if(!checkDuplicate(value, option)) return Promise.reject(<FormError>{variant} tidak boleh sama.</FormError>)
+      if(!isLength(value || "", { min: 1, max: 20 })) return Promise.reject(<FormError>{variant} minimal 1 - 20 karakter.</FormError>)
+      if(checkDuplicate(value, option)) return Promise.resolve()
+    }
+
     return ({
       required: true,
       whitespace: true,
-      validator: (_, value) => isEmpty(value || "", { ignore_whitespace:true }) ?  Promise.reject(<FormError>{variant} tidak boleh kosong.</FormError>) : 
-                               checkDuplicate(value, option) ?  Promise.resolve() : Promise.reject(<FormError>{variant} tidak boleh sama.</FormError>),
+      validator: (_, value) => validate(value) 
     })
   }
 
@@ -121,7 +133,7 @@ const TableVariant = () => {
         va1Total: va1Total + 1
       }
       setVaOption(data)
-      setTotalVariant({...totalVariant, va1: va1+1})
+      // setTotalVariant({...totalVariant, va1: va1+1})
     }
     if(variant == 2){
       const data = {
@@ -130,7 +142,7 @@ const TableVariant = () => {
         va2Total: va2Total + 1
       }
       setVaOption(data)
-      setTotalVariant({...totalVariant, va2: va2+1})
+      // setTotalVariant({...totalVariant, va2: va2+1})
     }
   }
 
@@ -210,7 +222,7 @@ const TableVariant = () => {
         va2Total: 0,
       }
 
-      setVaOption(data)
+      setVaOption(data);
       setColumns(oldColumns);
     }
 
@@ -223,8 +235,64 @@ const TableVariant = () => {
         delete obj.render
         return obj
       })
-      setVaOption({ ...vaOption, va2Option: [], va2Total: 0 })
+      setVaOption({ ...vaOption, va2Option: [], va2Total: 0 });
       setColumns(oldColumns);
+    }
+  }
+
+  const deleteVariantHandler = (variant, index) => {
+    const data = {
+      ...vaOption,
+      [`va${variant}Option`]: vaOption[`va${variant}Option`].filter((_, i) => i !== index),
+      [`va${variant}Total`]: vaOption[`va${variant}Total`] - 1
+    }
+    setVaOption(data)
+  }
+
+  const infoVariantChange = (e, item) => {
+    const name = !item && e.target.name;
+    const value = !item && e.target.value;
+
+    if(item){
+      const data = {
+        ...infoVariant,
+        [item]: e
+      }
+      setInfoVariant(data)
+    }
+    else{
+      const data = {
+        ...infoVariant,
+        [name]: value
+      }
+      setInfoVariant(data)
+    }
+  }
+
+  const setInfoVariantHandler = () => {
+    let oldVa1 = [...va1Option]
+    let oldVa2 = [...va2Option]
+
+    const { price, stock, code } = infoVariant
+
+    if(countVariation == 1) {
+      oldVa1.map(obj => {
+        if(price) obj.price = price
+        if(stock) obj.stock = stock
+        if(code) obj.code = code
+        return obj
+      })
+      setVaOption({ ...vaOption, va1Option: oldVa1 })
+    }
+
+    if(countVariation == 2) {
+      oldVa2.map(obj => {
+        if(price) obj.price = price
+        if(stock) obj.stock = stock
+        if(code) obj.code = code
+        return obj
+      })
+      setVaOption({ ...vaOption, va2Option: oldVa2 })
     }
   }
 
@@ -240,7 +308,9 @@ const TableVariant = () => {
             va2_key: +key2,
             va1_option: val1.va1_option ? val1.va1_option : `Pilihan ${+key1+1}`,
             va2_option: val2.va2_option ? val2.va2_option : `Pilihan ${+key2+1}`,
-            ...additional
+            price: val2.price,
+            stock: val2.stock,
+            code: val2.code
           })
         }
       }
@@ -248,7 +318,9 @@ const TableVariant = () => {
         variant_tmp.push({
           key: val1.key ? val1.key+1+key1 : 1+key1,
           va1_option: val1.va1_option ? val1.va1_option : `Pilihan ${+key1+1}`,
-          ...additional
+          price: val1.price,
+          stock: val1.stock,
+          code: val1.code
         })
       }
       for(let item of variant_tmp){
@@ -264,7 +336,13 @@ const TableVariant = () => {
         <Card.Body className="p-3">
 
           {[...Array(countVariation)].map((_, i) => (
-            <Card.Body className="p-3 bg-light" key={i}>
+            <React.Fragment key={i}>
+            <Card.Header className="bg-light border-0 pb-0 text-right">
+              <span className="hover-pointer text-dark" onClick={() => deleteGroupVariantsHandler(i+1)}>
+                <i className="far fa-times" />
+              </span>
+            </Card.Header>
+            <Card.Body className="px-3 pb-3 pt-0 bg-light">
               <p className="fs-14 mb-2">Variasi {i+1}</p>
               <Form layout="vertical" {...formItemLayout} name="head_title">
                 <Form.Item 
@@ -304,7 +382,7 @@ const TableVariant = () => {
                       <Media.Body> 
                         {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
                         {va1Total > 1 ? (
-                          <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" />
+                          <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
                         ) : null}
                       </Media.Body> 
                     </Media>
@@ -325,7 +403,7 @@ const TableVariant = () => {
                       <Media.Body> 
                         {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
                         {va2Total > 1 ? (
-                          <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" />
+                          <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
                         ) : null}
                       </Media.Body>
                     </Media>
@@ -338,9 +416,6 @@ const TableVariant = () => {
                       <ButtonColor block with="dashed" type="primary" className="h-35" icon={<PlusCircleOutlined />} onClick={() => addVariant(i+1)}>
                         Tambahkan Pilihan ({va1Total+1}/20)
                       </ButtonColor>
-                      <ButtonColor block with="dashed" type="danger" className="h-35" onClick={() => deleteGroupVariantsHandler(i+1)}>
-                        HAPUS VARIAN
-                      </ButtonColor>
                       <Media.Body> <div style={{ width: 22 }} /> </Media.Body>
                     </Media>
                   </Form.Item>
@@ -352,9 +427,6 @@ const TableVariant = () => {
                       <ButtonColor block with="dashed" type="primary" className="h-35" icon={<PlusCircleOutlined />} onClick={() => addVariant(i+1)}>
                         Tambahkan Pilihan ({va2Total+1}/20)
                       </ButtonColor>
-                      <ButtonColor block with="dashed" type="danger" className="h-35" onClick={() => deleteGroupVariantsHandler(i+1)}>
-                        HAPUS VARIAN
-                      </ButtonColor>
                       <Media.Body> <div style={{ width: 22 }} /> </Media.Body>
                     </Media>
                   </Form.Item>
@@ -363,18 +435,79 @@ const TableVariant = () => {
               </Form>
 
             </Card.Body>
+            </React.Fragment>
           ))}
 
-          <Card.Body className="p-3 bg-light">
-            <Table 
-              bordered
-              size="middle" 
-              pagination={false} 
-              columns={columns} 
-              dataSource={createNewArr(dataSource)} 
-              className="variant-table" 
-            />
-          </Card.Body>
+          {isActiveVariation.active && (
+            <>
+              <Card.Body className="p-3 bg-light">
+                <Form layout="vertical">
+                  <Form.Item className="mb-0" label="Informasi Variasi" >
+                    <Row gutter={[8, 8]}>
+                      <Col xs={24} sm={24} md={17} lg={18} xl={18}>
+                        <Input.Group compact className="info-variasi-input">
+                          <div className="ant-input-group-wrapper" style={{ width: 'calc(100%/3)' }}>
+                            <div className="ant-input-wrapper ant-input-group" style={{ zIndex: 1 }}>
+                              <span className="ant-input-group-addon noselect">Rp</span>
+                              <InputNumber
+                                name="price"
+                                placeholder="Harga"
+                                // value={infoVariant.price}
+                                onChange={e => infoVariantChange(e, "price")}
+                                className="w-100 bor-left-rad-0 bor-right-rad-0 h-33-custom-input h-35"
+                                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                                parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
+                              />
+                            </div>
+                          </div>
+                          <InputNumber 
+                            min={0} 
+                            name="stock"
+                            className="h-35" 
+                            placeholder="Stok" 
+                            // value={infoVariant.stock}
+                            onChange={e => infoVariantChange(e, "stock")}
+                            style={{ width: 'calc(100%/3)' }} 
+                          />
+                          <Input 
+                            name="code"
+                            className="h-35" 
+                            placeholder="Kode Variasi" 
+                            // value={infoVariant.code}
+                            onChange={e => infoVariantChange(e)}
+                            style={{ width: 'calc(100%/3)', borderTopRightRadius: '.25rem', borderBottomRightRadius: '.25rem' }} 
+                          />
+                        </Input.Group>
+                      </Col>
+
+                      <Col xs={24} sm={24} md={7} lg={6} xl={6}>
+                        <ButtonColor
+                          block
+                          disabled={!infoVariant.price && !infoVariant.stock && !infoVariant.code}
+                          type="primary" 
+                          className="h-35"
+                          onClick={setInfoVariantHandler}
+                        >
+                          Terapkan ke Semua
+                        </ButtonColor>
+                      </Col>
+                    </Row>
+                  </Form.Item>
+                </Form>
+              </Card.Body>
+
+              <Card.Body className="p-3 bg-light">
+                <Table 
+                  bordered
+                  size="middle" 
+                  pagination={false} 
+                  columns={columns} 
+                  dataSource={createNewArr(dataSource)} 
+                  className="variant-table" 
+                />
+              </Card.Body>
+            </>
+          )}
 
         </Card.Body>
 
@@ -392,6 +525,15 @@ const TableVariant = () => {
       </Card>
 
       <style jsx>{`
+        :global(.ant-input-number-input){
+          position: relative;
+        }
+        :global(.info-variasi-input .ant-input-number:focus, .info-variasi-input .ant-input-number-focused, .info-variasi-input .ant-input-number:hover){
+          z-index: 3;
+        }
+        :global(.info-variasi-input .ant-input:focus, .info-variasi-input .ant-input-focused, .info-variasi-input .ant-input:focus){
+          box-shadow: none;
+        }
         :global(.variant-table .ant-table-tbody > tr.ant-table-row:hover > td){
           background: transparent;
         }
