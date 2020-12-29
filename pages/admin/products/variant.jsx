@@ -8,24 +8,14 @@ import ButtonColor from "antd-button-color"
 import isIn from 'validator/lib/isIn'
 import isEmpty from 'validator/lib/isEmpty'
 
-const formItemLayout = { wrapperCol: { xs: { span: 24 }, sm: { span: 24 }, md: { span: 18 }, lg: { span: 14 }, xl: { span: 12 }, }, };
-
+import makeid from 'lib/makeid'
 import EditableCell from 'components/Admin/Variant/Cell'
 
+const formItemLayout = { wrapperCol: { xs: { span: 24 }, sm: { span: 24 }, md: { span: 18 }, lg: { span: 14 }, xl: { span: 12 }, }, };
 const emptyMessage = "Variasi tidak boleh kosong"
 const emptyColumnMessage = "Kolom tidak boleh kosong"
 const duplicateMessage = "Pilihan variasi harus berbeda."
 const stockMessage = "Stok tidak boleh kurang dari 0."
-
-const makeid = (length) => {
-   let result           = '';
-   let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-   let charactersLength = characters.length;
-   for ( let i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-   }
-   return result;
-}
 
 /*
  * TODO:
@@ -119,6 +109,7 @@ const TableVariant = () => {
   const { va1Option, va2Option, va1Total, va2Total } = vaOption
 
   const addVariant = (variant) => {
+    setIsSetAll(false)
     const dataLength = dataSource.length
     const va2Length = va2Option.length
     if(variant == 1){
@@ -189,6 +180,7 @@ const TableVariant = () => {
     setIsActiveVariation({ ...isActiveVariation, active: true, countVariation: countVariation + 1 })
     addColumVariantHandler(variant)
     addVariant(variant)
+    setIsSetAll(false)
   }
 
   const onVariantHeadChange = valKey => e => {
@@ -355,40 +347,17 @@ const TableVariant = () => {
     }
   }
 
+
   const setInfoVariantHandler = () => {
     setIsSetAll(true)
-    let oldVa1 = [...va1Option]
-    let oldVa2 = [...va2Option]
+    if(countVariation == 2){
+      const { price, stock, code } = infoVariant
+      let oldVa2 = [...va2Option]
 
-    const { price, stock, code } = infoVariant
-
-    if(countVariation == 1) {
-      oldVa1.map(obj => {
-        if(price.value) {
-          obj.price = { value: price.value, isValid: true, message: null, }
-        }
-        if(stock.value) {
-          obj.stock = { value: stock.value, isValid: true, message: null, }
-        }
-        if(code.value) {
-          obj.code = { value: code.value, isValid: true, message: null, }
-        }
-        return obj
-      })
-      setVaOption({ ...vaOption, va1Option: oldVa1 })
-    }
-
-    if(countVariation == 2) {
       oldVa2.map(obj => {
-        if(price.value) {
-          obj.price = { value: price.value, isValid: true, message: null, }
-        }
-        if(stock.value) {
-          obj.stock = { value: stock.value, isValid: true, message: null, }
-        }
-        if(code.value) {
-          obj.code = { value: code.value, isValid: true, message: null, }
-        }
+        if(price.value) obj.price = price
+        if(stock.value) obj.stock = stock
+        if(code.value) obj.code = code
         return obj
       })
       setVaOption({ ...vaOption, va2Option: oldVa2 })
@@ -403,50 +372,56 @@ const TableVariant = () => {
       let variant_tmp = []
       if(vaOption.va2Option.length){
         for(let [key2, val2] of Object.entries(va2Option)){
-          if(isDeleting){
+          const initialData = {
+            key: val1.key+val2.key,
+            va1_key: +key1,
+            va2_key: +key2,
+            va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
+            va2_option: val2.va2_option.value ? val2.va2_option.value : `Pilihan ${+key2+1}`,
+          }
+          if(isDeleting || isSetAll){
             variant_tmp.push({
-              // key: val1.key ? val1.key+1+key1+key2 : 1+key1+key2,
-              key: val1.key+val2.key,
-              va1_key: +key1,
-              va2_key: +key2,
-              va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
-              va2_option: val2.va2_option.value ? val2.va2_option.value : `Pilihan ${+key2+1}`,
+              ...initialData,
             })
-            // setIsDeleting(false)
           } else {
-            variant_tmp.push({
-              // key: val1.key ? val1.key+1+key1+key2 : 1+key1+key2,
-              key: val1.key+val2.key,
-              va1_key: +key1,
-              va2_key: +key2,
-              va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
-              va2_option: val2.va2_option.value ? val2.va2_option.value : `Pilihan ${+key2+1}`,
-              price: { value: val2.price.value, isValid: true, message: null },
-              stock: { value: val2.stock.value, isValid: true, message: null },
-              code: { value: val2.code.value, isValid: true, message: null },
-            })
-            // setIsDeleting(false)
+            if(!isSetAll){
+              variant_tmp.push({
+                ...initialData,
+                price: { value: val2.price.value, isValid: true, message: null },
+                stock: { value: val2.stock.value, isValid: true, message: null },
+                code: { value: val2.code.value, isValid: true, message: null },
+              })
+            }
           }
         }
       }
       else{
+        const initialData = {
+          key: val1.key,
+          va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
+        }
+        if(isSetAll && !isDeleting){
+          const { price, stock, code } = infoVariant
+          variant_tmp.push({
+            ...initialData,
+            price: { value: price.value ? price.value : copyDataSource[key1].price.value, isValid: true, message: null },
+            stock: { value: stock.value ? stock.value : copyDataSource[key1].stock.value, isValid: true, message: null },
+            code: { value: code.value ? code.value : copyDataSource[key1].code.value, isValid: true, message: null },
+          })
+        }
         if(isDeleting){
           variant_tmp.push({
-            // key: val1.key ? val1.key+1+key1+"###@@@###@@@@" : 1+key1+"###@@@###",
-            key: val1.key,
-            va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
+            ...initialData,
           })
-          // setIsDeleting(false)
         } else {
-          variant_tmp.push({
-            // key: val1.key ? val1.key+1+key1 : 1+key1,
-            key: val1.key,
-            va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
-            price: { value: val1.price.value, isValid: true, message: null },
-            stock: { value: val1.stock.value, isValid: true, message: null },
-            code: { value: val1.code.value, isValid: true, message: null },
-          })
-          // setIsDeleting(false)
+          if(!isSetAll){
+            variant_tmp.push({
+              ...initialData,
+              price: { value: val1.price.value, isValid: true, message: null },
+              stock: { value: val1.stock.value, isValid: true, message: null },
+              code: { value: val1.code.value, isValid: true, message: null },
+            })
+          }
         }
       }
       for(let item of variant_tmp){
@@ -454,7 +429,27 @@ const TableVariant = () => {
       }
     }
 
+    if(countVariation == 2 && isSetAll){
+      const tmpVar = copyDataSource.map(data => data.key)
+      const { price, stock, code } = infoVariant
+
+      for(var i = 0; i < variants.length; i++){
+        const dataPrice = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].price
+        const dataStock = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].stock
+        const dataCode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].code
+
+        variants[i] = {
+          ...variants[i],
+          price: { value: price.value ? price.value : dataPrice.value, isValid: true, message: null },
+          stock: { value: stock.value ? stock.value : dataStock.value, isValid: true, message: null },
+          code: { value: code.value ? code.value : dataCode.value, isValid: true, message: null }
+        }
+      }
+      setIsSetAll(false)
+    }
+
     if(isDeleting){
+      isSetAll && setIsSetAll(false)
       const tmpVar = copyDataSource.map(data => data.key)
       const tmpDataSource = variants.map(data => data.key)
 
@@ -517,7 +512,7 @@ const TableVariant = () => {
     }
 
     setDataSource(variants)
-  },[vaOption, isDeleting])
+  },[vaOption, isDeleting, isSetAll])
 
   /*
    * TODO: 
@@ -622,6 +617,7 @@ const TableVariant = () => {
                         } 
                         onBlur={onValidateVariantHeadCheck(`va${i+1}_option`)}
                         onChange={onVariantHeadChange(`va${i+1}_option`)}
+                        onFocus={() => setIsSetAll(false)}
                       />
                     </Tooltip>
                     <Media.Body>
@@ -656,6 +652,7 @@ const TableVariant = () => {
                           value={va1Option[idx].va1_option.value} 
                           onChange={onVariantOptionChange(idx, i+1)}
                           onBlur={onValidateVariantCheck(idx, i+1)}
+                          onFocus={() => setIsSetAll(false)}
                           placeholder={
                             i == 0 ? "Masukkan Pilihan Variasi, contoh: Merah, dll." : 
                             i == 1 ? "Masukkan Pilihan Variasi, contoh: S, M, dll." : ""
@@ -772,6 +769,7 @@ const TableVariant = () => {
                                 className="w-100 bor-left-rad-0 bor-right-rad-0 h-33-custom-input h-35"
                                 formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
                                 parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
+                                onFocus={() => setIsSetAll(false)}
                               />
                             </div>
                           </div>
@@ -782,6 +780,7 @@ const TableVariant = () => {
                             placeholder="Stok" 
                             value={infoVariant.stock.value}
                             onChange={e => infoVariantChange(e, "stock")}
+                            onFocus={() => setIsSetAll(false)}
                             style={{ width: 'calc(100%/3)' }} 
                           />
                           <Input 
@@ -790,6 +789,7 @@ const TableVariant = () => {
                             placeholder="Kode Variasi" 
                             value={infoVariant.code.value}
                             onChange={e => infoVariantChange(e)}
+                            onFocus={() => setIsSetAll(false)}
                             style={{ width: 'calc(100%/3)', borderTopRightRadius: '.25rem', borderBottomRightRadius: '.25rem' }} 
                           />
                         </Input.Group>
@@ -798,7 +798,7 @@ const TableVariant = () => {
                       <Col xs={24} sm={24} md={7} lg={6} xl={6}>
                         <ButtonColor
                           block
-                          disabled={!infoVariant.price && !infoVariant.stock && !infoVariant.code}
+                          disabled={!infoVariant.price.value && !infoVariant.stock.value && !infoVariant.code.value}
                           type="primary" 
                           className="h-35"
                           onClick={setInfoVariantHandler}
