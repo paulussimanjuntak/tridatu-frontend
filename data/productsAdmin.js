@@ -1,6 +1,67 @@
 import { Space, Avatar, Tooltip } from 'antd'
 import Button from 'antd-button-color';
 
+export const createNewArr = (data) => {
+  return data
+    .reduce((result, item) => {
+      if (result.indexOf(item.va1_option) < 0) {
+        result.push(item.va1_option);
+      }
+      return result;
+    }, [])
+    .reduce((result, va1_option) => {
+      const children = data.filter((item) => item.va1_option === va1_option);
+      result = result.concat(
+        children.map((item, index) => ({
+          ...item,
+          rowSpan: index === 0 ? children.length : 0,
+        }))
+      );
+      return result;
+    }, []);
+};
+
+export const formItemLayout = {
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 24 },
+    md: { span: 18 },
+    lg: { span: 14 },
+    xl: { span: 12 },
+  },
+};
+
+export const initialColumn = [
+  {
+    title: "Harga",
+    dataIndex: "price",
+    key: "price",
+    inputType: "price",
+    editable: true,
+    align: "center",
+    width: 150,
+  },
+  {
+    title: "Stok",
+    dataIndex: "stock",
+    key: "stock",
+    inputType: "stock",
+    editable: true,
+    align: "center",
+    width: 150,
+  },
+  {
+    title: "Kode Variasi",
+    dataIndex: "code",
+    key: "code",
+    inputType: "code",
+    editable: true,
+    align: "center",
+    width: 150,
+  },
+];
+
+// NOT USE IN BELOW
 export const productsColumns = [
   {
     fixed: 'left',

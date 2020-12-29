@@ -9,13 +9,16 @@ import isIn from 'validator/lib/isIn'
 import isEmpty from 'validator/lib/isEmpty'
 
 import makeid from 'lib/makeid'
+import getIndex from 'lib/getIndex'
 import EditableCell from 'components/Admin/Variant/Cell'
+import { formItemLayout, initialColumn, createNewArr } from 'data/productsAdmin'
 
-const formItemLayout = { wrapperCol: { xs: { span: 24 }, sm: { span: 24 }, md: { span: 18 }, lg: { span: 14 }, xl: { span: 12 }, }, };
 const emptyMessage = "Variasi tidak boleh kosong"
 const emptyColumnMessage = "Kolom tidak boleh kosong"
 const duplicateMessage = "Pilihan variasi harus berbeda."
 const stockMessage = "Stok tidak boleh kurang dari 0."
+const initialValue = { value: "", isValid: true, message: null }
+const additional = { price: initialValue, stock: initialValue, code: initialValue } 
 
 /*
  * TODO:
@@ -24,80 +27,11 @@ const stockMessage = "Stok tidak boleh kurang dari 0."
  * Remove variant group ✅
  */
 
-const createNewArr = (data) => {
-  return data
-    .reduce((result, item) => {
-      if (result.indexOf(item.va1_option) < 0) {
-        result.push(item.va1_option);
-      }
-      return result;
-    }, [])
-    .reduce((result, va1_option) => {
-      const children = data.filter((item) => item.va1_option === va1_option);
-      result = result.concat(
-        children.map((item, index) => ({
-          ...item,
-          rowSpan: index === 0 ? children.length : 0,
-        }))
-      );
-      return result;
-    }, []);
-};
-
-const getIndex = (value, arr, prop) => {
-  for(var i = 0; i < arr.length; i++) {
-    if(arr[i][prop] === value) {
-      return i;
-    }
-  }
-  return -1; //to handle the case where the value doesn't exist
-}
-
-const initCol = [
-  {
-    title: 'Harga',
-    dataIndex: 'price',
-    key: 'price',
-    inputType: 'price',
-    editable: true,
-    align: "center",
-    width: 150,
-  },
-  {
-    title: 'Stok',
-    dataIndex: 'stock',
-    key: 'stock',
-    inputType: 'stock',
-    editable: true,
-    align: "center",
-    width: 150,
-  },
-  {
-    title: 'Kode Variasi',
-    dataIndex: 'code',
-    key: 'code',
-    inputType: 'code',
-    editable: true,
-    align: "center",
-    width: 150,
-  },
-]
-
-const additional = { 
-  price: { value: "", isValid: true, message: null }, 
-  stock: { value: "", isValid: true, message: null }, 
-  code: { value: "", isValid: true, message: null } 
-} 
-
-const components = {
-  body: {
-    cell: EditableCell,
-  },
-};
+const components = { body: { cell: EditableCell } };
 
 const TableVariant = () => {
   const [count, setCount] = useState(0)
-  const [columns, setColumns] = useState(initCol)
+  const [columns, setColumns] = useState(initialColumn)
   const [dataSource, setDataSource] = useState([])
   const [vaOption, setVaOption] = useState({ va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 })
   const [isActiveVariation, setIsActiveVariation] = useState({ active: false, countVariation: 0 })
@@ -118,7 +52,7 @@ const TableVariant = () => {
         va1Option: [
           ...va1Option, {
             key: `va${variant}_option${dataLength+1+count}_${makeid(10)}`, 
-            va1_option: { value: "", isValid: false, message: null }, 
+            va1_option: { ...initialValue, isValid: false }, 
             ...additional
           }
         ],
@@ -132,7 +66,7 @@ const TableVariant = () => {
         va2Option: [
           ...va2Option, {
             key: `va${variant}_option${va2Length}_${makeid(10)}`, 
-            va2_option: { value: "", isValid: false, message: null }, 
+            va2_option: { ...initialValue, isValid: false }, 
             ...additional
           }
         ],
@@ -153,11 +87,7 @@ const TableVariant = () => {
       align: "center",
       isValid: true,
       message: null,
-      render: (value) => {
-        return {
-          children: value,
-        }
-      } // render
+      render: (value) => value,
     }
     if(variant == 2){
       copyColumns[0] = {
@@ -334,14 +264,14 @@ const TableVariant = () => {
     if(item){
       const data = {
         ...infoVariant,
-        [item]: { value: e, isValid: true, message: null }
+        [item]: { ...initialValue, value: e }
       }
       setInfoVariant(data)
     }
     else{
       const data = {
         ...infoVariant,
-        [name]: { value: value, isValid: true, message: null }
+        [name]: { ...initialValue, value: value }
       }
       setInfoVariant(data)
     }
@@ -350,9 +280,11 @@ const TableVariant = () => {
 
   const setInfoVariantHandler = () => {
     setIsSetAll(true)
+    isDeleting && setIsDeleting(false)
+
     if(countVariation == 2){
-      const { price, stock, code } = infoVariant
       let oldVa2 = [...va2Option]
+      const { price, stock, code } = infoVariant
 
       oldVa2.map(obj => {
         if(price.value) obj.price = price
@@ -387,9 +319,9 @@ const TableVariant = () => {
             if(!isSetAll){
               variant_tmp.push({
                 ...initialData,
-                price: { value: val2.price.value, isValid: true, message: null },
-                stock: { value: val2.stock.value, isValid: true, message: null },
-                code: { value: val2.code.value, isValid: true, message: null },
+                price: { ...initialValue, value: val2.price.value },
+                stock: { ...initialValue, value: val2.stock.value },
+                code: { ...initialValue, value: val2.code.value },
               })
             }
           }
@@ -404,9 +336,9 @@ const TableVariant = () => {
           const { price, stock, code } = infoVariant
           variant_tmp.push({
             ...initialData,
-            price: { value: price.value ? price.value : copyDataSource[key1].price.value, isValid: true, message: null },
-            stock: { value: stock.value ? stock.value : copyDataSource[key1].stock.value, isValid: true, message: null },
-            code: { value: code.value ? code.value : copyDataSource[key1].code.value, isValid: true, message: null },
+            price: { ...initialValue, value: price.value ? price.value : copyDataSource[key1].price.value },
+            stock: { ...initialValue, value: stock.value ? stock.value : copyDataSource[key1].stock.value },
+            code: { ...initialValue, value: code.value ? code.value : copyDataSource[key1].code.value },
           })
         }
         if(isDeleting){
@@ -417,9 +349,9 @@ const TableVariant = () => {
           if(!isSetAll){
             variant_tmp.push({
               ...initialData,
-              price: { value: val1.price.value, isValid: true, message: null },
-              stock: { value: val1.stock.value, isValid: true, message: null },
-              code: { value: val1.code.value, isValid: true, message: null },
+              price: { ...initialValue, value: val1.price.value },
+              stock: { ...initialValue, value: val1.stock.value },
+              code: { ...initialValue, value: val1.code.value },
             })
           }
         }
@@ -440,9 +372,9 @@ const TableVariant = () => {
 
         variants[i] = {
           ...variants[i],
-          price: { value: price.value ? price.value : dataPrice.value, isValid: true, message: null },
-          stock: { value: stock.value ? stock.value : dataStock.value, isValid: true, message: null },
-          code: { value: code.value ? code.value : dataCode.value, isValid: true, message: null }
+          price: { ...initialValue, value: price.value ? price.value : dataPrice.value },
+          stock: { ...initialValue, value: stock.value ? stock.value : dataStock.value },
+          code: { ...initialValue, value: code.value ? code.value : dataCode.value }
         }
       }
       setIsSetAll(false)
@@ -468,11 +400,7 @@ const TableVariant = () => {
         for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
           if(variants[i].key === val){
             for(let prop of ["price", "stock", "code"]){
-              variants[i][prop] = {
-                value: "",
-                isValid: true,
-                message: null,
-              }
+              variants[i][prop] = initialValue
             }
           }
         }
@@ -499,16 +427,11 @@ const TableVariant = () => {
         for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
           if(variants[i].key === val){
             for(let prop of ["price", "stock", "code"]){
-              variants[i][prop] = {
-                value: "",
-                isValid: true,
-                message: null,
-              }
+              variants[i][prop] = initialValue
             }
           }
         }
       }
-
     }
 
     setDataSource(variants)
@@ -827,23 +750,6 @@ const TableVariant = () => {
           )}
 
         </Card.Body>
-
-        {/*
-        <Card className="border-0 shadow-sm card-add-product">
-          <Card.Body className="p-3">
-            <Table
-              bordered
-              pagination={false} 
-              className="variant-table"
-              size="middle"
-              rowClassName={() => 'variant-row'}
-              components={components}
-              columns={mergedColumns} 
-              dataSource={createNewArr(dataSource)} 
-            />
-          </Card.Body>
-        </Card>
-        */}
 
         <Card.Body className="p-3">
           {countVariation < 2 && (
