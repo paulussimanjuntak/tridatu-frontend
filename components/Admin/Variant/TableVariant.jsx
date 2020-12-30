@@ -17,11 +17,13 @@ const emptyMessage = "Variasi tidak boleh kosong"
 const emptyColumnMessage = "Kolom tidak boleh kosong"
 const duplicateMessage = "Pilihan variasi harus berbeda."
 const stockMessage = "Stok tidak boleh kurang dari 0."
+const priceMessage = "Harga harus lebih dari 1."
 
 const nameTitle1 = "Masukkan Nama Variasi, contoh: Warna, dll."
 const nameTitle2 = "Masukkan Nama Variasi, contoh: Ukuran, dll."
 const nameVariant1 = "Masukkan Pilihan Variasi, contoh: Merah, dll."
 const nameVariant2 = "Masukkan Pilihan Variasi, contoh: S, M, dll."
+const maxNameTitle = 15, maxNameVariant = 20, maxCode = 50;
 
 const arrProp = ["price", "stock", "code", "barcode"]
 const initialValue = { value: "", isValid: true, message: null }
@@ -303,7 +305,7 @@ const TableVariant = () => {
 
       oldVa2.map(obj => {
         if(price.value) obj.price = price
-        if(stock.value) obj.stock = stock
+        if(stock.value || stock.value == 0) obj.stock = stock
         if(code.value) obj.code = code
         if(barcode.value) obj.barcode = barcode
         return obj
@@ -365,7 +367,7 @@ const TableVariant = () => {
               message: priceVal ? null : copyDataSource[key1].price.message
             },
             stock: { 
-              value: stockVal ? stockVal : copyDataSource[key1].stock.value, 
+              value: stockVal || stockVal == 0 ? stockVal : copyDataSource[key1].stock.value, 
               isValid: stockVal ? true : copyDataSource[key1].stock.isValid, 
               message: stockVal ? null : copyDataSource[key1].stock.message
             },
@@ -425,7 +427,7 @@ const TableVariant = () => {
             message: priceVal ? null : dataPrice.message
           },
           stock: { 
-            value: stockVal ? stockVal : dataStock.value, 
+            value: stockVal || stockVal == 0 ? stockVal : dataStock.value, 
             isValid: stockVal ? true : dataStock.isValid, 
             message: stockVal ? null : dataStock.message
           },
@@ -522,10 +524,10 @@ const TableVariant = () => {
       newData[index][name].isValid = true
       newData[index][name].message = null
     }
-    if(item && e < 0) {
+    if((item == "stock" && e < 0) || (item == "price" && e < 1)) {
       newData[index][item].value = e
       newData[index][item].isValid = false
-      newData[index][item].message = stockMessage
+      newData[index][item].message = item == "stock" ? stockMessage : priceMessage
     }
     if(item && e !== 0 && isEmpty(e ? e.toString() : "", { ignore_whitespace: true })) {
       newData[index][item].value = e
@@ -561,6 +563,7 @@ const TableVariant = () => {
         // onChange: e => onTableChange(e, col.inputType !== "code" && col.inputType, index),
         onChange: e => onTableChange(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
         onBlur: e => onValidateTableVariantCheck(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
+        maxCode: maxCode
       }),
     };
   });
@@ -618,8 +621,8 @@ const TableVariant = () => {
                             placeholder={ i == 0 ? nameTitle1 : i == 1 ? nameTitle2 : "" } 
                             onBlur={onValidateVariantHeadCheck(`va${i+1}_option`)}
                             onChange={onVariantHeadChange(`va${i+1}_option`)}
-                            maxLength="20"
-                            suffix={ columns[i].title.split(" ")[0] === "Nama" ? <CountChar>0/20</CountChar> : <CountChar>{columns[i].title.length}/20</CountChar> }
+                            maxLength={maxNameTitle}
+                            suffix={ columns[i].title.split(" ")[0] === "Nama" ? <CountChar>0/{maxNameTitle}</CountChar> : <CountChar>{columns[i].title.length}/{maxNameTitle}</CountChar> }
                           />
                         </Tooltip>
                         <Media.Body>
@@ -655,8 +658,8 @@ const TableVariant = () => {
                               onChange={onVariantOptionChange(idx, i+1)}
                               onBlur={onValidateVariantCheck(idx, i+1)}
                               placeholder={ i == 0 ? nameVariant1 : i == 1 ? nameVariant2 : "" } 
-                              maxLength="20"
-                              suffix={<CountChar>{va1Option[idx].va1_option.value.length}/20</CountChar>}
+                              maxLength={maxNameVariant}
+                              suffix={<CountChar>{va1Option[idx].va1_option.value.length}/{maxNameVariant}</CountChar>}
                             />
                           </Tooltip>
                           <Media.Body> 
@@ -694,8 +697,8 @@ const TableVariant = () => {
                               onChange={onVariantOptionChange(idx, i+1)}
                               onBlur={onValidateVariantCheck(idx, i+1)}
                               placeholder={ i == 0 ? nameVariant1 : i == 1 ? nameVariant2 : "" }
-                              maxLength="20"
-                              suffix={<CountChar>{va2Option[idx].va2_option.value.length}/20</CountChar>}
+                              maxLength={maxNameVariant}
+                              suffix={<CountChar>{va2Option[idx].va2_option.value.length}/{maxNameVariant}</CountChar>}
                             />
                           </Tooltip>
                           <Media.Body> 
@@ -744,6 +747,7 @@ const TableVariant = () => {
                             <div className="ant-input-wrapper ant-input-group" style={{ zIndex: 1 }}>
                               <span className="ant-input-group-addon noselect">Rp</span>
                               <InputNumber
+                                min={1}
                                 name="price"
                                 placeholder="Harga"
                                 value={infoVariant.price.value}
@@ -767,6 +771,7 @@ const TableVariant = () => {
                             name="code"
                             className="h-35" 
                             placeholder="Kode" 
+                            maxLength={maxCode}
                             value={infoVariant.code.value}
                             onChange={e => infoVariantChange(e)}
                             style={{ width: 'calc(100%/4)' }} 
@@ -775,6 +780,7 @@ const TableVariant = () => {
                             name="barcode"
                             className="h-35" 
                             placeholder="Barcode" 
+                            maxLength={maxCode}
                             value={infoVariant.barcode.value}
                             onChange={e => infoVariantChange(e)}
                             style={{ width: 'calc(100%/4)', borderTopRightRadius: '.25rem', borderBottomRightRadius: '.25rem' }} 

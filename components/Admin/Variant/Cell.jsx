@@ -13,12 +13,28 @@ const EditableCell = ({
   onChange,
   index,
   onBlur,
+  maxCode,
   ...restProps
 }) => {
 
   let childNode = children;
 
   if (editable) {
+    const initProps = {
+      onChange: onChange,
+      value: record[inputType].value,
+      onBlur: onBlur,
+    }
+
+    const propsTextArea = {
+      ...initProps,
+      autoSize: true,
+      className: "h-30 fs-12 input-code-variant",
+      bordered: false,
+      style: { resize: "none" },
+      maxLength: maxCode,
+    }
+
     childNode = (
       <Form>
         {inputType === "price" && (
@@ -38,14 +54,13 @@ const EditableCell = ({
                 <div className="ant-input-wrapper ant-input-group input-group-variant" style={{ zIndex: 1 }}>
                   <span className="ant-input-group-addon noselect fs-12 bg-transparent">Rp</span>
                   <InputNumber
+                    {...initProps}
+                    min={1}
                     name="price"
                     placeholder="Masukkan harga"
                     className="w-100 bor-left-rad-0 h-33-custom-input fs-12 input-number-variant"
                     formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
                     parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
-                    value={record[inputType].value}
-                    onChange={onChange}
-                    onBlur={onBlur}
                   />
                 </div>
               </div>
@@ -67,13 +82,11 @@ const EditableCell = ({
             >
               <div>
                 <InputNumber 
+                  {...initProps}
                   min={0} 
                   name="stock"
-                  className="w-100 fs-12 input-number-variant"
                   placeholder="Masukkan stok" 
-                  value={record[inputType].value}
-                  onChange={onChange}
-                  onBlur={onBlur}
+                  className="w-100 fs-12 input-number-variant"
                 />
               </div>
             </Tooltip>
@@ -83,15 +96,9 @@ const EditableCell = ({
           <Form.Item className="mb-0" name="code">
             <div>
               <Input.TextArea 
-                autoSize 
+                {...propsTextArea}
                 name="code" 
-                className="h-30 fs-12 input-code-variant"
                 placeholder="Kode" 
-                bordered={false}
-                onChange={onChange} 
-                value={record[inputType].value} 
-                onBlur={onBlur}
-                style={{ resize: "none" }}
               />
             </div>
           </Form.Item>
@@ -100,15 +107,9 @@ const EditableCell = ({
           <Form.Item className="mb-0" name="barcode">
             <div>
               <Input.TextArea 
-                autoSize 
+                {...propsTextArea}
                 name="barcode" 
-                className="h-30 fs-12 input-code-variant"
                 placeholder="Barcode" 
-                bordered={false}
-                onChange={onChange} 
-                value={record[inputType].value} 
-                onBlur={onBlur}
-                style={{ resize: "none" }}
               />
             </div>
           </Form.Item>
