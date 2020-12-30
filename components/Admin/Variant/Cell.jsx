@@ -86,7 +86,24 @@ const EditableCell = ({
                 autoSize 
                 name="code" 
                 className="h-30 fs-12 input-code-variant"
-                placeholder="Kode Variasi" 
+                placeholder="Kode" 
+                bordered={false}
+                onChange={onChange} 
+                value={record[inputType].value} 
+                onBlur={onBlur}
+                style={{ resize: "none" }}
+              />
+            </div>
+          </Form.Item>
+        )}
+        {inputType === "barcode" && (
+          <Form.Item className="mb-0" name="barcode">
+            <div>
+              <Input.TextArea 
+                autoSize 
+                name="barcode" 
+                className="h-30 fs-12 input-code-variant"
+                placeholder="Barcode" 
                 bordered={false}
                 onChange={onChange} 
                 value={record[inputType].value} 

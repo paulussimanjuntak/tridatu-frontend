@@ -23,8 +23,9 @@ const nameTitle2 = "Masukkan Nama Variasi, contoh: Ukuran, dll."
 const nameVariant1 = "Masukkan Pilihan Variasi, contoh: Merah, dll."
 const nameVariant2 = "Masukkan Pilihan Variasi, contoh: S, M, dll."
 
+const arrProp = ["price", "stock", "code", "barcode"]
 const initialValue = { value: "", isValid: true, message: null }
-const additional = { price: initialValue, stock: initialValue, code: initialValue } 
+const additional = { price: initialValue, stock: initialValue, code: initialValue, barcode: initialValue } 
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
@@ -40,6 +41,19 @@ const TableVariant = () => {
 
   const { countVariation } = isActiveVariation
   const { va1Option, va2Option, va1Total, va2Total } = vaOption
+
+  const resetValidation = () => {
+    const state = JSON.parse(JSON.stringify(dataSource));
+    for (let key in state) {
+      for(let prop of arrProp){
+        if(state[key][prop].hasOwnProperty("isValid")){
+          state[key][prop].isValid = true
+          state[key][prop].message = null
+        }
+      }
+    }
+    setDataSource(state)
+  }
 
   const addVariant = (variant) => {
     setIsSetAll(false)
@@ -73,16 +87,7 @@ const TableVariant = () => {
       }
       setVaOption(data)
     }
-    const state = JSON.parse(JSON.stringify(dataSource));
-    for (let key in state) {
-      for(let prop of ["price", "stock", "code"]){
-        if(state[key][prop].hasOwnProperty("isValid")){
-          state[key][prop].isValid = true
-          state[key][prop].message = null
-        }
-      }
-    }
-    setDataSource(state)
+    resetValidation()
   }
 
   const addColumVariantHandler = (variant) => {
@@ -201,7 +206,10 @@ const TableVariant = () => {
 
   const deleteGroupVariantsHandler = (variant) => {
     setIsActiveVariation({ ...isActiveVariation, active: countVariation == 1 ? false : true,  countVariation: countVariation - 1 })
-    if(countVariation == 1) setCount(0)
+    if(countVariation == 1) {
+      setCount(0)
+      setInfoVariant(additional)
+    }
 
     let oldVa2 = [...vaOption.va2Option]
     let oldColumns = [...columns]; // make a separate copy of the array
@@ -248,6 +256,7 @@ const TableVariant = () => {
   }
 
   const deleteVariantHandler = (variant, index) => {
+    resetValidation()
     setIsDeleting(true)
     if(countVariation == 1 && variant == 1) {
       setDataSource(dataSource.filter((_, i) => i !== index))
@@ -289,13 +298,14 @@ const TableVariant = () => {
   const setInfoVariantHandler = () => {
     setIsSetAll(true)
     if(countVariation == 2){
-      const { price, stock, code } = infoVariant
+      const { price, stock, code, barcode } = infoVariant
       let oldVa2 = [...va2Option]
 
       oldVa2.map(obj => {
         if(price.value) obj.price = price
         if(stock.value) obj.stock = stock
         if(code.value) obj.code = code
+        if(barcode.value) obj.barcode = barcode
         return obj
       })
       setVaOption({ ...vaOption, va2Option: oldVa2 })
@@ -329,6 +339,7 @@ const TableVariant = () => {
                 price: { value: val2.price.value, isValid: true, message: null },
                 stock: { value: val2.stock.value, isValid: true, message: null },
                 code: { value: val2.code.value, isValid: true, message: null },
+                barcode: { value: val2.barcode.value, isValid: true, message: null },
               })
             }
           }
@@ -340,10 +351,11 @@ const TableVariant = () => {
           va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
         }
         if(isSetAll && !isDeleting){
-          const { price, stock, code } = infoVariant
+          const { price, stock, code, barcode } = infoVariant
           const priceVal = price.value
           const stockVal = stock.value
           const codeVal = code.value
+          const barcodeVal = barcode.value
 
           variant_tmp.push({
             ...initialData,
@@ -362,6 +374,11 @@ const TableVariant = () => {
               isValid: codeVal ? true : copyDataSource[key1].code.isValid, 
               message: codeVal ? null : copyDataSource[key1].code.message
             },
+            barcode: { 
+              value: barcodeVal ? barcodeVal : copyDataSource[key1].barcode.value, 
+              isValid: barcodeVal ? true : copyDataSource[key1].barcode.isValid, 
+              message: barcodeVal ? null : copyDataSource[key1].barcode.message
+            },
           })
           isSetAll && setIsSetAll(false)
         }
@@ -376,6 +393,7 @@ const TableVariant = () => {
               price: { value: val1.price.value, isValid: true, message: null },
               stock: { value: val1.stock.value, isValid: true, message: null },
               code: { value: val1.code.value, isValid: true, message: null },
+              barcode: { value: val1.barcode.value, isValid: true, message: null },
             })
           }
         }
@@ -387,15 +405,17 @@ const TableVariant = () => {
 
     if(countVariation == 2 && isSetAll){
       const tmpVar = copyDataSource.map(data => data.key)
-      const { price, stock, code } = infoVariant
+      const { price, stock, code, barcode } = infoVariant
       const priceVal = price.value
       const stockVal = stock.value
       const codeVal = code.value
+      const barcodeVal = barcode.value
 
       for(var i = 0; i < variants.length; i++){
         const dataPrice = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].price
         const dataStock = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].stock
         const dataCode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].code
+        const dataBarcode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].barcode
 
         variants[i] = {
           ...variants[i],
@@ -413,10 +433,14 @@ const TableVariant = () => {
             value: codeVal ? codeVal : dataCode.value, 
             isValid: codeVal ? true : dataCode.isValid, 
             message: codeVal ? null : dataCode.message
+          },
+          barcode: { 
+            value: barcodeVal ? barcodeVal : dataBarcode.value, 
+            isValid: barcodeVal ? true : dataBarcode.isValid, 
+            message: barcodeVal ? null : dataBarcode.message
           }
         }
       }
-      // setIsSetAll(false)
     }
 
     if(isDeleting){
@@ -427,18 +451,20 @@ const TableVariant = () => {
       for(var i = 0; i < variants.length; i++){
         for(let val of tmpVar){
           if(variants[i].key === val){
-            for(let prop of ["price", "stock", "code"]){
+            for(let prop of arrProp){
               variants[i][prop] = {
                 value:   copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
-                isValid: copyDataSource[getIndex(val, copyDataSource, "key")][prop].isValid,
-                message: copyDataSource[getIndex(val, copyDataSource, "key")][prop].message,
+                isValid: true,
+                message: null,
+                // isValid: copyDataSource[getIndex(val, copyDataSource, "key")][prop].isValid,
+                // message: copyDataSource[getIndex(val, copyDataSource, "key")][prop].message,
               }
             }
           }
         }
         for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
           if(variants[i].key === val){
-            for(let prop of ["price", "stock", "code"]){
+            for(let prop of arrProp){
               variants[i][prop] = {
                 value: "",
                 isValid: true,
@@ -458,7 +484,7 @@ const TableVariant = () => {
       for(var i = 0; i < variants.length; i++){
         for(let val of tmpVar){
           if(variants[i].key === val){
-            for(let prop of ["price", "stock", "code"]){
+            for(let prop of arrProp){
               variants[i][prop] = {
                 value: copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
                 isValid: copyDataSource[getIndex(val, copyDataSource, "key")][prop].isValid,
@@ -472,6 +498,7 @@ const TableVariant = () => {
             variants[i]['price'] = { value: "", isValid: true, message: null, }
             variants[i]['stock'] = { value: "0", isValid: true, message: null, }
             variants[i]['code'] = { value: "", isValid: true, message: null, }
+            variants[i]['barcode'] = { value: "", isValid: true, message: null, }
           }
         }
       }
@@ -505,6 +532,7 @@ const TableVariant = () => {
       newData[index][item].isValid = false
       newData[index][item].message = emptyColumnMessage
     }
+
     setDataSource(newData)
   }
 
@@ -530,8 +558,9 @@ const TableVariant = () => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         inputType: col.inputType,
-        onChange: e => onTableChange(e, col.inputType !== "code" && col.inputType, index),
-        onBlur: e => onValidateTableVariantCheck(e, col.inputType !== "code" && col.inputType, index),
+        // onChange: e => onTableChange(e, col.inputType !== "code" && col.inputType, index),
+        onChange: e => onTableChange(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
+        onBlur: e => onValidateTableVariantCheck(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
       }),
     };
   });
@@ -711,7 +740,7 @@ const TableVariant = () => {
                     <Row gutter={[8, 8]}>
                       <Col xs={24} sm={24} md={17} lg={18} xl={18}>
                         <Input.Group compact className="info-variasi-input">
-                          <div className="ant-input-group-wrapper" style={{ width: 'calc(100%/3)' }}>
+                          <div className="ant-input-group-wrapper" style={{ width: 'calc(100%/4)' }}>
                             <div className="ant-input-wrapper ant-input-group" style={{ zIndex: 1 }}>
                               <span className="ant-input-group-addon noselect">Rp</span>
                               <InputNumber
@@ -732,15 +761,23 @@ const TableVariant = () => {
                             placeholder="Stok" 
                             value={infoVariant.stock.value}
                             onChange={e => infoVariantChange(e, "stock")}
-                            style={{ width: 'calc(100%/3)', marginLeft: '-1px' }} 
+                            style={{ width: 'calc(100%/4)', marginLeft: '-1px' }} 
                           />
                           <Input 
                             name="code"
                             className="h-35" 
-                            placeholder="Kode Variasi" 
+                            placeholder="Kode" 
                             value={infoVariant.code.value}
                             onChange={e => infoVariantChange(e)}
-                            style={{ width: 'calc(100%/3)', borderTopRightRadius: '.25rem', borderBottomRightRadius: '.25rem' }} 
+                            style={{ width: 'calc(100%/4)' }} 
+                          />
+                          <Input 
+                            name="barcode"
+                            className="h-35" 
+                            placeholder="Barcode" 
+                            value={infoVariant.barcode.value}
+                            onChange={e => infoVariantChange(e)}
+                            style={{ width: 'calc(100%/4)', borderTopRightRadius: '.25rem', borderBottomRightRadius: '.25rem' }} 
                           />
                         </Input.Group>
                       </Col>
@@ -748,7 +785,7 @@ const TableVariant = () => {
                       <Col xs={24} sm={24} md={7} lg={6} xl={6}>
                         <ButtonColor
                           block
-                          disabled={!infoVariant.price.value && !infoVariant.stock.value && !infoVariant.code.value}
+                          disabled={!infoVariant.price.value && !infoVariant.stock.value && !infoVariant.code.value && !infoVariant.barcode.value}
                           type="primary" 
                           className="h-35"
                           onClick={setInfoVariantHandler}

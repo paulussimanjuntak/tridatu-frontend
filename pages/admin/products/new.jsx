@@ -124,7 +124,7 @@ const NewProduct = () => {
             */}
           </Form>
 
-            <TableVariant />
+          <TableVariant />
 
         </Card.Body>
       </Card>
