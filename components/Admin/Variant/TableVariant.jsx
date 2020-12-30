@@ -17,6 +17,7 @@ const emptyMessage = "Variasi tidak boleh kosong"
 const emptyColumnMessage = "Kolom tidak boleh kosong"
 const duplicateMessage = "Pilihan variasi harus berbeda."
 const stockMessage = "Stok tidak boleh kurang dari 0."
+
 const nameTitle1 = "Masukkan Nama Variasi, contoh: Warna, dll."
 const nameTitle2 = "Masukkan Nama Variasi, contoh: Ukuran, dll."
 const nameVariant1 = "Masukkan Pilihan Variasi, contoh: Merah, dll."
@@ -25,6 +26,7 @@ const nameVariant2 = "Masukkan Pilihan Variasi, contoh: S, M, dll."
 const initialValue = { value: "", isValid: true, message: null }
 const additional = { price: initialValue, stock: initialValue, code: initialValue } 
 const components = { body: { cell: EditableCell } };
+const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
 const TableVariant = () => {
   const [count, setCount] = useState(0)
@@ -71,6 +73,16 @@ const TableVariant = () => {
       }
       setVaOption(data)
     }
+    const state = JSON.parse(JSON.stringify(dataSource));
+    for (let key in state) {
+      for(let prop of ["price", "stock", "code"]){
+        if(state[key][prop].hasOwnProperty("isValid")){
+          state[key][prop].isValid = true
+          state[key][prop].message = null
+        }
+      }
+    }
+    setDataSource(state)
   }
 
   const addColumVariantHandler = (variant) => {
@@ -309,6 +321,7 @@ const TableVariant = () => {
             variant_tmp.push({
               ...initialData,
             })
+            isSetAll && setIsSetAll(false)
           } else {
             if(!isSetAll){
               variant_tmp.push({
@@ -350,6 +363,7 @@ const TableVariant = () => {
               message: codeVal ? null : copyDataSource[key1].code.message
             },
           })
+          isSetAll && setIsSetAll(false)
         }
         if(isDeleting){
           variant_tmp.push({
@@ -402,7 +416,7 @@ const TableVariant = () => {
           }
         }
       }
-      setIsSetAll(false)
+      // setIsSetAll(false)
     }
 
     if(isDeleting){
@@ -455,28 +469,9 @@ const TableVariant = () => {
         }
         for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
           if(variants[i].key === val){
-            variants[i]['price'] = {
-              value: "",
-              isValid: true,
-              message: null,
-            }
-            variants[i]['stock'] = {
-              value: "0",
-              isValid: true,
-              message: null,
-            }
-            variants[i]['code'] = {
-              value: "",
-              isValid: true,
-              message: null,
-            }
-            // for(let prop of ["price", "stock", "code"]){
-            //   variants[i][prop] = {
-            //     value: "",
-            //     isValid: true,
-            //     message: null,
-            //   }
-            // }
+            variants[i]['price'] = { value: "", isValid: true, message: null, }
+            variants[i]['stock'] = { value: "0", isValid: true, message: null, }
+            variants[i]['code'] = { value: "", isValid: true, message: null, }
           }
         }
       }
@@ -537,7 +532,6 @@ const TableVariant = () => {
         inputType: col.inputType,
         onChange: e => onTableChange(e, col.inputType !== "code" && col.inputType, index),
         onBlur: e => onValidateTableVariantCheck(e, col.inputType !== "code" && col.inputType, index),
-        onFocus: () => setIsSetAll(false)
       }),
     };
   });
@@ -561,9 +555,6 @@ const TableVariant = () => {
 
   return(
     <>
-      <Card className="border-0 shadow-sm card-add-product">
-        <Card.Body className="p-3">
-
           <Row>
             <Col xs={24} sm={24} md={18} lg={16} xl={14}>
               {[...Array(countVariation)].map((_, i) => (
@@ -598,7 +589,8 @@ const TableVariant = () => {
                             placeholder={ i == 0 ? nameTitle1 : i == 1 ? nameTitle2 : "" } 
                             onBlur={onValidateVariantHeadCheck(`va${i+1}_option`)}
                             onChange={onVariantHeadChange(`va${i+1}_option`)}
-                            onFocus={() => setIsSetAll(false)}
+                            maxLength="20"
+                            suffix={ columns[i].title.split(" ")[0] === "Nama" ? <CountChar>0/20</CountChar> : <CountChar>{columns[i].title.length}/20</CountChar> }
                           />
                         </Tooltip>
                         <Media.Body>
@@ -633,8 +625,9 @@ const TableVariant = () => {
                               value={va1Option[idx].va1_option.value} 
                               onChange={onVariantOptionChange(idx, i+1)}
                               onBlur={onValidateVariantCheck(idx, i+1)}
-                              onFocus={() => setIsSetAll(false)}
                               placeholder={ i == 0 ? nameVariant1 : i == 1 ? nameVariant2 : "" } 
+                              maxLength="20"
+                              suffix={<CountChar>{va1Option[idx].va1_option.value.length}/20</CountChar>}
                             />
                           </Tooltip>
                           <Media.Body> 
@@ -672,6 +665,8 @@ const TableVariant = () => {
                               onChange={onVariantOptionChange(idx, i+1)}
                               onBlur={onValidateVariantCheck(idx, i+1)}
                               placeholder={ i == 0 ? nameVariant1 : i == 1 ? nameVariant2 : "" }
+                              maxLength="20"
+                              suffix={<CountChar>{va2Option[idx].va2_option.value.length}/20</CountChar>}
                             />
                           </Tooltip>
                           <Media.Body> 
@@ -694,18 +689,15 @@ const TableVariant = () => {
               ))}
 
               {countVariation < 2 && (
-                <Card.Body className="p-3">
+                <Card.Body className="p-0 pb-1">
                   <p className="fs-14 mb-3 w-100">Variasi {countVariation+1 == 2 && countVariation+1}</p>
-                  <Media className="align-items-center">
-                    <ButtonColor
-                      block with="dashed" type="primary" 
-                      className="h-35" icon={<PlusCircleOutlined />}
-                      onClick={() => activeVariantHandler(countVariation+1)}
-                    >
-                      {countVariation < 1 ? "Aktifkan Variasi" : "Tambah"}
-                    </ButtonColor>
-                    <Media.Body> <div style={{ width: 22 }} /> </Media.Body>
-                  </Media>
+                  <ButtonColor
+                    block with="dashed" type="primary" 
+                    className="h-35" icon={<PlusCircleOutlined />}
+                    onClick={() => activeVariantHandler(countVariation+1)}
+                  >
+                    {countVariation < 1 ? "Aktifkan Variasi" : "Tambah"}
+                  </ButtonColor>
                 </Card.Body>
               )}
             </Col>
@@ -713,7 +705,7 @@ const TableVariant = () => {
 
           {isActiveVariation.active && (
             <>
-              <Card.Body className="p-3">
+              <Card.Body className="p-0 py-3">
                 <Form layout="vertical">
                   <Form.Item className="mb-0" label="Informasi Variasi" >
                     <Row gutter={[8, 8]}>
@@ -730,7 +722,6 @@ const TableVariant = () => {
                                 className="w-100 bor-left-rad-0 bor-right-rad-0 h-33-custom-input h-35"
                                 formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
                                 parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
-                                onFocus={() => setIsSetAll(false)}
                               />
                             </div>
                           </div>
@@ -741,7 +732,6 @@ const TableVariant = () => {
                             placeholder="Stok" 
                             value={infoVariant.stock.value}
                             onChange={e => infoVariantChange(e, "stock")}
-                            onFocus={() => setIsSetAll(false)}
                             style={{ width: 'calc(100%/3)', marginLeft: '-1px' }} 
                           />
                           <Input 
@@ -750,7 +740,6 @@ const TableVariant = () => {
                             placeholder="Kode Variasi" 
                             value={infoVariant.code.value}
                             onChange={e => infoVariantChange(e)}
-                            onFocus={() => setIsSetAll(false)}
                             style={{ width: 'calc(100%/3)', borderTopRightRadius: '.25rem', borderBottomRightRadius: '.25rem' }} 
                           />
                         </Input.Group>
@@ -772,7 +761,7 @@ const TableVariant = () => {
                 </Form>
               </Card.Body>
 
-              <Card.Body className="p-3">
+              <Card.Body className="p-0">
                 <Table
                   bordered
                   pagination={false} 
@@ -786,9 +775,6 @@ const TableVariant = () => {
               </Card.Body>
             </>
           )}
-
-        </Card.Body>
-      </Card>
 
       <style jsx>{`
         :global(.ant-input-number-input){

@@ -2,53 +2,25 @@ import { useState } from 'react'
 import { Form, Input, Select, InputNumber, Button, Cascader, Space, Upload, Col, Row, Table } from 'antd'
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons'
 
-import ButtonColor from "antd-button-color"
 import Card from 'react-bootstrap/Card'
 
 import { formImage } from 'formdata/formImage'
 import { imageValidation, uploadButton } from 'lib/imageUploader'
 import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
+
+import TableVariant from 'components/Admin/Variant/TableVariant'
 import AddStyleAdmin from 'components/Admin/addStyle'
 
 import { categoryData } from 'components/Header/categoryData'
 
 import { brandData } from 'data/brand'
-
-const formItemLayout = {
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 24 },
-    md: { span: 18 },
-    lg: { span: 16 },
-    xl: { span: 14 },
-  },
-};
+import { formItemLayout } from 'data/productsAdmin'
 
 const NewProduct = () => {
-  const [form] = Form.useForm();
-
   const [brandList, setBrandList] = useState(brandData)
   const [imageList, setImageList] = useState(formImage);
   const [loading, setLoading] = useState(false)
   const [showSizeGuide, setShowSizeGuide] = useState(false)
-
-  const [isGrosir, setIsGrosir] = useState(false)
-  const [isVariation, setIsVariation] = useState(false)
-
-  const setIsGrosirHandler = () => {
-    setIsGrosir(true)
-  }
-  const cancelIsGrosirHandler = () => {
-    setIsGrosir(false)
-  }
-
-  const setIsVariationHandler = () => {
-    setIsVariation(true)
-  }
-  const cancelIsVariationHandler = () => {
-    setIsVariation(false)
-  }
-
 
   return(
     <>
@@ -58,7 +30,7 @@ const NewProduct = () => {
         </Card.Body>
         <Card.Body className="p-3">
 
-          <Form form={form} layout="vertical">
+          <Form layout="vertical">
             <Form.Item label="Nama Produk" required>
               <Input placeholder="Nama Produk" className="h-35" />
             </Form.Item>
@@ -98,7 +70,7 @@ const NewProduct = () => {
         </Card.Body>
         <Card.Body className="p-3">
 
-          <Form form={form} layout="vertical" {...formItemLayout}>
+          <Form layout="vertical" {...formItemLayout}>
             <Form.Item label="Harga" required>
               <div className="ant-input-group-wrapper">
                 <div className="ant-input-wrapper ant-input-group">
@@ -143,13 +115,6 @@ const NewProduct = () => {
             </Form.Item>
 
             <hr />
-
-            <Form.Item label="Variasi">
-              <ButtonColor with="dashed" type="primary" className="h-35" block onClick={setIsVariationHandler}>
-                <i className="fal fa-plus-circle mr-1" />Aktifkan Variasi
-              </ButtonColor>
-            </Form.Item>
-
             {/*
             <Form.Item label="Grosir">
               <ButtonColor with="dashed" type="primary" className="px-5" onClick={setIsGrosirHandler}>
@@ -159,90 +124,7 @@ const NewProduct = () => {
             */}
           </Form>
 
-          <Row>
-            <Col xs={24} sm={24} md={18} lg={16} xl={14}>
-              <Card className="bg-light border-0 w-100">
-                <Card.Header className="bg-light border-0 pb-0 text-right">
-                  <span className="hover-pointer text-dark">
-                    <i className="far fa-times" />
-                  </span>
-                </Card.Header>
-                <Card.Body className="pt-0">
-                  <Form layout="vertical">
-                    <Form.List name="variants">
-                      {(fields, { add, remove }, { errors }) => (
-                        <>
-                          {fields.map((field, index) => (
-                            <Form.Item
-                              label={index === 0 ? 'Nama' : index === 1 ? 'Pilihan' : ''}
-                              required={true}
-                              key={field.key}
-                              className="mb-2"
-                            >
-                              <div className="media align-items-center">
-                                <Form.Item
-                                  {...field}
-                                  validateTrigger={['onChange', 'onBlur']}
-                                  name={index === 0 ? [field.name, 'name'] : [field.name, 'value'] }
-                                  rules={[
-                                    {
-                                      required: true,
-                                      whitespace: true,
-                                      message: <small className="form-text text-left text-danger">Kolom tidak boleh kosong.</small>,
-                                    },
-                                  ]}
-                                  noStyle
-                                >
-                                  <Input 
-                                    placeholder={index === 0 ? "Masukkan Nama Variasi, contoh: Warna, dll." : "Masukkan Pilihan Variasi, contoh: Merah, dll."} 
-                                    name={index === 0 ? "variant" : "pilihan"+index}
-                                    onChange={e => console.log(e.target.name, e.target.value)}
-                                    className="h-35"
-                                  />
-                                </Form.Item>
-                                <div className="media-body">
-                                  {index === 0 && <div style={{ width: 22 }} />}
-                                  {index === 1 && <div style={{ width: 22 }} />}
-                                  {fields.length > 2 && index !== 0 ? (
-                                    <DeleteOutlined 
-                                      className="dynamic-delete-button ml-2"
-                                      onClick={() => remove(field.name)}
-                                    />
-                                  ) : null}
-                                </div>
-                              </div>
-                            </Form.Item>
-                          ))}
-
-                          <Form.Item>
-                            <div className="media align-items-center">
-                              <ButtonColor
-                                block
-                                id="add-twice-coice"
-                                with="dashed" 
-                                type="primary"
-                                className="h-35"
-                                onClick={() => add()}
-                                icon={<PlusCircleOutlined />}
-                              >
-                                Tambahkan Pilihan
-                              </ButtonColor>
-                              <Form.ErrorList errors={errors} />
-                              <div className="media-body">
-                                <div style={{ width: 22 }} />
-                              </div>
-                            </div>
-                          </Form.Item>
-
-                        </>
-                      )}
-                    </Form.List>
-                  </Form>
-                </Card.Body>
-              </Card>
-
-            </Col>
-          </Row>
+            <TableVariant />
 
         </Card.Body>
       </Card>
@@ -253,7 +135,7 @@ const NewProduct = () => {
         </Card.Body>
         <Card.Body className="p-3">
 
-          <Form form={form} layout="vertical">
+          <Form layout="vertical">
             <Form.Item label="Foto Produk" className="" required>
               <Upload
                 accept="image/*"
@@ -295,7 +177,7 @@ const NewProduct = () => {
         </Card.Body>
         <Card.Body className="p-3">
 
-          <Form form={form} layout="vertical">
+          <Form layout="vertical">
             <Form.Item label="Berat" required>
               <div className="ant-input-group-wrapper">
                 <div className="ant-input-wrapper ant-input-group">

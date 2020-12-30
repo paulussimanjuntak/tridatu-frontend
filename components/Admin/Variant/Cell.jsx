@@ -13,7 +13,6 @@ const EditableCell = ({
   onChange,
   index,
   onBlur,
-  onFocus,
   ...restProps
 }) => {
 
@@ -47,7 +46,6 @@ const EditableCell = ({
                     value={record[inputType].value}
                     onChange={onChange}
                     onBlur={onBlur}
-                    onFocus={onFocus}
                   />
                 </div>
               </div>
@@ -76,7 +74,6 @@ const EditableCell = ({
                   value={record[inputType].value}
                   onChange={onChange}
                   onBlur={onBlur}
-                  onFocus={onFocus}
                 />
               </div>
             </Tooltip>
@@ -94,7 +91,6 @@ const EditableCell = ({
                 onChange={onChange} 
                 value={record[inputType].value} 
                 onBlur={onBlur}
-                onFocus={onFocus}
                 style={{ resize: "none" }}
               />
             </div>
