@@ -38,6 +38,6 @@
     "redux-thunk": "^2.3.0",
     "slick-carousel": "^1.8.1",
     "suneditor-react": "^2.14.4",
-    "validator": "^13.1.17"
+    "validator": "^13.5.2"
   }
 }

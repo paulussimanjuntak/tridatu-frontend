@@ -582,6 +582,10 @@ const App = ({ Component, pageProps, store }) => {
           cursor: pointer;
         }
 
+        .position-relative{
+          position: relative !important;
+        }
+
         .noselect {
           -webkit-touch-callout: none; /* iOS Safari */
           -webkit-user-select: none; /* Safari */
@@ -597,12 +601,22 @@ const App = ({ Component, pageProps, store }) => {
           border-top-right-radius: calc(0.25rem - 1px);
         }
 
+        .bor-left-rad-0{
+          border-top-left-radius: 0!important;
+          border-bottom-left-radius: 0!important;
+        }
+
+        .bor-right-rad-0{
+          border-top-right-radius: 0!important;
+          border-bottom-right-radius: 0!important;
+        }
+
         .bor-rad-2rem {
           border-radius: .2rem;
         }
 
         .bor-rad-25rem {
-          border-radius: 0.25rem;
+          border-radius: 0.25rem !important;
         }
 
         .bor-rad-15px {
@@ -625,6 +639,10 @@ const App = ({ Component, pageProps, store }) => {
           border-top: 5px solid rgb(243, 244, 245);
         }
 
+        .h-30{
+          height: 30px;
+        }
+
         .h-33{
           height: 33px;
         }
@@ -645,6 +663,9 @@ const App = ({ Component, pageProps, store }) => {
           max-height: 100vh !important;
         }
 
+        .w-min-content {
+          width: min-content;
+        }
         .w-340px{
           width: 340px !important;
         }
