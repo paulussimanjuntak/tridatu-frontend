@@ -21,6 +21,7 @@ const NewProduct = () => {
   const [imageList, setImageList] = useState(formImage);
   const [loading, setLoading] = useState(false)
   const [showSizeGuide, setShowSizeGuide] = useState(false)
+  const [isActiveVariation, setIsActiveVariation] = useState({ active: false, countVariation: 0 })
 
   return(
     <>
@@ -69,62 +70,65 @@ const NewProduct = () => {
           <h5 className="mb-0 fs-16-s">Informasi Penjualan</h5>
         </Card.Body>
         <Card.Body className="p-3">
-
-          <Form layout="vertical" {...formItemLayout}>
-            <Form.Item label="Harga" required>
-              <div className="ant-input-group-wrapper">
-                <div className="ant-input-wrapper ant-input-group">
-                  <span className="ant-input-group-addon noselect">Rp</span>
-                  <InputNumber
-                    className="w-100 bor-left-rad-0 h-33-custom-input"
-                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                    parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
-                  />
+          {!isActiveVariation.active && (
+            <Form layout="vertical" {...formItemLayout}>
+              <Form.Item label="Harga" required>
+                <div className="ant-input-group-wrapper">
+                  <div className="ant-input-wrapper ant-input-group">
+                    <span className="ant-input-group-addon noselect">Rp</span>
+                    <InputNumber
+                      className="w-100 bor-left-rad-0 h-33-custom-input"
+                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                      parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
+                    />
+                  </div>
                 </div>
-              </div>
-            </Form.Item>
+              </Form.Item>
 
-            <Form.Item label="Stok" required>
-              <InputNumber 
-                min={0} 
-                placeholder="Jumlah Stok"
-                className="w-100 h-33-custom-input" 
-              />
-            </Form.Item>
+              <Form.Item label="Stok" required>
+                <InputNumber 
+                  min={0} 
+                  placeholder="Jumlah Stok"
+                  className="w-100 h-33-custom-input" 
+                />
+              </Form.Item>
 
-            <Form.Item label="Kode Variasi">
-              <Input placeholder="Kode Variasi" className="h-35" />
-            </Form.Item>
+              <Form.Item label="Kode Variasi">
+                <Input placeholder="Kode Variasi" className="h-35" />
+              </Form.Item>
 
-            <Form.Item label="Barcode">
-              <Input placeholder="Barcode" className="h-35" />
-            </Form.Item>
+              <Form.Item label="Barcode">
+                <Input placeholder="Barcode" className="h-35" />
+              </Form.Item>
 
-            <Form.Item label="Diskon">
-              <div className="ant-input-group-wrapper">
-                <div className="ant-input-wrapper ant-input-group">
-                  <span className="ant-input-group-addon noselect">%</span>
-                  <InputNumber
-                    min={0}
-                    max={100}
-                    placeholder="Diskon"
-                    className="w-100 bor-left-rad-0 h-33-custom-input"
-                  />
+              <Form.Item label="Diskon">
+                <div className="ant-input-group-wrapper">
+                  <div className="ant-input-wrapper ant-input-group">
+                    <span className="ant-input-group-addon noselect">%</span>
+                    <InputNumber
+                      min={0}
+                      max={100}
+                      placeholder="Diskon"
+                      className="w-100 bor-left-rad-0 h-33-custom-input"
+                    />
+                  </div>
                 </div>
-              </div>
-            </Form.Item>
+              </Form.Item>
 
-            <hr />
-            {/*
-            <Form.Item label="Grosir">
-              <ButtonColor with="dashed" type="primary" className="px-5" onClick={setIsGrosirHandler}>
-                <i className="fal fa-plus-circle mr-1" />Tambah Harga Grosir
-              </ButtonColor>
-            </Form.Item>
-            */}
-          </Form>
+              {/* GROSIR
+              <Form.Item label="Grosir">
+                <ButtonColor with="dashed" type="primary" className="px-5" onClick={setIsGrosirHandler}>
+                  <i className="fal fa-plus-circle mr-1" />Tambah Harga Grosir
+                </ButtonColor>
+              </Form.Item>
+              */}
+            </Form>
+          )}
 
-          <TableVariant />
+          <TableVariant 
+            isActiveVariation={isActiveVariation}
+            setIsActiveVariation={setIsActiveVariation}
+          />
 
         </Card.Body>
       </Card>
