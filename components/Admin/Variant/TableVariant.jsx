@@ -31,12 +31,12 @@ const additional = { price: initialValue, stock: initialValue, code: initialValu
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
-const TableVariant = () => {
+const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
   const [count, setCount] = useState(0)
   const [columns, setColumns] = useState(initialColumn)
   const [dataSource, setDataSource] = useState([])
   const [vaOption, setVaOption] = useState({ va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 })
-  const [isActiveVariation, setIsActiveVariation] = useState({ active: false, countVariation: 0 })
+  // const [isActiveVariation, setIsActiveVariation] = useState({ active: false, countVariation: 0 })
   const [infoVariant, setInfoVariant] = useState(additional)
   const [isSetAll, setIsSetAll] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
