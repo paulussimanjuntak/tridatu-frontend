@@ -89,7 +89,7 @@ const Password = () => {
           else if (typeof errDetail === "string" && errDetail) {
             const state = JSON.parse(JSON.stringify(formPassword));
             if(isUpdate){
-              state.old_password.value = state.password.value;
+              state.old_password.value = state.old_password.value;
               state.old_password.isValid = false;
               state.old_password.message = errDetail;
               setFormPassword(state);
