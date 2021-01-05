@@ -1,16 +1,18 @@
 import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
-import { Tabs, Row, Col, List, Skeleton, Popconfirm, Empty, Collapse } from 'antd'
+import { Tabs, List, Skeleton, Popconfirm, Empty, Collapse, Input } from 'antd'
 import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from 'framer-motion'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
+import ColB from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
 import Card from 'react-bootstrap/Card'
 
 import { formCategories, formSubCategories, formItemSubCategories } from 'formdata/formCategories'
 import * as actions from "store/actions";
 import axios, { jsonHeaderHandler, resNotification, signature_exp } from 'lib/axios'
-import CardCategory from "components/Card/Admin/Categories/Category.jsx"
+// import CardCategory from "components/Card/Admin/Categories/Category.jsx"
 import ModalEditCategory from "components/Modal/Admin/Categories/Category"
 import ModalEditSubCategory from "components/Modal/Admin/Categories/SubCategory"
 import ModalEditItemSubCategory from "components/Modal/Admin/Categories/ItemSubCategory"
@@ -21,12 +23,29 @@ const CATEGORIES = "categories"
 const SUBCATEGORIES = "sub-categories"
 const ITEMSUBCATEGORIES = "item-sub-categories"
 
+const SearchComponent = ({ placeholder, search, setSearch }) => (
+  <Form>
+    <Form.Row>
+      <Form.Group as={ColB} lg={12}>
+        <Input 
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="account-search h-100"
+          placeholder={placeholder} 
+          prefix={<i className="far fa-search" />}
+        />
+      </Form.Group>
+    </Form.Row>
+  </Form>
+)
+
 const Category = () => {
   const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState(CATEGORIES)
   const [categories, setCategories] = useState(formCategories)
   const [subCategories, setSubCategories] = useState(formSubCategories)
   const [itemSubCategories, setItemSubCategories] = useState(formItemSubCategories)
+  const [search, setSearch] = useState("")
 
   const [showEditCategory, setShowEditCategory] = useState(false)
   const [showEditSubCategory, setShowEditSubCategory] = useState(false)
@@ -34,12 +53,12 @@ const Category = () => {
 
   const categoriesData = useSelector(state => state.categories.categories)
   const allCategoriesData = useSelector(state => state.categories.allCategories)
-  const loadingCategories = useSelector(state => state.categories.loading)
 
   const onTabClick = key => {
     if(key === CATEGORIES) dispatch(actions.getCategories(false))
     else dispatch(actions.getCategories(true))
     setActiveTab(key)
+    setSearch("")
   }
 
   /* CATEGORIES */
@@ -216,6 +235,13 @@ const Category = () => {
     }
   }, [activeTab])
 
+  useEffect(() => {
+    if(activeTab === CATEGORIES) dispatch(actions.getCategories(false, search))
+    if(activeTab === SUBCATEGORIES) dispatch(actions.getCategories(true, search))
+    if(activeTab === ITEMSUBCATEGORIES) dispatch(actions.getAllCategories(search))
+  },[search])
+
+
   return(
     <>
       <Card className="border-0 shadow-none card-add-product">
@@ -223,43 +249,98 @@ const Category = () => {
           <Tabs className="order-tabs noselect" activeKey={activeTab} onTabClick={onTabClick}>
 
             <Tabs.TabPane tab="Kategori" key={CATEGORIES}>
-              <Row gutter={[16, 16]}>
-                <AnimatePresence>
-                  {!loadingCategories && activeTab === CATEGORIES && categoriesData.map(data => (
-                    <Col key={data.categories_id} xl={4} lg={6} md={8} sm={8} xs={12}>
-                      <CardCategory 
-                        data={data} 
-                        showEditHandler={() => editCategoryHandler(data.categories_id)}
-                        deleteHandler={() => deleteCategoryHandler(data.categories_id)}
-                        loading={loadingCategories}
-                      />
-                    </Col>
-                  ))}
-                </AnimatePresence>
-
-                <AnimatePresence>
-                  {categoriesData.length == 0 && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: ".2" }}
-                      className="w-100"
-                    >
-                      <Empty 
-                        className="my-5" 
-                        image={Empty.PRESENTED_IMAGE_SIMPLE} 
-                        description={<span className="text-secondary">Kategori kosong</span>} 
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </Row>
+              <SearchComponent 
+                search={search} 
+                setSearch={setSearch} 
+                placeholder="Cari kategori" 
+              />
+              <div className="scrollable-category">
+                {activeTab === CATEGORIES && categoriesData.length > 0 && (
+                  <List
+                    itemLayout="horizontal"
+                    dataSource={categoriesData}
+                    renderItem={({categories_id, categories_name}) => (
+                      <List.Item
+                        actions={[
+                          <EditOutlined key="edit" onClick={() => editCategoryHandler(categories_id)} />,
+                          <Popconfirm
+                            title="Hapus kategori ini?"
+                            onConfirm={() => deleteCategoryHandler(categories_id)}
+                            okText="Ya"
+                            cancelText="Batal"
+                            placement="bottomRight"
+                            arrowPointAtCenter
+                          >
+                            <DeleteOutlined key="delete" />
+                          </Popconfirm>,
+                        ]}
+                      >
+                        <Skeleton title={false} loading={false} active>
+                          <List.Item.Meta description={ <span className="text-dark">{categories_name}</span> } />
+                        </Skeleton>
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </div>
+              <AnimatePresence>
+                {categoriesData.length == 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: ".2" }}
+                    className="w-100"
+                  >
+                    <Empty 
+                      className="my-5" 
+                      image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                      description={<span className="text-secondary">Kategori kosong</span>} 
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Tabs.TabPane>
 
-
-
+            
+            
             <Tabs.TabPane tab="Sub Kategori" key={SUBCATEGORIES}>
+              <SearchComponent 
+                search={search} 
+                setSearch={setSearch} 
+                placeholder="Cari sub kategori"
+              />
+              <div className="scrollable-category">
+                {categoriesData.length > 0 && (
+                  <List
+                    itemLayout="horizontal"
+                    dataSource={categoriesData}
+                    renderItem={({categories_name, sub_categories_id, sub_categories_name}) => (
+                      <List.Item
+                        actions={[
+                          <EditOutlined key="edit" onClick={() => editSubCategoryHandler(sub_categories_id)} />,
+                          <Popconfirm
+                            title="Hapus sub kategori ini?"
+                            onConfirm={() => deleteSubCategoryHandler(sub_categories_id)}
+                            okText="Ya"
+                            cancelText="Batal"
+                            placement="bottomRight"
+                            arrowPointAtCenter
+                          >
+                            <DeleteOutlined key="delete" />
+                          </Popconfirm>,
+                        ]}
+                      >
+                        <Skeleton title={false} loading={false} active>
+                          <List.Item.Meta
+                            description={ <div>{categories_name} / <span className="text-dark">{sub_categories_name}</span></div> }
+                          />
+                        </Skeleton>
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </div>
               <AnimatePresence>
                 {categoriesData.length == 0 && (
                   <motion.div
@@ -277,40 +358,58 @@ const Category = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-              {categoriesData.length > 0 && (
-                <List
-                  itemLayout="horizontal"
-                  dataSource={categoriesData}
-                  renderItem={({categories_name, sub_categories_id, sub_categories_name}) => (
-                    <List.Item
-                      actions={[
-                        <EditOutlined key="edit" onClick={() => editSubCategoryHandler(sub_categories_id)} />,
-                        <Popconfirm
-                          title="Hapus sub kategori ini?"
-                          onConfirm={() => deleteSubCategoryHandler(sub_categories_id)}
-                          okText="Ya"
-                          cancelText="Batal"
-                          placement="bottomRight"
-                          arrowPointAtCenter
-                        >
-                          <DeleteOutlined key="delete" />
-                        </Popconfirm>,
-                      ]}
-                    >
-                      <Skeleton title={false} loading={false} active>
-                        <List.Item.Meta
-                          description={ <div>{categories_name} / <span className="text-dark">{sub_categories_name}</span></div> }
-                        />
-                      </Skeleton>
-                    </List.Item>
-                  )}
-                />
-              )}
             </Tabs.TabPane>
 
 
 
             <Tabs.TabPane tab="Item Sub Kategori" key={ITEMSUBCATEGORIES}>
+              <SearchComponent 
+                search={search} 
+                setSearch={setSearch} 
+                placeholder="Cari item sub kategori"
+              />
+              <div className="scrollable-category">
+                {allCategoriesData.length > 0 && (
+                  <Collapse accordion className="mb-3">
+                    {allCategoriesData.map(({categories_name, sub_categories}) => (
+                      sub_categories.map(({sub_categories_id, sub_categories_name, item_sub_categories}) => (
+                        <Collapse.Panel 
+                        header={<div className="text-muted">{categories_name} / <span className="text-dark">{sub_categories_name}</span></div>} 
+                        key={sub_categories_id}
+                        >
+                          <List
+                            itemLayout="horizontal"
+                            dataSource={item_sub_categories}
+                            renderItem={({item_sub_categories_id, item_sub_categories_name}) => (
+                              <List.Item
+                                actions={[
+                                  <EditOutlined key="edit" onClick={() => editItemSubCategoryHandler(item_sub_categories_id)} />,
+                                  <Popconfirm
+                                    title="Hapus item sub kategori ini?"
+                                    onConfirm={() => deleteItemSubCategoryHandler(item_sub_categories_id)}
+                                    okText="Ya"
+                                    cancelText="Batal"
+                                    placement="bottomRight"
+                                    arrowPointAtCenter
+                                  >
+                                    <DeleteOutlined key="delete" />
+                                  </Popconfirm>,
+                                ]}
+                              >
+                                <Skeleton title={false} loading={false} active>
+                                  <List.Item.Meta
+                                    description={ <span className="text-dark">{item_sub_categories_name}</span> }
+                                  />
+                                </Skeleton>
+                              </List.Item>
+                            )}
+                          />
+                        </Collapse.Panel>
+                      ))
+                    ))}
+                  </Collapse>
+                )}
+              </div>
               <AnimatePresence>
                 {allCategoriesData.length == 0 && (
                   <motion.div
@@ -328,46 +427,6 @@ const Category = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-              {allCategoriesData.length > 0 && (
-                <Collapse accordion>
-                  {allCategoriesData.map(({categories_name, sub_categories}) => (
-                    sub_categories.map(({sub_categories_id, sub_categories_name, item_sub_categories}) => (
-                      <Collapse.Panel 
-                      header={<div className="text-muted">{categories_name} / <span className="text-dark">{sub_categories_name}</span></div>} 
-                      key={sub_categories_id}
-                      >
-                        <List
-                          itemLayout="horizontal"
-                          dataSource={item_sub_categories}
-                          renderItem={({item_sub_categories_id, item_sub_categories_name}) => (
-                            <List.Item
-                              actions={[
-                                <EditOutlined key="edit" onClick={() => editItemSubCategoryHandler(item_sub_categories_id)} />,
-                                <Popconfirm
-                                  title="Hapus item sub kategori ini?"
-                                  onConfirm={() => deleteItemSubCategoryHandler(item_sub_categories_id)}
-                                  okText="Ya"
-                                  cancelText="Batal"
-                                  placement="bottomRight"
-                                  arrowPointAtCenter
-                                >
-                                  <DeleteOutlined key="delete" />
-                                </Popconfirm>,
-                              ]}
-                            >
-                              <Skeleton title={false} loading={false} active>
-                                <List.Item.Meta
-                                  description={ <span className="text-dark">{item_sub_categories_name}</span> }
-                                />
-                              </Skeleton>
-                            </List.Item>
-                          )}
-                        />
-                      </Collapse.Panel>
-                    ))
-                  ))}
-                </Collapse>
-              )}
             </Tabs.TabPane>
 
           </Tabs>
@@ -393,6 +452,12 @@ const Category = () => {
       />
 
       <style jsx>{AddStyleAdmin}</style>
+      <style jsx>{`
+        .scrollable-category{
+          max-height: 63vh;
+          overflow: auto;
+        }
+      `}</style>
     </>
   )
 }
