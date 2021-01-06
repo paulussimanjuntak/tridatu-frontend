@@ -560,7 +560,6 @@ const App = ({ Component, pageProps, store }) => {
         .va-inherit {
           vertical-align: inherit !important;
         }
-
         .va-super{
           vertical-align: super !important;
         }
@@ -675,6 +674,10 @@ const App = ({ Component, pageProps, store }) => {
         }
         .top-68{
           top: 68px !important;
+        }
+
+        .idx-1{
+          z-index: 1;
         }
 
         .idx-1020{
