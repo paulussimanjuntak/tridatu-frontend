@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect, useRef } from 'react'
-import { Input, InputNumber, Form, Tooltip } from 'antd'
+import { Input, InputNumber, Form } from 'antd'
+import ErrorTooltip from "components/ErrorMessage/Tooltip";
 
 const EditableCell = ({
   title,
@@ -42,14 +43,7 @@ const EditableCell = ({
             name="price" 
             className="mb-0 h-30 input-form-variant"
           >
-            <Tooltip 
-              color="red"
-              placement="topLeft"
-              visible={!record[inputType].isValid && record[inputType].message}
-              title={<small className="fs-10">{record[inputType].message}</small>}
-              autoAdjustOverflow
-              overlayClassName="variant-input-tooltip"
-            >
+            <div>
               <div className="ant-input-group-wrapper">
                 <div className="ant-input-wrapper ant-input-group input-group-variant" style={{ zIndex: 1 }}>
                   <span className="ant-input-group-addon noselect fs-12 bg-transparent">Rp</span>
@@ -64,7 +58,8 @@ const EditableCell = ({
                   />
                 </div>
               </div>
-            </Tooltip>
+              <ErrorTooltip item={record[inputType]} />
+            </div>
           </Form.Item>
         )}
         {inputType === "stock" && (
@@ -72,24 +67,16 @@ const EditableCell = ({
             name="stock" 
             className="mb-0 h-30 input-form-variant"
           >
-            <Tooltip 
-              color="red"
-              placement="topLeft"
-              visible={!record[inputType].isValid && record[inputType].message}
-              title={<small className="fs-10">{record[inputType].message}</small>}
-              autoAdjustOverflow
-              overlayClassName="variant-input-tooltip"
-            >
-              <div>
-                <InputNumber 
-                  {...initProps}
-                  min={0} 
-                  name="stock"
-                  placeholder="Masukkan stok" 
-                  className="w-100 fs-12 input-number-variant"
-                />
-              </div>
-            </Tooltip>
+            <div>
+              <InputNumber 
+                {...initProps}
+                min={0} 
+                name="stock"
+                placeholder="Masukkan stok" 
+                className="w-100 fs-12 input-number-variant"
+              />
+              <ErrorTooltip item={record[inputType]} />
+            </div>
           </Form.Item>
         )}
         {inputType === "code" && (
@@ -100,6 +87,7 @@ const EditableCell = ({
                 name="code" 
                 placeholder="Kode" 
               />
+              <ErrorTooltip item={record[inputType]} />
             </div>
           </Form.Item>
         )}
@@ -111,6 +99,7 @@ const EditableCell = ({
                 name="barcode" 
                 placeholder="Barcode" 
               />
+              <ErrorTooltip item={record[inputType]} />
             </div>
           </Form.Item>
         )}
@@ -158,25 +147,6 @@ const EditableCell = ({
         }
         :global(.input-form-variant.ant-form-item-has-error .ant-input-number:focus, .input-form-variant.ant-form-item-has-error .ant-input-number-focused){
           box-shadow: none !important;
-        }
-        :global(.variant-table-tooltip .ant-tooltip-inner){
-          padding: 0px 5px;
-          min-height: 24px;
-          white-space: nowrap;
-        }
-        :global(.ant-tooltip-open > div){
-          position: relative !important;
-        }
-        :global(.ant-tooltip-open > div > div > .ant-tooltip){
-          top: -55px !important;
-          left: 0 !important;
-        }
-        :global(.td-input-variant .show-help.show-help-enter, 
-                .td-input-variant .show-help.show-help-leave.show-help-start,
-                .td-input-variant .show-help.show-help-leave.show-help-active,
-        ){
-          height: 0 !important;
-          display: none !important;
         }
       `}</style>
     </>
