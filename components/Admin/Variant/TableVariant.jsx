@@ -359,6 +359,24 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
           const stockVal = stock.value
           const codeVal = code.value
           const barcodeVal = barcode.value
+          const stockDSValue = copyDataSource[key1].stock.value
+
+          let finalStockValue = 0
+          if(stockVal === null){
+            if(stockDSValue !== ""){
+              finalStockValue = stockDSValue
+            } else {
+              finalStockValue = 0
+            }
+          } else if(stockVal === "") {
+            if(stockDSValue !== ""){
+              finalStockValue = stockDSValue
+            } else {
+              finalStockValue = 0
+            }
+          } else {
+            finalStockValue = stockVal
+          }
 
           variant_tmp.push({
             ...initialData,
@@ -368,7 +386,9 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
               message: priceVal ? null : copyDataSource[key1].price.message
             },
             stock: { 
-              value: stockVal || stockVal == 0 ? stockVal : copyDataSource[key1].stock.value, 
+              // value: stockVal !== "" ? stockVal : copyDataSource[key1].stock.value ? copyDataSource[key1].stock.value : stockDataSource,
+              // value: stockVal || stockVal == 0 ? stockVal : copyDataSource[key1].stock.value, 
+              value: finalStockValue,
               isValid: stockVal ? true : copyDataSource[key1].stock.isValid, 
               message: stockVal ? null : copyDataSource[key1].stock.message
             },
@@ -420,6 +440,23 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
         const dataCode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].code
         const dataBarcode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].barcode
 
+        let finalStockValue = 0
+        if(stockVal === null){
+          if(dataStock.value !== ""){
+            finalStockValue = dataStock.value
+          } else {
+            finalStockValue = 0
+          }
+        } else if(stockVal === "") {
+          if(dataStock.value!== ""){
+            finalStockValue = dataStock.value
+          } else {
+            finalStockValue = 0
+          }
+        } else {
+          finalStockValue = stockVal
+        }
+
         variants[i] = {
           ...variants[i],
           price: { 
@@ -428,7 +465,8 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
             message: priceVal ? null : dataPrice.message
           },
           stock: { 
-            value: stockVal || stockVal == 0 ? stockVal : dataStock.value, 
+            // value: stockVal || stockVal == 0 ? stockVal : dataStock.value, 
+            value: finalStockValue, 
             isValid: stockVal ? true : dataStock.isValid, 
             message: stockVal ? null : dataStock.message
           },
