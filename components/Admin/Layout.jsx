@@ -286,6 +286,14 @@ const AdminLayout = ({ children }) => {
     setActiveMenu([router.pathname])
   }, [router.pathname])
 
+  useEffect(() => {
+    dispatch(actions.getAdminCollapsed(collapsed))
+  }, [collapsed])
+
+  useEffect(() => {
+    dispatch(actions.getAdminIsMobile(isMobile))
+  }, [isMobile])
+
   return(
     <>
       <Layout style={{ minHeight: '100vh', marginBottom: "0" }}>
