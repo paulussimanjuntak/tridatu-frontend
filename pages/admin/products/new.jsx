@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { Form, Input, Select, InputNumber, Button, Cascader, Space, Upload, Row, Col } from 'antd'
+import { Form, Input, Select, InputNumber, Button, Cascader, Space, Upload, Row, Col, Radio } from 'antd'
 import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons'
+import { AnimatePresence, motion } from "framer-motion";
 
 import _ from 'lodash'
 import isIn from 'validator/lib/isIn'
@@ -10,7 +11,8 @@ import axios, { jsonHeaderHandler, resNotification, signature_exp } from 'lib/ax
 
 import getIndex from 'lib/getIndex'
 import { formImage } from 'formdata/formImage'
-import { imageValidation, uploadButton } from 'lib/imageUploader'
+import { imagePreview, uploadButton } from 'lib/imageUploader'
+import { imageValidationProduct } from 'lib/imageProductUploader'
 import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
 
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
@@ -26,13 +28,15 @@ import { formItemLayout, initialColumn } from 'data/productsAdmin'
 import { formInformationProduct, formNoVariant } from 'formdata/formProduct'
 import { formNoVariantIsValid, formVa1OptionSingleVariantIsValid, formTableIsValid, formVariantTitleIsValid } from 'formdata/formProduct'
 import { formVa2OptionDoubleVariantIsValid, formTitleIsValid } from 'formdata/formProduct'
+import { isValidProductInformation } from 'formdata/formProduct'
 
 import * as actions from "store/actions";
 
 /*
  * TODO:
  * search in select categories ✅
- * variant images
+ * variant images ✅
+ * validation error input 
  * improve variant component
  * connect to backend
  */
@@ -41,7 +45,16 @@ const NewProduct = () => {
   const dispatch = useDispatch()
 
   const [imageList, setImageList] = useState(formImage);
+  const [imageVariants, setImageVariants] = useState(formImage);
+  const [imageSizeGuide, setImageSizeGuide] = useState(formImage);
+  const [urlImageVariants, setUrlImageVariants] = useState([]);
+
+  const [isPreorder, setIsPreorder] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingImageProduct, setLoadingImageProduct] = useState(false)
+  const [loadingImageVariant, setLoadingImageVariant] = useState(false)
+  const [loadingImageSizeGuide, setLoadingImageSizeGuide] = useState(false)
+
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [allCategoriesList, setAllCategoriesList] = useState([])
 
@@ -65,7 +78,7 @@ const NewProduct = () => {
   const { va1Option, va2Option, va1Total, va2Total } = vaOption
 
   /* Destructuring Object Product */
-  const { name, desc, item_sub_category_id, brand_id, condition, weight, video } = informationProduct;
+  const { name, desc, item_sub_category_id, brand_id, condition, weight, preorder, video } = informationProduct;
   const { va1_price, va1_stock, va1_code, va1_barcode } = noVariant
   /* Destructuring Object Product */
 
@@ -105,7 +118,6 @@ const NewProduct = () => {
             item.id = item.item_sub_categories_id;
             item.label = item.item_sub_categories_name;
             item.value = item.item_sub_categories_name;
-            // item.value = item.item_sub_categories_name + "~" + item.item_sub_categories_id;
             delete item.item_sub_categories_id;
             delete item.item_sub_categories_name;
           })
@@ -128,7 +140,7 @@ const NewProduct = () => {
     const category_id = selectedOptions[selectedOptions.length - 1]['id']
     const data = {
       ...informationProduct,
-      item_sub_category_id: { ...item_sub_category_id, value: category_id }
+      item_sub_category_id: { ...item_sub_category_id, value: category_id, isValid: true, message: null }
     }
     setInformationProduct(data)
   }
@@ -439,7 +451,38 @@ const NewProduct = () => {
 
   const onCheckProduct = e => {
     e.preventDefault()
+      console.log(informationProduct)
+    if(isValidProductInformation(informationProduct, setInformationProduct)){
+      console.log(informationProduct)
+    }
   }
+
+  // Function for image changing
+  const imageChangeHandler = ({ fileList: newFileList }) => {
+    const data = {
+      ...imageList,
+      file: { value: newFileList, isValid: true, message: null }
+    }
+    setImageList(data)
+  };
+
+  const imageVariantChangeHandler = ({ fileList: newFileList, file }) => {
+    if(file.status === "done"){
+      const data = {
+        ...imageVariants,
+        file: { value: newFileList, isValid: true, message: null }
+      }
+      setImageVariants(data)
+    }
+  };
+
+  const imageSizeGuideChangeHandler = ({ fileList: newFileList }) => {
+    const data = {
+      ...imageSizeGuide,
+      file: { value: newFileList, isValid: true, message: null }
+    }
+    setImageSizeGuide(data)
+  };
 
   return(
     <>
@@ -450,7 +493,11 @@ const NewProduct = () => {
         <Card.Body className="p-3">
 
           <Form layout="vertical">
-            <Form.Item label="Nama Produk" required>
+            <Form.Item 
+              required
+              label="Nama Produk" 
+              validateStatus={!name.isValid && name.message && "error"}
+            >
               <Input 
                 name="name"
                 placeholder="Nama Produk" 
@@ -458,8 +505,13 @@ const NewProduct = () => {
                 value={name.value}
                 onChange={e => onInformationProductChange(e)}
               />
+              <ErrorTooltip item={name} />
             </Form.Item>
-            <Form.Item label="Deskripsi Produk" required>
+            <Form.Item 
+              required
+              label="Deskripsi Produk" 
+              validateStatus={!desc.isValid && desc.message && "error"}
+            >
               <Input.TextArea 
                 name="desc"
                 autoSize={{ minRows: 8 }} 
@@ -467,21 +519,31 @@ const NewProduct = () => {
                 value={desc.value}
                 onChange={e => onInformationProductChange(e)}
               />
+              <ErrorTooltip item={desc} />
             </Form.Item>
-            <Form.Item label="Kategori" required>
+            <Form.Item 
+              required
+              label="Kategori" 
+              validateStatus={!item_sub_category_id.isValid && item_sub_category_id.message && "error"}
+            >
               <Cascader 
                 changeOnSelect
+                allowClear={false}
                 value={cascaderValue}
                 popupVisible={cascaderIsShow}
                 showSearch={{ filter }}
                 onChange={onCascaderChange}
                 options={allCategoriesList} 
                 onFocus={onFocusCascader}
-                placeholder="Pilih Kategori" 
+                placeholder="Ketik dan cari / pilih Kategori" 
                 popupClassName="cascader-category-menus"
               />
+              <ErrorTooltip item={item_sub_category_id} />
             </Form.Item>
-            <Form.Item label="Brand">
+            <Form.Item 
+              label="Brand"
+              validateStatus={!brand_id.isValid && brand_id.message && "error"}
+            >
               <Select
                 showSearch
                 name="brand_id"
@@ -497,8 +559,13 @@ const NewProduct = () => {
                   <Select.Option value={data.id} key={data.id}>{data.name}</Select.Option>
                 ))}
               </Select>
+              <ErrorTooltip item={brand_id} />
             </Form.Item>
-            <Form.Item label="Kondisi" required>
+            <Form.Item 
+              required
+              label="Kondisi" 
+              validateStatus={!condition.isValid && condition.message && "error"}
+            >
               <Select 
                 name="condition"
                 placeholder="Kondisi produk" 
@@ -508,6 +575,7 @@ const NewProduct = () => {
                 <Select.Option value={true}>Baru</Select.Option>
                 <Select.Option value={false}>Bekas</Select.Option>
               </Select>
+              <ErrorTooltip item={condition} />
             </Form.Item>
           </Form>
 
@@ -522,7 +590,11 @@ const NewProduct = () => {
 
           {!isActiveVariation.active && (
             <Form layout="vertical" {...formItemLayout}>
-              <Form.Item label="Harga" required>
+              <Form.Item 
+                required
+                label="Harga" 
+                validateStatus={!va1_price.isValid && va1_price.message && "error"}
+              >
                 <div className="ant-input-group-wrapper">
                   <div className="ant-input-wrapper ant-input-group">
                     <span className="ant-input-group-addon noselect">Rp</span>
@@ -537,10 +609,14 @@ const NewProduct = () => {
                     />
                   </div>
                 </div>
-                <ErrorMessage item={va1_price} />
+                <ErrorTooltip item={va1_price} />
               </Form.Item>
 
-              <Form.Item label="Stok" required>
+              <Form.Item 
+                required
+                label="Stok" 
+                validateStatus={!va1_stock.isValid && va1_stock.message && "error"}
+              >
                 <InputNumber 
                   min={0} 
                   name="va1_stock"
@@ -549,10 +625,13 @@ const NewProduct = () => {
                   value={va1_stock.value}
                   onChange={e => onNoVariantChangeHandler(e, "va1_stock")}
                 />
-                <ErrorMessage item={va1_stock} />
+                <ErrorTooltip item={va1_stock} />
               </Form.Item>
 
-              <Form.Item label="Kode Variasi">
+              <Form.Item 
+                label="Kode Variasi"
+                validateStatus={!va1_code.isValid && va1_code.message && "error"}
+              >
                 <Input 
                   className="h-35" 
                   name="va1_code"
@@ -560,10 +639,14 @@ const NewProduct = () => {
                   value={va1_code.value}
                   onChange={e => onNoVariantChangeHandler(e)}
                 />
-                <ErrorMessage item={va1_code} />
+                <ErrorTooltip item={va1_code} />
               </Form.Item>
 
-              <Form.Item label="Barcode" className="mb-4">
+              <Form.Item 
+                label="Barcode" 
+                className="mb-4"
+                validateStatus={!va1_barcode.isValid && va1_barcode.message && "error"}
+              >
                 <Input 
                   className="h-35" 
                   name="va1_barcode"
@@ -571,7 +654,7 @@ const NewProduct = () => {
                   value={va1_barcode.value}
                   onChange={e => onNoVariantChangeHandler(e)}
                 />
-                <ErrorMessage item={va1_barcode} />
+                <ErrorTooltip item={va1_barcode} />
               </Form.Item>
 
             </Form>
@@ -603,52 +686,63 @@ const NewProduct = () => {
                 accept="image/*"
                 listType="picture-card"
                 className="avatar-uploader"
+                disabled={loadingImageProduct}
+                onPreview={imagePreview}
                 fileList={imageList.file.value}
-                beforeUpload={(file) => imageValidation(file, "www.google.com", "avatar", "formHeader")}
+                onChange={imageChangeHandler}
+                beforeUpload={(file) => imageValidationProduct(file, "image_product", "/products/create", "post", setLoadingImageProduct )}
               >
-                {imageList.file.value.length >= 1 ? null : uploadButton(loading)}
+                {imageList.file.value.length >= 10 ? null : uploadButton(loadingImageProduct)}
               </Upload>
             </Form.Item>
 
             {isActiveVariation.active && (
               <Form.Item label={columns[0].title.split(" ")[0] === "Nama" ? "Variasi 1" : columns[0].title} className="mb-0">
-                <Row gutter={[16, 16]}>
+                <Row gutter={[8, 16]}>
                   {va1Option.map((va, i) => (
                     <Col key={i}>
-                      <div className="w-min-content">
-                        <Upload
-                          accept="image/*"
-                          listType="picture-card"
-                          className="variant-uploader"
-                          fileList={imageList.file.value}
-                          beforeUpload={(file) => imageValidation(file, "www.google.com", "avatar", "formHeader")}
-                        >
-                          {imageList.file.value.length >= 1 ? null : uploadButton(loading)}
-                        </Upload>
-                        <p className="text-center noselect">{va.va1_option.value || "Pilihan"}</p>
-                      </div>
+                      <Upload
+                        accept="image/*"
+                        listType="picture-card"
+                        className="variant-uploader"
+                        disabled={loadingImageVariant}
+                        onPreview={imagePreview}
+                        fileList={imageVariants.file && imageVariants.file.value && imageVariants.file.value.length > 1 && [imageVariants.file.value[i]]}
+                        onChange={imageVariantChangeHandler}
+                        beforeUpload={(file) => imageValidationProduct(file, "image_variant", "/products/create", "post", setLoadingImageVariant )}
+                      >
+                        {va1Total ? uploadButton(loadingImageVariant) : null}
+                      </Upload>
+                      <p className="text-center noselect">{va.va1_option.value || "Pilihan"} {imageList.file.value.length == va1Total}</p>
                     </Col>
                   ))}
                 </Row>
               </Form.Item>
             )}
 
-            <Form.Item label="Panduan Ukuran" className="mb-0" required>
+            <Form.Item label="Panduan Ukuran" className="mb-0">
               <div className="w-min-content">
                 <Upload
                   accept="image/*"
                   listType="picture-card"
                   className="size-guide-uploader"
-                  fileList={imageList.file.value}
-                  beforeUpload={(file) => imageValidation(file, "www.google.com", "avatar", "formHeader")}
+                  disabled={loadingImageSizeGuide}
+                  onPreview={imagePreview}
+                  fileList={imageSizeGuide.file.value}
+                  onChange={imageSizeGuideChangeHandler}
+                  beforeUpload={(file) => imageValidationProduct(file, "image_size_guide", "/products/create", "post", setLoadingImageSizeGuide)}
                 >
-                  {imageList.file.value.length >= 1 ? null : uploadButton(loading)}
+                  {imageSizeGuide.file.value.length >= 1 ? null : uploadButton(loadingImageSizeGuide)}
                 </Upload>
                 <p className="text-center text-secondary noselect hover-pointer" onClick={() => setShowSizeGuide(true)}>Contoh</p>
               </div>
             </Form.Item>
 
-            <Form.Item label="Video Produk" className="mb-0">
+            <Form.Item 
+              label="Video Produk" 
+              className="mb-0"
+              validateStatus={!video.isValid && video.message && "error"}
+            >
               <Input 
                 className="h-35" 
                 name="video"
@@ -656,6 +750,7 @@ const NewProduct = () => {
                 value={video.value}
                 onChange={e => onInformationProductChange(e)}
               />
+              <ErrorTooltip item={video} />
             </Form.Item>
           </Form>
 
@@ -669,20 +764,61 @@ const NewProduct = () => {
         <Card.Body className="p-3">
 
           <Form layout="vertical">
-            <Form.Item label="Berat" required>
+            <Form.Item 
+              required
+              label="Berat" 
+              validateStatus={!weight.isValid && weight.message && "error"}
+            >
               <div className="ant-input-group-wrapper">
                 <div className="ant-input-wrapper ant-input-group">
-                  <span className="ant-input-group-addon noselect">gr</span>
                   <InputNumber
-                    min={0}
+                    min={1}
                     name="weight"
                     placeholder="Berat paket"
-                    className="w-100 bor-left-rad-0 h-33-custom-input"
+                    className="w-100 bor-right-rad-0 h-33-custom-input"
                     value={weight.value}
                     onChange={e => onInformationProductChange(e, "weight")}
                   />
+                  <span className="ant-input-group-addon noselect">gr</span>
                 </div>
               </div>
+              <ErrorTooltip item={weight} />
+            </Form.Item>
+
+            <Form.Item 
+              label="Preorder"
+              validateStatus={!preorder.isValid && preorder.message && "error"}
+            >
+              <Radio.Group value={isPreorder} onChange={e => setIsPreorder(e.target.value)}>
+                <Radio className="noselect" value={false}>Tidak</Radio>
+                <Radio className="noselect" value={true}>Ya</Radio>
+              </Radio.Group>
+              <AnimatePresence>
+                {isPreorder && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: .05 }}
+                  >
+                    <div className="ant-input-group-wrapper mt-2">
+                      <div className="ant-input-wrapper ant-input-group">
+                        <InputNumber
+                          min={1}
+                          max={500}
+                          name="preorder"
+                          placeholder="Preorder"
+                          className="w-100 bor-right-rad-0 h-33-custom-input"
+                          value={preorder.value}
+                          onChange={e => onInformationProductChange(e, "preorder")}
+                        />
+                        <span className="ant-input-group-addon noselect">hari</span>
+                      </div>
+                    </div>
+                    <ErrorTooltip item={preorder} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Form.Item>
           </Form>
 
@@ -691,7 +827,7 @@ const NewProduct = () => {
 
       <Space>
         <Button className="btn-tridatu" onClick={onSubmitHandler}>Simpan</Button>
-        <Button>Batal</Button>
+        <Button onClick={onCheckProduct}>Batal</Button>
       </Space>
 
       <SizeGuideModal 
@@ -708,8 +844,11 @@ const NewProduct = () => {
           margin-right: 0;
           margin-bottom: 5px;
         }
-        :global(.variant-uploader .ant-upload.ant-upload-select-picture-card){
+        :global(.variant-uploader .ant-upload-list-picture-card-container){
           margin-right: 0;
+        }
+        :global(.variant-uploader .ant-upload.ant-upload-select-picture-card:not(:first-of-type)){
+          display: none;
         }
 
         :global(.cascader-category-menus){

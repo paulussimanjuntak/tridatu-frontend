@@ -2,6 +2,8 @@ import isInt from 'validator/lib/isInt'
 import isEmpty from 'validator/lib/isEmpty'
 import isLength from 'validator/lib/isLength'
 import isEquals from 'validator/lib/equals'
+import isBoolean from 'validator/lib/isBoolean'
+
 import getIndex from 'lib/getIndex'
 
 const emptyMessage = "Variasi tidak boleh kosong"
@@ -25,6 +27,7 @@ export const formInformationProduct = {
   brand_id: { ...initStringVal, value: [] },
   condition: { ...initStringVal, value: true },
   weight: initStringVal,
+  preorder: initStringVal,
   video: initStringVal,
 }
 
@@ -35,6 +38,95 @@ export const formNoVariant = {
   va1_barcode: initStringVal
 }
 
+export const isValidProductInformation = (state, setState) => {
+  const name = { ...state.name }
+  const desc = { ...state.desc }
+  const condition = { ...state.condition }
+  // const brand_id = { ...state.brand_id }
+  const item_sub_category_id = { ...state.item_sub_category_id }
+  const weight = { ...state.weight }
+  const preorder = { ...state.preorder }
+  // const video = { ...state.video }
+  let isGood = true
+
+  if(isEmpty(name.value, ignore_whitespace)){
+    isGood = false;
+    name.isValid = false;
+    name.message = emptyColumnMessage;
+  }
+  if(!isLength(name.value, { min: 5, max: 100 })){
+    isGood = false;
+    name.isValid = false;
+    name.message = "Value harus diantara 5 - 100 karakter";
+  }
+
+  if(isEmpty(desc.value, ignore_whitespace)){
+    isGood = false;
+    desc.isValid = false;
+    desc.message = emptyColumnMessage;
+  }
+  if(!isLength(name.value, { min: 20, max: undefined })){
+    isGood = false;
+    desc.isValid = false;
+    desc.message = "Value harus lebih dari 20 karakter";
+  }
+
+  if(isEmpty(condition.value.toString(), ignore_whitespace)){
+    isGood = false;
+    condition.isValid = false;
+    condition.message = emptyColumnMessage;
+  }
+  if(!isBoolean(condition.value.toString())){
+    isGood = false;
+    condition.isValid = false;
+    condition.message = "Value tidak valid";
+  }
+
+  if(isEmpty(weight.value ? weight.value.toString() : "", ignore_whitespace) || weight.value == null){
+    isGood = false;
+    weight.isValid = false;
+    weight.message = emptyColumnMessage;
+  }
+  if(!isInt(weight.value ? weight.value.toString() : "", { allow_leading_zeroes: false })){
+    isGood = false;
+    weight.isValid = false;
+    weight.message = emptyColumnMessage;
+  }
+  if(weight.value ? weight.value.length > 18 : ""){
+    isGood = false;
+    weight.isValid = false;
+    weight.message = "Value tidak boleh lebih dari 18 karakter";
+  }
+
+  if(item_sub_category_id.value.length < 1){
+    isGood = false;
+    item_sub_category_id.isValid = false;
+    item_sub_category_id.message = emptyColumnMessage;
+  }
+
+  if(preorder.value && preorder.value == 0){
+    isGood = false;
+    preorder.isValid = false;
+    preorder.message = "Value harus diantara 1 - 500";
+  }
+  if(preorder.value && preorder.value !== null && !isInt(preorder.value.toString(), { min: 1, max: 500 })){
+    isGood = false;
+    preorder.isValid = false;
+    preorder.message = "Value harus diantara 1 - 500";
+  }
+  if(preorder.value !== "" && preorder.value !== null && !isInt(preorder.value ? preorder.value.toString() : "", { min: 1, max: 500 })){
+    isGood = false;
+    preorder.isValid = false;
+    preorder.message = "Value harus diantara 1 - 500";
+  }
+
+  if(!isGood) setState({ ...state, name, desc, condition, weight, item_sub_category_id, preorder })
+
+  return isGood
+}
+
+
+// variant validation
 export const formNoVariantIsValid = (state, setState) => {
   const va1_price = { ...state.va1_price }
   const va1_stock = { ...state.va1_stock }
