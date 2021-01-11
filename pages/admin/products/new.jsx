@@ -14,7 +14,7 @@ import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature
 import getIndex from 'lib/getIndex'
 import { formImage, formImageIsValid } from 'formdata/formImage'
 import { imagePreview, uploadButton } from 'lib/imageUploader'
-import { imageValidationProduct } from 'lib/imageProductUploader'
+import { imageValidationProduct, multipleImageValidation } from 'lib/imageProductUploader'
 import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
 
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
@@ -861,7 +861,7 @@ const NewProduct = () => {
                 onPreview={imagePreview}
                 fileList={imageList.file.value}
                 onChange={imageChangeHandler}
-                beforeUpload={(file) => imageValidationProduct(file, "image_product", "/products/create", "post", setLoadingImageProduct )}
+                beforeUpload={(file) => multipleImageValidation(file, imageList.file.value, "image_product", "/products/create", "post", setLoadingImageProduct)}
               >
                 {imageList.file.value.length >= 10 ? null : uploadButton(loadingImageProduct)}
               </Upload>
@@ -884,7 +884,7 @@ const NewProduct = () => {
                                   imageVariants.file.value.length > 0 && [imageVariants.file.value[i]]
                         }
                         onChange={imageVariantChangeHandler(i)}
-                        beforeUpload={(file) => imageValidationProduct(file, "image_variant", "/products/create", "post", setLoadingImageVariant )}
+                        beforeUpload={(file) => multipleImageValidation(file, imageVariants.file.value, "image_variant", "/products/create", "post", setLoadingImageVariant )}
                       >
                         {va1Total ? uploadButton(loadingImageVariant) : null}
                       </Upload>

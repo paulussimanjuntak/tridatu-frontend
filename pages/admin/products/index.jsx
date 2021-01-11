@@ -10,7 +10,7 @@ import CardProductAdmin from "components/Card/Admin/Product/Card"
 
 const ALL = 'all'
 const LIVE = 'live'
-const OUTOFSTOCK = 'outofstock'
+const ARCHIVE = 'archive'
 
 import { productsColumns, productsData } from 'data/productsAdmin'
 
@@ -96,8 +96,8 @@ const Products = () => {
               <p>live</p>
             </Tabs.TabPane>
 
-            <Tabs.TabPane tab="Habis" key={OUTOFSTOCK}>
-              <p>Produk Habis</p>
+            <Tabs.TabPane tab="Diarsipkan" key={ARCHIVE}>
+              <p>Produk arsip</p>
             </Tabs.TabPane>
           </Tabs>
         </Card.Body>
