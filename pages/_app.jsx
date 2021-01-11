@@ -535,6 +535,11 @@ const App = ({ Component, pageProps, store }) => {
           font-weight: 500 !important;
         }
 
+        .invalid-upload > .ant-upload-list-picture-card > .ant-upload.ant-upload-select-picture-card {
+          border-color: #ff4d4f;
+          background-color: #ff4d4f1c;
+        }
+
         .truncate-4 {
           -webkit-line-clamp: 4;
           overflow: hidden;
@@ -560,7 +565,6 @@ const App = ({ Component, pageProps, store }) => {
         .va-inherit {
           vertical-align: inherit !important;
         }
-
         .va-super{
           vertical-align: super !important;
         }
@@ -675,6 +679,10 @@ const App = ({ Component, pageProps, store }) => {
         }
         .top-68{
           top: 68px !important;
+        }
+
+        .idx-1{
+          z-index: 1;
         }
 
         .idx-1020{

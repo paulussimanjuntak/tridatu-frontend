@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Table, Input, Form, InputNumber, Row, Col, Tooltip } from 'antd';
+import { Table, Input, Form, InputNumber, Row, Col } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons'
 
 import Card from 'react-bootstrap/Card'
@@ -11,7 +11,9 @@ import isEmpty from 'validator/lib/isEmpty'
 import makeid from 'lib/makeid'
 import getIndex from 'lib/getIndex'
 import EditableCell from 'components/Admin/Variant/Cell'
-import { formVariantLayout, initialColumn, createNewArr } from 'data/productsAdmin'
+import ErrorTooltip from "components/ErrorMessage/Tooltip";
+import { formVariantLayout, createNewArr } from 'data/productsAdmin'
+import { formImage } from 'formdata/formImage'
 
 const emptyMessage = "Variasi tidak boleh kosong"
 const emptyColumnMessage = "Kolom tidak boleh kosong"
@@ -31,11 +33,14 @@ const additional = { price: initialValue, stock: initialValue, code: initialValu
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
-const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
+const TableVariant = ({
+  isActiveVariation, setIsActiveVariation, dataSource, setDataSource, columns, setColumns, vaOption, setVaOption, 
+  imageVariants, setImageVariants, onRemoveVariant
+}) => {
   const [count, setCount] = useState(0)
-  const [columns, setColumns] = useState(initialColumn)
-  const [dataSource, setDataSource] = useState([])
-  const [vaOption, setVaOption] = useState({ va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 })
+  // const [columns, setColumns] = useState(initialColumn)
+  // const [dataSource, setDataSource] = useState([])
+  // const [vaOption, setVaOption] = useState({ va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 })
   // const [isActiveVariation, setIsActiveVariation] = useState({ active: false, countVariation: 0 })
   const [infoVariant, setInfoVariant] = useState(additional)
   const [isSetAll, setIsSetAll] = useState(false)
@@ -67,13 +72,19 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
         va1Option: [
           ...va1Option, {
             key: `va${variant}_option${dataLength+1+count}_${makeid(10)}`, 
-            va1_option: { value: "", isValid: false, message: null }, 
+            va1_option: { value: "", isValid: true, message: null }, 
             ...additional
           }
         ],
         va1Total: va1Total + 1
       }
       setVaOption(data)
+      const dataImgVariants = {
+        ...imageVariants,
+        file: { value: [...imageVariants.file.value, {}], isValid: true, message: null }
+      }
+      setImageVariants(dataImgVariants)
+
     }
     if(variant == 2){
       const data = {
@@ -81,7 +92,7 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
         va2Option: [
           ...va2Option, {
             key: `va${variant}_option${va2Length}_${makeid(10)}`, 
-            va2_option: { value: "", isValid: false, message: null }, 
+            va2_option: { value: "", isValid: true, message: null }, 
             ...additional
           }
         ],
@@ -93,7 +104,8 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
   }
 
   const addColumVariantHandler = (variant) => {
-    const copyColumns = columns.splice(0)
+    // const copyColumns = columns.splice(0)
+    const copyColumns = [...columns]
     let data = {
       title: `Nama`,
       dataIndex: `va${variant}_option`,
@@ -218,6 +230,12 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
     oldColumns.splice(variant-1, 1);
     setColumns(oldColumns);
 
+    if(variant == 1){
+      for(let i = 0; i < imageVariants.file.value.length; i++){
+        onRemoveVariant(i)
+      }
+    }
+
     if(variant == 1 && va2Total > 0){
       oldVa2.map(obj => {
         obj[`va1_option`] = obj[`va2_option`]
@@ -241,10 +259,18 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
 
       setVaOption(data);
       setColumns(oldColumns);
+
+      const emptyObj = {}
+      const dataImgVariants = {
+        ...imageVariants,
+        file: { value: [...Array(va2Total)].map(() => emptyObj) , isValid: true, message: null }
+      }
+      setImageVariants(dataImgVariants)
     }
 
     if(variant == 1 && va2Total == 0){
       setVaOption({ ...vaOption, va1Option: [], va1Total: 0, va2Total: 0 })
+      setImageVariants(formImage)
     }
 
     if(variant == 2){
@@ -257,9 +283,13 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
     }
   }
 
+
   const deleteVariantHandler = (variant, index) => {
     resetValidation()
     setIsDeleting(true)
+    if(variant == 1){
+      onRemoveVariant(index)
+    }
     if(countVariation == 1 && variant == 1) {
       setDataSource(dataSource.filter((_, i) => i !== index))
     }
@@ -275,6 +305,7 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
       [`va${variant}Total`]: vaOption[`va${variant}Total`] - 1
     }
     setVaOption(data)
+    return
   }
 
   const infoVariantChange = (e, item) => {
@@ -358,6 +389,24 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
           const stockVal = stock.value
           const codeVal = code.value
           const barcodeVal = barcode.value
+          const stockDSValue = copyDataSource[key1].stock.value
+
+          let finalStockValue = 0
+          if(stockVal === null){
+            if(stockDSValue !== ""){
+              finalStockValue = stockDSValue
+            } else {
+              finalStockValue = 0
+            }
+          } else if(stockVal === "") {
+            if(stockDSValue !== ""){
+              finalStockValue = stockDSValue
+            } else {
+              finalStockValue = 0
+            }
+          } else {
+            finalStockValue = stockVal
+          }
 
           variant_tmp.push({
             ...initialData,
@@ -367,7 +416,9 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
               message: priceVal ? null : copyDataSource[key1].price.message
             },
             stock: { 
-              value: stockVal || stockVal == 0 ? stockVal : copyDataSource[key1].stock.value, 
+              // value: stockVal !== "" ? stockVal : copyDataSource[key1].stock.value ? copyDataSource[key1].stock.value : stockDataSource,
+              // value: stockVal || stockVal == 0 ? stockVal : copyDataSource[key1].stock.value, 
+              value: finalStockValue,
               isValid: stockVal ? true : copyDataSource[key1].stock.isValid, 
               message: stockVal ? null : copyDataSource[key1].stock.message
             },
@@ -419,6 +470,23 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
         const dataCode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].code
         const dataBarcode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].barcode
 
+        let finalStockValue = 0
+        if(stockVal === null){
+          if(dataStock.value !== ""){
+            finalStockValue = dataStock.value
+          } else {
+            finalStockValue = 0
+          }
+        } else if(stockVal === "") {
+          if(dataStock.value!== ""){
+            finalStockValue = dataStock.value
+          } else {
+            finalStockValue = 0
+          }
+        } else {
+          finalStockValue = stockVal
+        }
+
         variants[i] = {
           ...variants[i],
           price: { 
@@ -427,7 +495,8 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
             message: priceVal ? null : dataPrice.message
           },
           stock: { 
-            value: stockVal || stockVal == 0 ? stockVal : dataStock.value, 
+            // value: stockVal || stockVal == 0 ? stockVal : dataStock.value, 
+            value: finalStockValue, 
             isValid: stockVal ? true : dataStock.isValid, 
             message: stockVal ? null : dataStock.message
           },
@@ -458,8 +527,6 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
                 value:   copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
                 isValid: true,
                 message: null,
-                // isValid: copyDataSource[getIndex(val, copyDataSource, "key")][prop].isValid,
-                // message: copyDataSource[getIndex(val, copyDataSource, "key")][prop].message,
               }
             }
           }
@@ -560,7 +627,6 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
         editable: col.editable,
         dataIndex: col.dataIndex,
         inputType: col.inputType,
-        // onChange: e => onTableChange(e, col.inputType !== "code" && col.inputType, index),
         onChange: e => onTableChange(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
         onBlur: e => onValidateTableVariantCheck(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
         maxCode: maxCode
@@ -587,237 +653,213 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
 
   return(
     <>
-          <Row>
-            <Col xs={24} sm={24} md={18} lg={16} xl={14}>
-              {[...Array(countVariation)].map((_, i) => (
-                <React.Fragment key={i}>
-                <Card.Body className="p-3 bg-light mb-3 bor-rad-5px">
-                  <p className="fs-15 mb-3 w-100 fw-500">
-                    Variasi {i+1}
-                    <span className="hover-pointer text-dark float-right" onClick={() => deleteGroupVariantsHandler(i+1)}>
-                      <i className="fal fa-times fs-16" />
-                    </span>
-                  </p>
-                  <Form layout="vertical" {...formVariantLayout} name="head_title">
-                    <Form.Item 
-                      className="mb-3"
-                      label="Nama"
-                      name={`va${i+1}_option`}
-                      validateStatus={!columns[i].isValid && columns[i].message && "error"}
-                    >
-                      <Media className="align-items-center">
-                        <Tooltip 
-                          color="red"
-                          placement="topLeft"
-                          visible={!columns[i].isValid && columns[i].message}
-                          title={<small className="fs-10">{columns[i].message}</small>}
-                          autoAdjustOverflow
-                          overlayClassName="variant-input-tooltip"
-                        >
-                          <Input 
-                            name={`va${i+1}_name`}
-                            className="h-35"
-                            value={columns[i].title.split(" ")[0] === "Nama" ? "" : columns[i].title} 
-                            placeholder={ i == 0 ? nameTitle1 : i == 1 ? nameTitle2 : "" } 
-                            onBlur={onValidateVariantHeadCheck(`va${i+1}_option`)}
-                            onChange={onVariantHeadChange(`va${i+1}_option`)}
-                            maxLength={maxNameTitle}
-                            suffix={ columns[i].title.split(" ")[0] === "Nama" ? <CountChar>0/{maxNameTitle}</CountChar> : <CountChar>{columns[i].title.length}/{maxNameTitle}</CountChar> }
-                          />
-                        </Tooltip>
-                        <Media.Body>
-                          <div style={{ width: 22 }} />
-                        </Media.Body>
-                      </Media>
-                    </Form.Item>
-                  </Form>
+      <Row>
+        <Col xs={24} sm={24} md={18} lg={16} xl={14}>
+          {[...Array(countVariation)].map((_, i) => (
+            <React.Fragment key={i}>
+            <Card.Body className="p-3 bg-light mb-3 bor-rad-5px">
+              <p className="fs-15 mb-3 w-100 fw-500">
+                Variasi {i+1}
+                <span className="hover-pointer text-dark float-right" onClick={() => deleteGroupVariantsHandler(i+1)}>
+                  <i className="fal fa-times fs-16" />
+                </span>
+              </p>
+              <Form layout="vertical" {...formVariantLayout} name="head_title">
+                <Form.Item 
+                  className="mb-3"
+                  label="Nama"
+                  name={`va${i+1}_option`}
+                  validateStatus={!columns[i].isValid && columns[i].message && "error"}
+                >
+                  <Media className="align-items-center">
+                    <Input 
+                      name={`va${i+1}_name`}
+                      className="h-35"
+                      value={columns[i].title.split(" ")[0] === "Nama" ? "" : columns[i].title} 
+                      placeholder={ i == 0 ? nameTitle1 : i == 1 ? nameTitle2 : "" } 
+                      onBlur={onValidateVariantHeadCheck(`va${i+1}_option`)}
+                      onChange={onVariantHeadChange(`va${i+1}_option`)}
+                      maxLength={maxNameTitle}
+                      suffix={ columns[i].title.split(" ")[0] === "Nama" ? <CountChar>0/{maxNameTitle}</CountChar> : <CountChar>{columns[i].title.length}/{maxNameTitle}</CountChar> }
+                    />
+                    <ErrorTooltip item={columns[i]} />
+                    <Media.Body>
+                      <div style={{ width: 22 }} />
+                    </Media.Body>
+                  </Media>
+                </Form.Item>
+              </Form>
 
-                  <Form layout="vertical" {...formVariantLayout} name={`variants_${i+1}`}>
-                    {/* VARIANT 1 */}
-                    {i == 0 && [...Array(va1Total)].map((_,idx) => (
-                      <Form.Item 
-                        key={idx}
-                        label={idx === 0 && 'Pilihan'} 
-                        className="my-2 w-100" 
-                        name={`variants_${idx+1}`} 
-                        validateStatus={!va1Option[idx].va1_option.isValid && va1Option[idx].va1_option.message && "error"}
-                      >
-                        <Media className="align-items-center">
-                          <Tooltip 
-                            color="red"
-                            placement="topLeft"
-                            visible={!va1Option[idx].va1_option.isValid && va1Option[idx].va1_option.message}
-                            title={<small className="fs-10">{va1Option[idx].va1_option.message}</small>}
-                            autoAdjustOverflow
-                            overlayClassName="variant-input-tooltip"
-                          >
-                            <Input 
-                              className="h-35" 
-                              name="va1_option"
-                              value={va1Option[idx].va1_option.value} 
-                              onChange={onVariantOptionChange(idx, i+1)}
-                              onBlur={onValidateVariantCheck(idx, i+1)}
-                              placeholder={ i == 0 ? nameVariant1 : i == 1 ? nameVariant2 : "" } 
-                              maxLength={maxNameVariant}
-                              suffix={<CountChar>{va1Option[idx].va1_option.value.length}/{maxNameVariant}</CountChar>}
-                            />
-                          </Tooltip>
-                          <Media.Body> 
-                            {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
-                            {va1Total > 1 ? (
-                              <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
-                            ) : null}
-                          </Media.Body> 
-                        </Media>
-                      </Form.Item>
-                    ))}
-
-                    {/* VARIANT 2 */}
-                    {i == 1 && [...Array(va2Total)].map((_,idx) => (
-                      <Form.Item 
-                        key={idx}
-                        label={idx === 0 && 'Pilihan'} 
-                        className="my-2 w-100" 
-                        name={`variants_${idx+1}`} 
-                        validateStatus={!va2Option[idx].va2_option.isValid && va2Option[idx].va2_option.message && "error"}
-                      >
-                        <Media className="align-items-center">
-                          <Tooltip 
-                            color="red"
-                            placement="topLeft"
-                            visible={!va2Option[idx].va2_option.isValid && va2Option[idx].va2_option.message}
-                            title={<small className="fs-10">{va2Option[idx].va2_option.message}</small>}
-                            autoAdjustOverflow
-                            overlayClassName="variant-input-tooltip"
-                          >
-                            <Input 
-                              className="h-35" 
-                              name="va2_option"
-                              value={va2Option[idx].va2_option.value} 
-                              onChange={onVariantOptionChange(idx, i+1)}
-                              onBlur={onValidateVariantCheck(idx, i+1)}
-                              placeholder={ i == 0 ? nameVariant1 : i == 1 ? nameVariant2 : "" }
-                              maxLength={maxNameVariant}
-                              suffix={<CountChar>{va2Option[idx].va2_option.value.length}/{maxNameVariant}</CountChar>}
-                            />
-                          </Tooltip>
-                          <Media.Body> 
-                            {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
-                            {va2Total > 1 ? (
-                              <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
-                            ) : null}
-                          </Media.Body>
-                        </Media>
-                      </Form.Item>
-                    ))}
-
-                    {i == 0 && va1Total < 20 && <ButtonAddVariant count={i}>Tambahkan Pilihan ({va1Total+1}/20)</ButtonAddVariant> }
-                    {i == 1 && va2Total < 20 && <ButtonAddVariant count={i}>Tambahkan Pilihan ({va2Total+1}/20)</ButtonAddVariant> }
-
-                  </Form>
-
-                </Card.Body>
-                </React.Fragment>
-              ))}
-
-              {countVariation < 2 && (
-                <Card.Body className="p-0 pb-1">
-                  <p className="fs-14 mb-3 w-100">Variasi {countVariation+1 == 2 && countVariation+1}</p>
-                  <ButtonColor
-                    block with="dashed" type="primary" 
-                    className="h-35" icon={<PlusCircleOutlined />}
-                    onClick={() => activeVariantHandler(countVariation+1)}
+              <Form layout="vertical" {...formVariantLayout} name={`variants_${i+1}`}>
+                {/* VARIANT 1 */}
+                {i == 0 && [...Array(va1Total)].map((_,idx) => (
+                  <Form.Item 
+                    key={idx}
+                    label={idx === 0 && 'Pilihan'} 
+                    className="my-2 w-100" 
+                    name={`variants_${idx+1}`} 
+                    validateStatus={!va1Option[idx].va1_option.isValid && va1Option[idx].va1_option.message && "error"}
                   >
-                    {countVariation < 1 ? "Aktifkan Variasi" : "Tambah"}
-                  </ButtonColor>
-                </Card.Body>
-              )}
-            </Col>
-          </Row>
-
-          {isActiveVariation.active && (
-            <>
-              <Card.Body className="p-0 py-3">
-                <Form layout="vertical">
-                  <Form.Item className="mb-0" label="Informasi Variasi" >
-                    <Row gutter={[8, 8]}>
-                      <Col xs={24} sm={24} md={17} lg={18} xl={18}>
-                        <Input.Group compact className="info-variasi-input">
-                          <div className="ant-input-group-wrapper" style={{ width: 'calc(100%/4)' }}>
-                            <div className="ant-input-wrapper ant-input-group" style={{ zIndex: 1 }}>
-                              <span className="ant-input-group-addon noselect">Rp</span>
-                              <InputNumber
-                                min={1}
-                                name="price"
-                                placeholder="Harga"
-                                value={infoVariant.price.value}
-                                onChange={e => infoVariantChange(e, "price")}
-                                className="w-100 bor-left-rad-0 bor-right-rad-0 h-33-custom-input h-35"
-                                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                                parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
-                              />
-                            </div>
-                          </div>
-                          <InputNumber 
-                            min={0} 
-                            name="stock"
-                            className="h-35" 
-                            placeholder="Stok" 
-                            value={infoVariant.stock.value}
-                            onChange={e => infoVariantChange(e, "stock")}
-                            style={{ width: 'calc(100%/4)', marginLeft: '-1px' }} 
-                          />
-                          <Input 
-                            name="code"
-                            className="h-35" 
-                            placeholder="Kode" 
-                            maxLength={maxCode}
-                            value={infoVariant.code.value}
-                            onChange={e => infoVariantChange(e)}
-                            style={{ width: 'calc(100%/4)' }} 
-                          />
-                          <Input 
-                            name="barcode"
-                            className="h-35" 
-                            placeholder="Barcode" 
-                            maxLength={maxCode}
-                            value={infoVariant.barcode.value}
-                            onChange={e => infoVariantChange(e)}
-                            style={{ width: 'calc(100%/4)', borderTopRightRadius: '.25rem', borderBottomRightRadius: '.25rem' }} 
-                          />
-                        </Input.Group>
-                      </Col>
-
-                      <Col xs={24} sm={24} md={7} lg={6} xl={6}>
-                        <ButtonColor
-                          block
-                          disabled={!infoVariant.price.value && !infoVariant.stock.value && !infoVariant.code.value && !infoVariant.barcode.value}
-                          type="primary" 
-                          className="h-35"
-                          onClick={setInfoVariantHandler}
-                        >
-                          Terapkan ke Semua
-                        </ButtonColor>
-                      </Col>
-                    </Row>
+                    <Media className="align-items-center">
+                      <Input 
+                        className="h-35" 
+                        name="va1_option"
+                        value={va1Option[idx].va1_option.value} 
+                        onChange={onVariantOptionChange(idx, i+1)}
+                        onBlur={onValidateVariantCheck(idx, i+1)}
+                        placeholder={ i == 0 ? nameVariant1 : i == 1 ? nameVariant2 : "" } 
+                        maxLength={maxNameVariant}
+                        suffix={<CountChar>{va1Option[idx].va1_option.value.length}/{maxNameVariant}</CountChar>}
+                      />
+                      <ErrorTooltip item={va1Option[idx].va1_option} />
+                      <Media.Body> 
+                        {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
+                        {va1Total > 1 ? (
+                        <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
+                        ) : null}
+                      </Media.Body> 
+                    </Media>
                   </Form.Item>
-                </Form>
-              </Card.Body>
+                ))}
 
-              <Card.Body className="p-0">
-                <Table
-                  bordered
-                  pagination={false} 
-                  className="variant-table"
-                  size="middle"
-                  rowClassName={() => 'variant-row'}
-                  components={components}
-                  columns={mergedColumns} 
-                  dataSource={createNewArr(dataSource)} 
-                />
-              </Card.Body>
-            </>
+                {/* VARIANT 2 */}
+                {i == 1 && [...Array(va2Total)].map((_,idx) => (
+                  <Form.Item 
+                    key={idx}
+                    label={idx === 0 && 'Pilihan'} 
+                    className="my-2 w-100" 
+                    name={`variants_${idx+1}`} 
+                    validateStatus={!va2Option[idx].va2_option.isValid && va2Option[idx].va2_option.message && "error"}
+                  >
+                    <Media className="align-items-center">
+                      <Input 
+                        className="h-35" 
+                        name="va2_option"
+                        value={va2Option[idx].va2_option.value} 
+                        onChange={onVariantOptionChange(idx, i+1)}
+                        onBlur={onValidateVariantCheck(idx, i+1)}
+                        placeholder={ i == 0 ? nameVariant1 : i == 1 ? nameVariant2 : "" }
+                        maxLength={maxNameVariant}
+                        suffix={<CountChar>{va2Option[idx].va2_option.value.length}/{maxNameVariant}</CountChar>}
+                      />
+                      <ErrorTooltip item={va2Option[idx].va2_option} />
+                      <Media.Body> 
+                        {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
+                        {va2Total > 1 ? (
+                        <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
+                        ) : null}
+                      </Media.Body>
+                    </Media>
+                  </Form.Item>
+                ))}
+
+                {i == 0 && va1Total < 20 && <ButtonAddVariant count={i}>Tambahkan Pilihan ({va1Total+1}/20)</ButtonAddVariant> }
+                {i == 1 && va2Total < 20 && <ButtonAddVariant count={i}>Tambahkan Pilihan ({va2Total+1}/20)</ButtonAddVariant> }
+
+              </Form>
+
+            </Card.Body>
+            </React.Fragment>
+          ))}
+
+          {countVariation < 2 && (
+            <Card.Body className="p-0 pb-1">
+              <p className="fs-14 mb-3 w-100">Variasi {countVariation+1 == 2 && countVariation+1}</p>
+              <ButtonColor
+                block with="dashed" type="primary" 
+                className="h-35" icon={<PlusCircleOutlined />}
+                onClick={() => activeVariantHandler(countVariation+1)}
+              >
+                {countVariation < 1 ? "Aktifkan Variasi" : "Tambah"}
+              </ButtonColor>
+            </Card.Body>
           )}
+        </Col>
+      </Row>
+
+      {isActiveVariation.active && (
+        <>
+          <Card.Body className="p-0 py-3">
+            <Form layout="vertical">
+              <Form.Item className="mb-0" label="Informasi Variasi" >
+                <Row gutter={[8, 8]}>
+                  <Col xs={24} sm={24} md={17} lg={18} xl={18}>
+                    <Input.Group compact className="info-variasi-input">
+                      <div className="ant-input-group-wrapper" style={{ width: 'calc(100%/4)' }}>
+                        <div className="ant-input-wrapper ant-input-group" style={{ zIndex: 1 }}>
+                          <span className="ant-input-group-addon noselect">Rp</span>
+                          <InputNumber
+                            min={1}
+                            name="price"
+                            placeholder="Harga"
+                            value={infoVariant.price.value}
+                            onChange={e => infoVariantChange(e, "price")}
+                            className="w-100 bor-left-rad-0 bor-right-rad-0 h-33-custom-input h-35"
+                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                            parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
+                          />
+                        </div>
+                      </div>
+                      <InputNumber 
+                        min={0} 
+                        name="stock"
+                        className="h-35" 
+                        placeholder="Stok" 
+                        value={infoVariant.stock.value}
+                        onChange={e => infoVariantChange(e, "stock")}
+                        style={{ width: 'calc(100%/4)', marginLeft: '-1px' }} 
+                      />
+                      <Input 
+                        name="code"
+                        className="h-35" 
+                        placeholder="Kode" 
+                        maxLength={maxCode}
+                        value={infoVariant.code.value}
+                        onChange={e => infoVariantChange(e)}
+                        style={{ width: 'calc(100%/4)' }} 
+                      />
+                      <Input 
+                        name="barcode"
+                        className="h-35" 
+                        placeholder="Barcode" 
+                        maxLength={maxCode}
+                        value={infoVariant.barcode.value}
+                        onChange={e => infoVariantChange(e)}
+                        style={{ width: 'calc(100%/4)', borderTopRightRadius: '.25rem', borderBottomRightRadius: '.25rem' }} 
+                      />
+                    </Input.Group>
+                  </Col>
+
+                  <Col xs={24} sm={24} md={7} lg={6} xl={6}>
+                    <ButtonColor
+                      block
+                      disabled={!infoVariant.price.value && !infoVariant.stock.value && !infoVariant.code.value && !infoVariant.barcode.value}
+                      type="primary" 
+                      className="h-35"
+                      onClick={setInfoVariantHandler}
+                    >
+                      Terapkan ke Semua
+                    </ButtonColor>
+                  </Col>
+                </Row>
+              </Form.Item>
+            </Form>
+          </Card.Body>
+
+          <Card.Body className="p-0">
+            <Table
+              bordered
+              pagination={false} 
+              className="variant-table"
+              size="middle"
+              rowClassName={() => 'variant-row'}
+              components={components}
+              columns={mergedColumns} 
+              dataSource={createNewArr(dataSource)} 
+            />
+          </Card.Body>
+        </>
+      )}
 
       <style jsx>{`
         :global(.ant-input-number-input){
@@ -835,27 +877,6 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation}) => {
         :global(.variant-row > td:first-child){
           font-size: 13px;
           padding: 5px 8px !important;
-        }
-
-
-        :global(.variant-input-tooltip .ant-tooltip-inner){
-          padding: 0px 5px;
-          min-height: 24px;
-          white-space: nowrap;
-        }
-        :global(.ant-tooltip-open > div){
-          position: relative !important;
-        }
-        :global(.ant-tooltip-open > div > div > .ant-tooltip){
-          top: -55px !important;
-          left: 0 !important;
-        }
-        :global(.td-input-variant .show-help.show-help-enter, 
-                .td-input-variant .show-help.show-help-leave.show-help-start,
-                .td-input-variant .show-help.show-help-leave.show-help-active,
-        ){
-          height: 0 !important;
-          display: none !important;
         }
       `}</style>
     </>

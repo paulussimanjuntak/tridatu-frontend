@@ -15,7 +15,7 @@ const SizeGuide = ({ show, close, image }) => {
         width={650}
         bodyStyle={{padding: '0'}}
       >
-        <Image src={image} />
+        <Image src={image} preview={false} />
       </Modal>
 
       <style jsx>{`

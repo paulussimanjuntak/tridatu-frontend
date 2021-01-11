@@ -465,7 +465,7 @@ const ProductDetail = () => {
         </Row>
 
         <section className="mt-3 border-top pt-4 recomend-section">
-          <h4 className="fs-20-s mb-4">Rekomendasi untuk mu</h4>
+          <h4 className="fs-20-s mb-4">Rekomendasi produk lainnya</h4>
           <Slider {...brandSettings}>
             {[...Array(10)].map((_, i) => (
               <Col key={i} className="px-0">
