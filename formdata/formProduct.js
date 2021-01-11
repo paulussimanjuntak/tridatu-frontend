@@ -38,7 +38,7 @@ export const formNoVariant = {
   va1_barcode: initStringVal
 }
 
-export const isValidProductInformation = (state, setState) => {
+export const isValidProductInformation = (state, setState, isPreorder) => {
   const name = { ...state.name }
   const desc = { ...state.desc }
   const condition = { ...state.condition }
@@ -65,7 +65,7 @@ export const isValidProductInformation = (state, setState) => {
     desc.isValid = false;
     desc.message = emptyColumnMessage;
   }
-  if(!isLength(name.value, { min: 20, max: undefined })){
+  if(!isLength(desc.value, { min: 20, max: undefined })){
     isGood = false;
     desc.isValid = false;
     desc.message = "Value harus lebih dari 20 karakter";
@@ -104,6 +104,26 @@ export const isValidProductInformation = (state, setState) => {
     item_sub_category_id.message = emptyColumnMessage;
   }
 
+  if(isPreorder && preorder.value && preorder.value == 0){
+    isGood = false;
+    preorder.isValid = false;
+    preorder.message = "Value harus diantara 1 - 500";
+  }
+  if(isPreorder && preorder.value && preorder.value == null){
+    isGood = false;
+    preorder.isValid = false;
+    preorder.message = "Value harus diantara 1 - 500";
+  }
+  if(isPreorder && preorder.value && preorder.value !== null && !isInt(preorder.value.toString(), { min: 1, max: 500 })){
+    isGood = false;
+    preorder.isValid = false;
+    preorder.message = "Value harus diantara 1 - 500";
+  }
+  if(isPreorder && isEmpty(preorder.value ? preorder.value.toString() : "")){
+    isGood = false;
+    preorder.isValid = false;
+    preorder.message = "Value harus diantara 1 - 500";
+  }
   if(preorder.value && preorder.value == 0){
     isGood = false;
     preorder.isValid = false;

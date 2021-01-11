@@ -1,27 +1,29 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { Form, Input, Select, InputNumber, Button, Cascader, Space, Upload, Row, Col, Radio } from 'antd'
-import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons'
+import { Form, Input, Select, InputNumber, Button, Cascader, Space, Upload, Row, Col, Radio, message } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
 import { AnimatePresence, motion } from "framer-motion";
 
 import _ from 'lodash'
+import cx from 'classnames'
 import isIn from 'validator/lib/isIn'
+import isEmpty from 'validator/lib/isEmpty'
 import Card from 'react-bootstrap/Card'
-import axios, { jsonHeaderHandler, resNotification, signature_exp } from 'lib/axios'
+import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature_exp } from 'lib/axios'
 
 import getIndex from 'lib/getIndex'
-import { formImage } from 'formdata/formImage'
+import { formImage, formImageIsValid } from 'formdata/formImage'
 import { imagePreview, uploadButton } from 'lib/imageUploader'
 import { imageValidationProduct } from 'lib/imageProductUploader'
 import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
 
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
-import ErrorMessage from "components/ErrorMessage";
+// import ErrorMessage from "components/ErrorMessage";
 import TableVariant from 'components/Admin/Variant/TableVariant'
 import AddStyleAdmin from 'components/Admin/addStyle'
 
-import { categoryData } from 'components/Header/categoryData'
-import { brandData } from 'data/brand'
+// import { categoryData } from 'components/Header/categoryData'
+// import { brandData } from 'data/brand'
 
 import { formItemLayout, initialColumn } from 'data/productsAdmin'
 
@@ -36,10 +38,16 @@ import * as actions from "store/actions";
  * TODO:
  * search in select categories ✅
  * variant images ✅
- * validation error input 
- * improve variant component
- * connect to backend
+ * validation error input ✅
+ * check in all variant test ✅
+ * validation images ✅
+ * delete each variant not syncron with the image variant ✅
+ * improve variant component 
+ * connect to backend ✅
  */
+
+const initialVaOption = { va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 }
+const initialActiveVariation = { active: false, countVariation: 0 }
 
 const NewProduct = () => {
   const dispatch = useDispatch()
@@ -47,10 +55,9 @@ const NewProduct = () => {
   const [imageList, setImageList] = useState(formImage);
   const [imageVariants, setImageVariants] = useState(formImage);
   const [imageSizeGuide, setImageSizeGuide] = useState(formImage);
-  const [urlImageVariants, setUrlImageVariants] = useState([]);
 
-  const [isPreorder, setIsPreorder] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isPreorder, setIsPreorder] = useState(false)
   const [loadingImageProduct, setLoadingImageProduct] = useState(false)
   const [loadingImageVariant, setLoadingImageVariant] = useState(false)
   const [loadingImageSizeGuide, setLoadingImageSizeGuide] = useState(false)
@@ -60,8 +67,8 @@ const NewProduct = () => {
 
   const [columns, setColumns] = useState(initialColumn)
   const [dataSource, setDataSource] = useState([])
-  const [vaOption, setVaOption] = useState({ va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 })
-  const [isActiveVariation, setIsActiveVariation] = useState({ active: false, countVariation: 0 })
+  const [vaOption, setVaOption] = useState(initialVaOption)
+  const [isActiveVariation, setIsActiveVariation] = useState(initialActiveVariation)
 
   const [informationProduct, setInformationProduct] = useState(formInformationProduct)
   const [noVariant, setNoVariant] = useState(formNoVariant)
@@ -75,7 +82,7 @@ const NewProduct = () => {
   const brandsData = useSelector(state => state.brand.brand)
   const allCategoriesData = useSelector(state => state.categories.allCategories)
 
-  const { va1Option, va2Option, va1Total, va2Total } = vaOption
+  const { va1Option, va1Total, va2Total } = vaOption
 
   /* Destructuring Object Product */
   const { name, desc, item_sub_category_id, brand_id, condition, weight, preorder, video } = informationProduct;
@@ -192,15 +199,198 @@ const NewProduct = () => {
   }
   /* No variant product change handler */
 
+  /* Function for image changing */
+  const imageChangeHandler = ({ fileList: newFileList }) => {
+    const data = {
+      ...imageList,
+      file: { value: newFileList, isValid: true, message: null }
+    }
+    setImageList(data)
+  };
+
+  const imageVariantChangeHandler = i => ({ fileList: newFileList, file }) => {
+    if(file.status === "done"){
+      const variants = [...imageVariants.file.value]
+      variants.splice(i, 1, newFileList[0])
+      const data = {
+        ...imageVariants,
+        file: { value: variants, isValid: true, message: null }
+      }
+      setImageVariants(data)
+    }
+  };
+
+  const onRemoveImageVariant = i => {
+    const copyImageVariants = [...imageVariants.file.value]
+    copyImageVariants.splice(i, 1, {})
+
+    const dataImgVariants = {
+      ...imageVariants,
+      file: { value: copyImageVariants, isValid: true, message: null }
+    }
+    setImageVariants(dataImgVariants)
+  }
+
+
+  const onRemoveVariant = i => {
+    const element = document.getElementById(`variant-upload-${i}`)
+    const child = element.childNodes[0].childNodes[0].childNodes[0]
+    const deleteBtn = child.childNodes[0].childNodes[1].childNodes[1]
+    if(deleteBtn.childNodes[0].childNodes[0]){
+      deleteBtn.click()
+    }
+    const copyImageVariants = [...imageVariants.file.value]
+    copyImageVariants.splice(i, 1)
+    const data = {
+      ...imageVariants,
+      file: { value: copyImageVariants, isValid: true, message: null }
+    }
+    setImageVariants(data)
+  }
+
+  const imageSizeGuideChangeHandler = ({ fileList: newFileList }) => {
+    const data = {
+      ...imageSizeGuide,
+      file: { value: newFileList, isValid: true, message: null }
+    }
+    setImageSizeGuide(data)
+  };
+  /* Function for image changing */
+
+  const onPreorderChange = e => {
+    const value = e.target.value;
+    setIsPreorder(value)
+    if(!value){
+      const data = {
+        ...informationProduct,
+        preorder: { ...informationProduct.preorder, value: "", isValid: true, message: null }
+      }
+      setInformationProduct(data)
+    }
+  }
+
+  const resetAllData = () => {
+    setIsActiveVariation(initialActiveVariation)
+    setColumns(initialColumn)
+    setDataSource([])
+    setVaOption(initialVaOption)
+
+    setInformationProduct(formInformationProduct)
+    setNoVariant(formNoVariant)
+
+    setImageList(formImage)
+    setImageVariants(formImage)
+    setImageSizeGuide(formImage)
+
+    setIsPreorder(false)
+    setLoadingImageProduct(false)
+    setLoadingImageVariant(false)
+    setLoadingImageSizeGuide(false)
+
+    setCascaderIsShow(false)
+    setCascaderValue([])
+  }
+
   const onSubmitProduct = (ticket) => {
-    alert(ticket)
+    const formData = new FormData();
+
+    formData.append("name", name.value);
+    formData.append("desc", desc.value);
+    formData.append("condition", condition.value);
+    formData.append("weight", weight.value);
+    formData.append("item_sub_category_id", item_sub_category_id.value);
+    formData.append("ticket_variant", ticket);
+    imageList.file.value.forEach(file => {
+      formData.append("image_product", file.originFileObj)
+    })
+
+    //optional
+    if(!isEmpty(video.value)) formData.append("video", video.value);
+    if(isPreorder && preorder.value !== null && !isEmpty(preorder.value.toString())) formData.append("preorder", preorder.value);
+    if(brand_id.value.length !== 0 && !isEmpty(brand_id.value.toString())) formData.append("brand_id", brand_id.value);
+    if(isActiveVariation.active && imageVariants.file.value.length > 0){
+      imageVariants.file.value.forEach(file => {
+        if(file.hasOwnProperty("originFileObj")) formData.append("image_variant", file.originFileObj)
+      })
+    }
+    if(imageSizeGuide.file.value.length > 0){
+      imageSizeGuide.file.value.forEach(file => {
+        formData.append("image_size_guide", file.originFileObj)
+      })
+    }
+
+    setLoading(true)
+    axios.post("/products/create", formData, formHeaderHandler())
+      .then(res => {
+        setLoading(false)
+        resNotification("success", "Success", res.data.detail)
+        resetAllData()
+      })
+      .catch(err => {
+        setLoading(false)
+        const errDetail = err.response.data.detail;
+        console.log(errDetail)
+        const uniqueImage = "Each image must be unique."
+        const variantImage = "You must fill all variant images or even without images."
+        const errName = "The name has already been taken."
+        if(errDetail == signature_exp){
+          resNotification("success", "Success", "Successfully add a new product.")
+        } else if (typeof errDetail === "string" && errDetail === errName) {
+          const state = JSON.parse(JSON.stringify(informationProduct));
+          state.name.value = state.name.value;
+          state.name.isValid = false;
+          state.name.message = errDetail;
+          setInformationProduct(state)
+        } else if(typeof errDetail === "string" && errDetail === uniqueImage){
+          message.error({ 
+            content: errDetail, 
+            style: { marginTop: '10vh' },
+          });
+        } else if(typeof errDetail === "string" && errDetail === variantImage){
+          message.error({ 
+            content: errDetail, 
+            style: { marginTop: '10vh' },
+          });
+        } else {
+          const state = JSON.parse(JSON.stringify(informationProduct));
+          errDetail.map(data => {
+            const key = data.loc[data.loc.length - 1];
+            /*
+             * TODO:
+             * Image validator from server
+             */
+            if(key === "image_product"){
+              message.error({ 
+                content: "image product " + data.msg, 
+                style: { marginTop: '10vh' },
+              });
+              const imgProduct = {
+                ...imageList,
+                file: { ...imageList.file, isValid: false, message: null }
+              }
+              setImageList(imgProduct)
+            }
+            if(state[key]){
+              state[key].value = state[key].value;
+              state[key].isValid = false;
+              state[key].message = data.msg;
+            }
+
+          })
+          setInformationProduct(state)
+        }
+      })
   }
 
   const onSubmitHandler = e => {
     e.preventDefault()
     const urlVariant = "/variants/create-ticket"
 
-    if(!isActiveVariation.active && formNoVariantIsValid(noVariant, setNoVariant)){
+    if(!isActiveVariation.active && 
+       isValidProductInformation(informationProduct, setInformationProduct, isPreorder) &&
+       formNoVariantIsValid(noVariant, setNoVariant) &&
+       formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
+    ){
       const data = {
         va1_items: [
           {
@@ -211,6 +401,8 @@ const NewProduct = () => {
           }
         ]
       }
+
+      console.log(JSON.stringify(data, null, 2))
       axios.post(urlVariant, data, jsonHeaderHandler())
         .then(res => {
           onSubmitProduct(res.data.ticket)
@@ -267,12 +459,17 @@ const NewProduct = () => {
         formIsValid = formVa1OptionSingleVariantIsValid(vaOption, setVaOption, i)
         tableIsValid = formTableIsValid(dataSource, setDataSource, i)
       }
-      if(formVariantTitleIsValid(columns, setColumns) && formIsValid && tableIsValid && !isIn("false", variantIsValid)){
+      if(formVariantTitleIsValid(columns, setColumns) && 
+         isValidProductInformation(informationProduct, setInformationProduct) &&
+         formIsValid && tableIsValid && !isIn("false", variantIsValid) &&
+         formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
+      ){
         const data = {
           va1_name: columns[0].title == "Nama" ?  "" : columns[0].title,
           va1_items: items
         }
 
+        console.log(JSON.stringify(data, null, 2))
         axios.post(urlVariant, data, jsonHeaderHandler())
           .then(res => {
             onSubmitProduct(res.data.ticket)
@@ -364,13 +561,17 @@ const NewProduct = () => {
 
       if(formTitleIsValid(columns, setColumns) && 
          formVa1IsValid && formVa2IsValid && tableIsValid && 
-         !isIn("false", variant1IsValid) && !isIn("false", variant2IsValid)
+         !isIn("false", variant1IsValid) && !isIn("false", variant2IsValid) &&
+         isValidProductInformation(informationProduct, setInformationProduct) &&
+         formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
       ){
         const data = {
           va1_name: columns[0].title == "Nama" ?  "" : columns[0].title,
           va2_name: columns[1].title == "Nama" ?  "" : columns[1].title,
           va1_items: variants
         }
+
+        console.log(JSON.stringify(data, null, 2))
 
         axios.post(urlVariant, data, jsonHeaderHandler())
           .then(res => {
@@ -449,40 +650,7 @@ const NewProduct = () => {
     }
   }, [isActiveVariation])
 
-  const onCheckProduct = e => {
-    e.preventDefault()
-      console.log(informationProduct)
-    if(isValidProductInformation(informationProduct, setInformationProduct)){
-      console.log(informationProduct)
-    }
-  }
-
-  // Function for image changing
-  const imageChangeHandler = ({ fileList: newFileList }) => {
-    const data = {
-      ...imageList,
-      file: { value: newFileList, isValid: true, message: null }
-    }
-    setImageList(data)
-  };
-
-  const imageVariantChangeHandler = ({ fileList: newFileList, file }) => {
-    if(file.status === "done"){
-      const data = {
-        ...imageVariants,
-        file: { value: newFileList, isValid: true, message: null }
-      }
-      setImageVariants(data)
-    }
-  };
-
-  const imageSizeGuideChangeHandler = ({ fileList: newFileList }) => {
-    const data = {
-      ...imageSizeGuide,
-      file: { value: newFileList, isValid: true, message: null }
-    }
-    setImageSizeGuide(data)
-  };
+  const invalidProductImage = cx({ "invalid-upload": !imageList.file.isValid });
 
   return(
     <>
@@ -514,7 +682,7 @@ const NewProduct = () => {
             >
               <Input.TextArea 
                 name="desc"
-                autoSize={{ minRows: 8 }} 
+                autoSize={{ minRows: 8, maxRows: 10 }} 
                 placeholder="Deskripsi produk" 
                 value={desc.value}
                 onChange={e => onInformationProductChange(e)}
@@ -669,6 +837,9 @@ const NewProduct = () => {
             setDataSource={setDataSource}
             vaOption={vaOption}
             setVaOption={setVaOption}
+            imageVariants={imageVariants}
+            setImageVariants={setImageVariants}
+            onRemoveVariant={onRemoveVariant}
           />
 
         </Card.Body>
@@ -685,7 +856,7 @@ const NewProduct = () => {
               <Upload
                 accept="image/*"
                 listType="picture-card"
-                className="avatar-uploader"
+                className={`avatar-uploader ${invalidProductImage}`}
                 disabled={loadingImageProduct}
                 onPreview={imagePreview}
                 fileList={imageList.file.value}
@@ -700,20 +871,26 @@ const NewProduct = () => {
               <Form.Item label={columns[0].title.split(" ")[0] === "Nama" ? "Variasi 1" : columns[0].title} className="mb-0">
                 <Row gutter={[8, 16]}>
                   {va1Option.map((va, i) => (
-                    <Col key={i}>
+                    <Col key={i} id={`variant-upload-${i}`}>
                       <Upload
                         accept="image/*"
                         listType="picture-card"
                         className="variant-uploader"
                         disabled={loadingImageVariant}
                         onPreview={imagePreview}
-                        fileList={imageVariants.file && imageVariants.file.value && imageVariants.file.value.length > 1 && [imageVariants.file.value[i]]}
-                        onChange={imageVariantChangeHandler}
+                        onRemove={() => onRemoveImageVariant(i)}
+                        fileList={imageVariants.file && imageVariants.file.value && 
+                                  imageVariants.file.value[i] && imageVariants.file.value[i].uid && 
+                                  imageVariants.file.value.length > 0 && [imageVariants.file.value[i]]
+                        }
+                        onChange={imageVariantChangeHandler(i)}
                         beforeUpload={(file) => imageValidationProduct(file, "image_variant", "/products/create", "post", setLoadingImageVariant )}
                       >
                         {va1Total ? uploadButton(loadingImageVariant) : null}
                       </Upload>
-                      <p className="text-center noselect">{va.va1_option.value || "Pilihan"} {imageList.file.value.length == va1Total}</p>
+                      <p className="text-center noselect">
+                        {va.va1_option.value || "Pilihan"} {imageList.file.value.length == va1Total}
+                      </p>
                     </Col>
                   ))}
                 </Row>
@@ -789,7 +966,7 @@ const NewProduct = () => {
               label="Preorder"
               validateStatus={!preorder.isValid && preorder.message && "error"}
             >
-              <Radio.Group value={isPreorder} onChange={e => setIsPreorder(e.target.value)}>
+              <Radio.Group value={isPreorder} onChange={onPreorderChange}>
                 <Radio className="noselect" value={false}>Tidak</Radio>
                 <Radio className="noselect" value={true}>Ya</Radio>
               </Radio.Group>
@@ -826,8 +1003,10 @@ const NewProduct = () => {
       </Card>
 
       <Space>
-        <Button className="btn-tridatu" onClick={onSubmitHandler}>Simpan</Button>
-        <Button onClick={onCheckProduct}>Batal</Button>
+        <Button className="btn-tridatu" onClick={onSubmitHandler} disabled={loading}>
+          {loading ? <LoadingOutlined /> : "Simpan"}
+        </Button>
+        <Button onClick={resetAllData}>Batal</Button>
       </Space>
 
       <SizeGuideModal 

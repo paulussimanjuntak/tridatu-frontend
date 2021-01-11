@@ -13,6 +13,7 @@ import getIndex from 'lib/getIndex'
 import EditableCell from 'components/Admin/Variant/Cell'
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
 import { formVariantLayout, createNewArr } from 'data/productsAdmin'
+import { formImage } from 'formdata/formImage'
 
 const emptyMessage = "Variasi tidak boleh kosong"
 const emptyColumnMessage = "Kolom tidak boleh kosong"
@@ -32,7 +33,10 @@ const additional = { price: initialValue, stock: initialValue, code: initialValu
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
-const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setDataSource, columns, setColumns, vaOption, setVaOption}) => {
+const TableVariant = ({
+  isActiveVariation, setIsActiveVariation, dataSource, setDataSource, columns, setColumns, vaOption, setVaOption, 
+  imageVariants, setImageVariants, onRemoveVariant
+}) => {
   const [count, setCount] = useState(0)
   // const [columns, setColumns] = useState(initialColumn)
   // const [dataSource, setDataSource] = useState([])
@@ -75,6 +79,12 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
         va1Total: va1Total + 1
       }
       setVaOption(data)
+      const dataImgVariants = {
+        ...imageVariants,
+        file: { value: [...imageVariants.file.value, {}], isValid: true, message: null }
+      }
+      setImageVariants(dataImgVariants)
+
     }
     if(variant == 2){
       const data = {
@@ -94,7 +104,8 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
   }
 
   const addColumVariantHandler = (variant) => {
-    const copyColumns = columns.splice(0)
+    // const copyColumns = columns.splice(0)
+    const copyColumns = [...columns]
     let data = {
       title: `Nama`,
       dataIndex: `va${variant}_option`,
@@ -219,6 +230,12 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
     oldColumns.splice(variant-1, 1);
     setColumns(oldColumns);
 
+    if(variant == 1){
+      for(let i = 0; i < imageVariants.file.value.length; i++){
+        onRemoveVariant(i)
+      }
+    }
+
     if(variant == 1 && va2Total > 0){
       oldVa2.map(obj => {
         obj[`va1_option`] = obj[`va2_option`]
@@ -242,10 +259,18 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
 
       setVaOption(data);
       setColumns(oldColumns);
+
+      const emptyObj = {}
+      const dataImgVariants = {
+        ...imageVariants,
+        file: { value: [...Array(va2Total)].map(() => emptyObj) , isValid: true, message: null }
+      }
+      setImageVariants(dataImgVariants)
     }
 
     if(variant == 1 && va2Total == 0){
       setVaOption({ ...vaOption, va1Option: [], va1Total: 0, va2Total: 0 })
+      setImageVariants(formImage)
     }
 
     if(variant == 2){
@@ -258,9 +283,13 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
     }
   }
 
+
   const deleteVariantHandler = (variant, index) => {
     resetValidation()
     setIsDeleting(true)
+    if(variant == 1){
+      onRemoveVariant(index)
+    }
     if(countVariation == 1 && variant == 1) {
       setDataSource(dataSource.filter((_, i) => i !== index))
     }
@@ -276,6 +305,7 @@ const TableVariant = ({isActiveVariation, setIsActiveVariation, dataSource, setD
       [`va${variant}Total`]: vaOption[`va${variant}Total`] - 1
     }
     setVaOption(data)
+    return
   }
 
   const infoVariantChange = (e, item) => {

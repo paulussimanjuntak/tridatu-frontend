@@ -41,7 +41,7 @@ export const formItemLayout = {
   },
 };
 
-export const initialColumn = [
+const initCol = [
   {
     title: "Harga",
     dataIndex: "price",
@@ -79,6 +79,8 @@ export const initialColumn = [
     width: 150,
   },
 ];
+
+export const initialColumn = initCol;
 
 // NOT USE IN BELOW
 export const productsColumns = [

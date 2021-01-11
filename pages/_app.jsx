@@ -535,6 +535,11 @@ const App = ({ Component, pageProps, store }) => {
           font-weight: 500 !important;
         }
 
+        .invalid-upload > .ant-upload-list-picture-card > .ant-upload.ant-upload-select-picture-card {
+          border-color: #ff4d4f;
+          background-color: #ff4d4f1c;
+        }
+
         .truncate-4 {
           -webkit-line-clamp: 4;
           overflow: hidden;
