@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { AnimatePresence } from 'framer-motion'
 import { Menu, Rate, Tag, InputNumber, Checkbox, Drawer, Tabs, Select, Collapse, Col, Row, Empty } from 'antd';
 
 import RowB from "react-bootstrap/Row";
@@ -15,6 +16,8 @@ import CardProduct from "components/Card/Product";
 import Pagination from "components/Pagination";
 import formFilter from "formdata/formFilter";
 
+import * as actions from "store/actions";
+
 import ProductsStyle from "components/Products/style";
 
 const CardProductMemo = React.memo(CardProduct);
@@ -27,11 +30,15 @@ const sortList = ['Paling Sesuai', 'Harga Tertinggi', 'Harga Terendah']
 const ratingList = ['4 Ketas', '3 Keatas']
 
 const ProductContainer = () => {
+  const dispatch = useDispatch()
   const router = useRouter();
+
   const [visible, setVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState(formFilter);
 
   const allCategories = useSelector(state => state.categories.allCategories)
+  const products = useSelector(state => state.products.products)
+  const user = useSelector(state => state.auth.user)
 
   const { sort, category, rating, brand } = activeFilter;
 
@@ -103,10 +110,13 @@ const ProductContainer = () => {
      return list
   }
 
+  useEffect(() => {
+    dispatch(actions.getProducts({ page: 1, per_page: 20, live: "true" }))
+  }, [user])
+
   return(
     <>
       <Container className="pt-4 pb-2">
-
         <RowB>
           <ColB className="align-self-center">
             <span className="text-secondary fs-14-s">
@@ -145,19 +155,19 @@ const ProductContainer = () => {
               >
                 <Menu.SubMenu 
                   key="kategori" 
-                  className="title-filter" 
+                  className="scrollable-submenu-category title-filter" 
                   title={renderTitle('Kategori')} 
                 >
                   {allCategories.map(category => (
-                    <Menu.SubMenu key={category.id_category} title={renderSubTitle(category.name_category)}>
+                    <Menu.SubMenu key={category.categories_id} title={renderSubTitle(category.categories_name)}>
                       {category.sub_categories.map(sub => (
-                        <Menu.SubMenu key={sub.id_sub_category} title={renderSubTitle(sub.name_sub_category)} className="pl-3">
+                        <Menu.SubMenu key={sub.sub_categories_id} title={renderSubTitle(sub.sub_categories_name)} className="pl-3">
                           {sub.item_sub_categories.map(item => (
                             <Menu.Item 
-                              key={item.id_item_sub_category} 
+                              key={item.item_sub_categories_id} 
                               className="text-secondary"
                             >
-                              {item.name_item_sub_category}
+                              {item.item_sub_categories_name}
                             </Menu.Item>
                           ))}
                         </Menu.SubMenu>
@@ -230,16 +240,28 @@ const ProductContainer = () => {
             )}
 
             <Row gutter={[16, 16]}>
-              {[...Array(10)].map((_, i) => (
-                <Col key={i} lg={6} md={8} sm={12} xs={12}>
-                  <CardProductMemo />
-                </Col>
-              ))}
+              <AnimatePresence>
+                {products && products.data && products.data.length > 0 && products.data.map(product => (
+                  <Col lg={6} md={8} sm={12} xs={12} key={product.products_id}>
+                    <CardProductMemo data={product} />
+                  </Col>
+                ))}
+              </AnimatePresence>
             </Row>
 
             <RowB className="mt-4">
               <ColB className="align-self-center text-center">
-                <Pagination />
+                {products !== null && products && products.data && products.data.length > 0 && (
+                  <Card.Body className="text-center">
+                    <Pagination 
+                      total={products.total} 
+                      // goTo={pageChange} 
+                      // current={currentPage} 
+                      hideOnSinglePage 
+                      // pageSize={perPage}
+                    />
+                  </Card.Body>
+                )}
               </ColB>
             </RowB>
           </ColB>
@@ -261,8 +283,8 @@ const ProductContainer = () => {
         </RowB>
       </Container>
 
-      {/*FILTER MOBILE*/}
 
+      {/*FILTER MOBILE*/}
       <Drawer
         placement="bottom"
         title="Filter"
@@ -323,18 +345,18 @@ const ProductContainer = () => {
             )}
             <Tabs>
               {allCategories.map(category => (
-                <Tabs.TabPane tab={category.name_category} key={category.id_category}>
+                <Tabs.TabPane tab={category.categories_name} key={category.categories_id}>
                   <Collapse className="category-mobile scrollable-submenu" expandIconPosition="right" accordion>
                     {category.sub_categories.map(sub => (
-                      <Collapse.Panel header={sub.name_sub_category} key={sub.id_sub_category}>
+                      <Collapse.Panel header={sub.sub_categories_name} key={sub.sub_categories_id}>
                         <Checkbox.Group
                           className="w-100" 
                           onChange={onCategoryChangeMobile} 
                           value={category.value}
                         >
                           {sub.item_sub_categories.map(item => (
-                            <Checkbox value={item.name_item_sub_category} className="rating-checkbox" key={item.id_item_sub_category}>
-                              <span className="text-secondary">{item.name_item_sub_category}</span>
+                            <Checkbox value={item.item_sub_categories_name} className="rating-checkbox" key={item.item_sub_categories_id}>
+                              <span className="text-secondary">{item.item_sub_categories_name}</span>
                             </Checkbox>
                           ))}
                         </Checkbox.Group>

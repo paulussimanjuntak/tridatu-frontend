@@ -23,6 +23,7 @@ const getProductFail = (error) => {
   }
 }
 
+
 const aliveArchiveProductStart = () => {
   return { type: actionType.ALIVE_ARCHIVE_START }
 }
@@ -34,6 +35,37 @@ const aliveArchiveProductSuccess = () => {
 const aliveArchiveProductFail = (error) => {
   return {
     type: actionType.ALIVE_ARCHIVE_FAIL,
+    error: error
+  }
+}
+
+
+const loveProductStart = () => {
+  return { type: actionType.LOVE_PRODUCT_START }
+}
+
+const loveProductSuccess = () => {
+  return { type: actionType.LOVE_PRODUCT_SUCCESS }
+}
+
+const loveProductFail = (error) => {
+  return { 
+    type: actionType.LOVE_PRODUCT_FAIL,
+    error: error
+  }
+}
+
+const unloveProductStart = () => {
+  return { type: actionType.UNLOVE_PRODUCT_START }
+}
+
+const unloveProductSuccess = () => {
+  return { type: actionType.UNLOVE_PRODUCT_SUCCESS }
+}
+
+const unloveProductFail = (error) => {
+  return { 
+    type: actionType.UNLOVE_PRODUCT_FAIL,
     error: error
   }
 }
@@ -85,6 +117,40 @@ export const aliveArchiveProduct = id => {
       })
       .catch(err => {
         dispatch(aliveArchiveProductFail(err.response))
+      })
+  }
+}
+
+export const loveProduct = id => {
+  return dispatch => {
+    dispatch(loveProductStart())
+    axios.post(`/wishlists/love/${id}`, null, jsonHeaderHandler())
+      .then(res => {
+        message.success({ 
+          content: res.data.detail, 
+          style: { marginTop: '8vh' },
+        });
+        dispatch(loveProductSuccess())
+      })
+      .catch(err => {
+        dispatch(loveProductFail(err.response))
+      })
+  }
+}
+
+export const unloveProduct = id => {
+  return dispatch => {
+    dispatch(unloveProductStart())
+    axios.delete(`/wishlists/unlove/${id}`, jsonHeaderHandler())
+      .then(res => {
+        message.success({ 
+          content: res.data.detail, 
+          style: { marginTop: '8vh' },
+        });
+        dispatch(unloveProductSuccess())
+      })
+      .catch(err => {
+        dispatch(unloveProductFail(err.response))
       })
   }
 }

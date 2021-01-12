@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { Space, Modal, Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb, Input, Popover } from "antd";
-import { Comment, Avatar } from 'antd';
+import { Comment, Avatar, Col as ColAntd, Row as RowAntd } from 'antd';
 import { motion, AnimatePresence } from "framer-motion"
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 
@@ -21,6 +21,8 @@ import UlasanContainer from 'components/Card/Ulasan'
 import DiskusiContainer from 'components/Card/Diskusi'
 import ShareModal from 'components/Card/ShareModal'
 import CardProduct from "components/Card/Product";
+
+import * as actions from "store/actions";
 
 const CardProductMemo = React.memo(CardProduct);
 
@@ -69,12 +71,15 @@ const content = (
 );
 
 const ProductDetail = () => {
+  const dispatch = useDispatch()
+
   const [quantity, setQuantity] = useState(1)
   const [showNote, setShowNote] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const [showModalCart, setShowModalCart] = useState(false)
 
   const user = useSelector(state => state.auth.user)
+  const products = useSelector(state => state.products.products)
 
   const quantityHandler = (e, val) => {
     if(val == "input"){
@@ -90,9 +95,12 @@ const ProductDetail = () => {
   }
 
   const showModalCartHandler = () => { setShowModalCart(true) }
-
   const showNoteHandler = () => { setShowNote(true) }
   const closeNoteHandler = () => { setShowNote(false) }
+
+  useEffect(() => {
+    dispatch(actions.getProducts({ page: 1, per_page: 6, live: "true" }))
+  }, [user])
 
   return(
     <>
@@ -466,13 +474,15 @@ const ProductDetail = () => {
 
         <section className="mt-3 border-top pt-4 recomend-section">
           <h4 className="fs-20-s mb-4">Rekomendasi produk lainnya</h4>
-          <Slider {...brandSettings}>
-            {[...Array(10)].map((_, i) => (
-              <Col key={i} className="px-0">
-                <CardProductMemo />
-              </Col>
-            ))}
-          </Slider>
+          <RowAntd gutter={[16, 16]}>
+            <AnimatePresence>
+              {products && products.data && products.data.length > 0 && products.data.map(product => (
+                <ColAntd lg={4} md={6} sm={8} xs={12} className="modif-col" key={product.products_id}>
+                  <CardProductMemo data={product} />
+                </ColAntd>
+              ))}
+            </AnimatePresence>
+          </RowAntd>
         </section>
       </Container>
 

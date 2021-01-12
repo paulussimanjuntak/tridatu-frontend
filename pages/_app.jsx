@@ -90,7 +90,7 @@ const App = ({ Component, pageProps, store }) => {
           color: #fbbc04;
         }
         .ant-rate-star:not(:last-child) {
-          margin-right: 4px;
+          margin-right: 2px;
         }
         /*ANT RATE*/
 
@@ -738,7 +738,7 @@ const App = ({ Component, pageProps, store }) => {
 
 App.getInitialProps = async ({ Component, ctx }) => {
   const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
-  await ctx.store.dispatch(actions.authCheckState(ctx));
+  // await ctx.store.dispatch(actions.authCheckState(ctx));
   return { pageProps };
 };
 

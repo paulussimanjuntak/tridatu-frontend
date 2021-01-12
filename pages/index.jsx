@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { Col, Row } from "antd";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { AnimatePresence } from 'framer-motion'
 
 import Link from "next/link";
 import Image from "next/image";
@@ -29,8 +31,16 @@ const infoStores = [...Array(4)].map(() => '/static/images/info-store/placeholde
 const emptyBrands = [...Array(5)].map(() => '/static/images/brand/placeholder.png')
 
 const Home = () => {
+  const dispatch = useDispatch()
   const outlets = useSelector(state => state.outlet.outlet)
   const brands = useSelector(state => state.brand.brand)
+
+  const user = useSelector(state => state.auth.user)
+  const products = useSelector(state => state.products.products)
+
+  useEffect(() => {
+    dispatch(actions.getProducts({ page: 1, per_page: 10, live: "true" }))
+  }, [user])
 
   return (
     <>
@@ -120,19 +130,18 @@ const Home = () => {
         <section>
           <h4 className="fs-20-s mb-4">Paling Banyak Dilihat</h4>
           <Row gutter={[16, 16]}>
-            {[...Array(10)].map((_, i) => (
-              <Col key={i} lg={5} md={6} sm={8} xs={12} className="modif-col">
-                <CardProductMemo />
-              </Col>
-            ))}
+            <AnimatePresence>
+              {products && products.data && products.data.length > 0 && products.data.map(product => (
+                <Col lg={5} md={6} sm={8} xs={12} className="modif-col" key={product.products_id}>
+                  <CardProductMemo data={product} />
+                </Col>
+              ))}
+            </AnimatePresence>
           </Row>
 
           <div className="text-center mb-5 mt-3">
             <Link href="/products" as="/products">
-              <Button size="lg" className="btn-dark-tridatu-outline d-none d-lg-block mx-auto">Lihat Semua Produk</Button>
-            </Link>
-            <Link href="/products" as="/products">
-              <Button className="btn-dark-tridatu-outline d-lg-none mx-auto">Lihat Semua Produk</Button>
+              <Button className="btn-dark-tridatu-outline mx-auto">Lihat Semua Produk</Button>
             </Link>
           </div>
         </section>
