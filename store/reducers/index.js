@@ -4,6 +4,7 @@ import addressReducer from "./address";
 import outletReducer from "./outlet";
 import brandReducer from "./brand";
 import categoriesRecuder from "./categories"
+import productsRecuder from "./products"
 
 import layoutReducer from "./layout"
 
@@ -13,6 +14,7 @@ const reducers = {
   outlet: outletReducer,
   brand: brandReducer,
   categories: categoriesRecuder,
+  products: productsRecuder,
   layout: layoutReducer
 };
 

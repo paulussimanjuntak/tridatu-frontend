@@ -1,108 +1,249 @@
-import { useState } from 'react'
-import { Tabs, Checkbox, Row, Col, Space, Input, Select } from 'antd'
+import { withAuth } from 'lib/withAuth'
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from "react-redux";
+import { Tabs, Row, Col, Input, Select, Empty } from 'antd'
 import { EditOutlined, EllipsisOutlined } from '@ant-design/icons'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import Card from 'react-bootstrap/Card'
-import Button from "antd-button-color"
+import Form from 'react-bootstrap/Form'
+import ColB from 'react-bootstrap/Col'
 
+import * as actions from "store/actions";
+import Pagination from "components/Pagination";
 import CardProductAdmin from "components/Card/Admin/Product/Card"
+
+const CardProductMemo = React.memo(CardProductAdmin);
 
 const ALL = 'all'
 const LIVE = 'live'
 const ARCHIVE = 'archive'
 
+const orderList = [
+  { name: "Terbaru", value: "newest" },
+  { name: "Harga Tertinggi", value: "high_price", },
+  { name: "Harga Terendah", value: "low_price", }
+]
+
 import { productsColumns, productsData } from 'data/productsAdmin'
 
-const selectBefore = (
-  <Select defaultValue="1" className="select-before">
-    <Select.Option value="1">Nama produk</Select.Option>
-    <Select.Option value="2">Barcode</Select.Option>
-  </Select>
-);
+const EmptyProduct = ({ loading, products }) => (
+  <AnimatePresence>
+    {!loading && (products == null || products && products.total == 0) && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: ".2" }}
+        className="w-100"
+      >
+        <Empty className="my-5" description={<span className="text-secondary">Tidak ada produk</span>} />
+      </motion.div>
+    )}
+  </AnimatePresence>
+)
 
+const ProductComponent = ({ products, dispatch }) => (
+  <AnimatePresence>
+    {products && products.data && products.data.length > 0 && products.data.map(product => (
+      <Col xl={4} lg={6} md={6} sm={8} xs={12} key={product.products_id}>
+        <CardProductMemo 
+          data={product} 
+          aliveArchive={(id) => dispatch(actions.aliveArchiveProduct(id))}
+        />
+      </Col>
+    ))}
+  </AnimatePresence>
+)
+
+const SearchComponent = ({ search, setSearch, orderBy, setOrderBy }) => (
+  <Form>
+    <Form.Row>
+      <Form.Group as={ColB} lg={8} md={6}>
+        <Input 
+          placeholder="Cari berdasarkan nama" 
+          prefix={<i className="far fa-search" />}
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+      </Form.Group>
+      <Form.Group as={ColB} lg={4} md={6}>
+        <Select 
+          placeholder="Urutkan" 
+          style={{ width: "100%"}}
+          className="product-search-select"
+          value={orderBy}
+          onChange={e => setOrderBy(e)}
+        >
+          {orderList.map((list, i) => (
+            <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
+          ))}
+        </Select>
+      </Form.Group>
+    </Form.Row>
+  </Form>
+)
+
+const perPage = 18;
 const Products = () => {
-  const [selectedProduct, setSelectedProduct] = useState([])
-  const [selectAllProduct, setSelectAllProduct] = useState(false)
-  const [indeterminate, setIndeterminate] = useState(false)
+  const dispatch = useDispatch();
+  const [activeTab, setActiveTab] = useState(ALL)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [live, setLive] = useState("")
+  const [search, setSearch] = useState("")
+  const [orderBy, setOrderBy] = useState(orderList[0].value)
 
-  const onSelectProduct = item => {
-    setSelectedProduct(item)
-    setIndeterminate(!!item.length && item.length < 10);
-    setSelectAllProduct(item.length === 10)
+  const loading = useSelector(state => state.products.loading)
+  const aliveArchiving = useSelector(state => state.products.aliveArchiving)
+  const products = useSelector(state => state.products.products)
+
+  let queryString = {
+    page: currentPage,
+    per_page: perPage,
+    order_by: orderBy,
+    live: live,
+    q: search
   }
 
-  const onSelectAllProduct = e => {
-    setSelectedProduct(e.target.checked ? [...Array(10)].map((_,i) => i) : [])
-    setIndeterminate(false);
-    setSelectAllProduct(true)
+  const onTabClick = key => {
+    setActiveTab(key)
+    setCurrentPage(1)
+    setSearch("")
+    setOrderBy(orderList[0].value)
+    if(key === ALL) setLive("")
+    if(key === LIVE) setLive("true")
+    if(key === ARCHIVE) setLive("false")
   }
+
+  const pageChange = page => {
+    setCurrentPage(page)
+  }
+
+  useEffect(() => {
+    dispatch(actions.getProducts({ ...queryString }))
+  },[currentPage, orderBy, live])
+
+  useEffect(() => {
+    dispatch(actions.getProducts({ ...queryString }))
+  }, [search, aliveArchiving])
+
+  useEffect(() => {
+    if(products !== null){
+      setCurrentPage(products.page)
+    }
+  }, [])
 
   return(
     <>
       <Card className="border-0 shadow-sm card-add-product">
         <Card.Body className="p-3 border-bottom">
-          <Tabs className="order-tabs">
+          <Tabs className="order-tabs" activeKey={activeTab} onTabClick={onTabClick}>
             <Tabs.TabPane tab="Semua" key={ALL}>
               
-              <Input addonBefore={selectBefore} placeholder="Cari produk" />
+              <Form>
+                <Form.Row>
+                  <Form.Group as={ColB} lg={8} md={6}>
+                    <Input 
+                      placeholder="Cari berdasarkan nama" 
+                      prefix={<i className="far fa-search" />}
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                    />
+                  </Form.Group>
+                  <Form.Group as={ColB} lg={4} md={6}>
+                    <Select 
+                      placeholder="Urutkan" 
+                      style={{ width: "100%"}}
+                      className="product-search-select"
+                      value={orderBy}
+                      onChange={e => setOrderBy(e)}
+                    >
+                      {orderList.map((list, i) => (
+                        <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Group>
+                </Form.Row>
+              </Form>
 
-              <Checkbox.Group value={selectedProduct} onChange={onSelectProduct} className="w-100">
-                <Row gutter={[10, 10]}>
-                  {[...Array(10)].map((_,i) => (
-                    <Col xl={4} lg={6} md={6} sm={8} xs={12} key={i}>
-                      <CardProductAdmin i={i} />
-                    </Col>
-                  ))}
-                </Row>
-              </Checkbox.Group>
+              <Row gutter={[10, 10]}>
+                <ProductComponent products={products} dispatch={dispatch} />
+                <EmptyProduct loading={loading} products={products} />
+              </Row>
 
-              <AnimatePresence>
-                {selectedProduct.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: ".2" }}
-                    className="w-100"
-                  >
-                    <Card className="border-0 mt-4 noselect">
-                      <p className="mb-0 fw-500">
-                        {selectedProduct.length} produk dipilih
-                      </p>
-                      <Row justify="space-between" gutter={[10, 10]}>
-                        <Col className="va-sub" xl={12} lg={12} md={12} sm={12} xs={24}>
-                          <span className="mb-0 va-sub">
-                            <Checkbox indeterminate={indeterminate} onChange={onSelectAllProduct} checked={selectAllProduct}>
-                              Pilih semua
-                            </Checkbox>
-                          </span>
-                        </Col>
-                        <Col className="va-sub" xl={12} lg={12} md={12} sm={12} xs={24}>
-                          <Space align="center" className="float-product-button">
-                            <Button>Hapus</Button>
-                            <Button>Arsipkan</Button>
-                            <Button className="btn-tridatu">Tampilkan</Button>
-                          </Space>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {products !== null && products && products.data && products.data.length > 0 && (
+                <Card.Body className="text-center">
+                  <Pagination 
+                    total={products.total} 
+                    goTo={pageChange} 
+                    current={currentPage} 
+                    hideOnSinglePage 
+                    pageSize={perPage}
+                  />
+                </Card.Body>
+              )}
             </Tabs.TabPane>
+
 
             <Tabs.TabPane tab="Live" key={LIVE}>
-              <p>live</p>
+              <SearchComponent 
+                search={search}
+                setSearch={setSearch}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+              />
+
+              <Row gutter={[10, 10]}>
+                <ProductComponent products={products} dispatch={dispatch} />
+                <EmptyProduct loading={loading} products={products} />
+              </Row>
+
+              {products !== null && products && products.data && products.data.length > 0 && (
+                <Card.Body className="text-center">
+                  <Pagination 
+                    total={products.total} 
+                    goTo={pageChange} 
+                    current={currentPage} 
+                    hideOnSinglePage 
+                    pageSize={perPage}
+                  />
+                </Card.Body>
+              )}
             </Tabs.TabPane>
 
+
             <Tabs.TabPane tab="Diarsipkan" key={ARCHIVE}>
-              <p>Produk arsip</p>
+              <SearchComponent 
+                search={search}
+                setSearch={setSearch}
+                orderBy={orderBy}
+                setOrderBy={setOrderBy}
+              />
+
+              <Row gutter={[10, 10]}>
+                <ProductComponent products={products} dispatch={dispatch} />
+                <EmptyProduct loading={loading} products={products} />
+              </Row>
+
+              {products !== null && products && products.data && products.data.length > 0 && (
+                <Card.Body className="text-center">
+                  <Pagination 
+                    total={products.total} 
+                    goTo={pageChange} 
+                    current={currentPage} 
+                    hideOnSinglePage 
+                    pageSize={perPage}
+                  />
+                </Card.Body>
+              )}
             </Tabs.TabPane>
           </Tabs>
         </Card.Body>
       </Card>
       <style jsx>{`
+        :global(.product-search-select > .ant-select-selector){
+          height: 33px !important;
+        }
         :global(.float-product-button) {
           float: left;
         }
@@ -116,4 +257,4 @@ const Products = () => {
   )
 }
 
-export default Products
+export default withAuth(Products)
