@@ -2,6 +2,7 @@ import { Card as CardAnt, Dropdown, Menu } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EditOutlined, EllipsisOutlined } from '@ant-design/icons'
 
+import Link from "next/link";
 import Image from "next/image";
 import Card from 'react-bootstrap/Card'
 import Button from "antd-button-color"
@@ -23,7 +24,11 @@ const CardProductAdmin = ({ data, aliveArchive }) => {
           className="product-card-admin"
           bodyStyle={{ padding: 0 }}
           actions={[
-            <EditOutlined key="edit" />,
+            <Link href="products/[slug]" as={`products/${products_slug}`}>
+              <a className="text-decoration-none">
+                <EditOutlined key="edit" />
+              </a>
+            </Link>,
             <Dropdown 
               placement="bottomRight" 
               trigger={['click']}

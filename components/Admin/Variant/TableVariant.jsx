@@ -28,14 +28,45 @@ const nameVariant2 = "Masukkan Pilihan Variasi, contoh: S, M, dll."
 const maxNameTitle = 15, maxNameVariant = 20, maxCode = 50;
 
 const arrProp = ["price", "stock", "code", "barcode"]
-const initialValue = { value: "", isValid: true, message: null }
-const additional = { price: initialValue, stock: initialValue, code: initialValue, barcode: initialValue } 
+export const initialValue = { value: "", isValid: true, message: null }
+export const additional = { price: initialValue, stock: initialValue, code: initialValue, barcode: initialValue } 
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
+export const addColumVariantHandler = (variant, columns, setColumns) => {
+  // const copyColumns = columns.splice(0)
+  const copyColumns = [...columns]
+  let data = {
+    title: `Nama`,
+    dataIndex: `va${variant}_option`,
+    key: `va${variant}_option`,
+    fixed: 'left',
+    width: 152,
+    align: "center",
+    isValid: true,
+    message: null,
+    render: (value) => value,
+  }
+  if(variant == 2){
+    copyColumns[0] = {
+      ...copyColumns[0],
+      fixed: 'left',
+      width: 150,
+      render: (value, row) => {
+        return {
+          children: value,
+          props: { rowSpan: row.rowSpan }
+        }
+      } // render
+    }
+  }
+  setColumns(copyColumns)
+  copyColumns.splice(variant-1, 0, data)
+}
+
 const TableVariant = ({
   isActiveVariation, setIsActiveVariation, dataSource, setDataSource, columns, setColumns, vaOption, setVaOption, 
-  imageVariants, setImageVariants, onRemoveVariant
+  imageVariants, setImageVariants, onRemoveVariant, initialFetch, setInitialFetch
 }) => {
   const [count, setCount] = useState(0)
   // const [columns, setColumns] = useState(initialColumn)
@@ -103,40 +134,10 @@ const TableVariant = ({
     resetValidation()
   }
 
-  const addColumVariantHandler = (variant) => {
-    // const copyColumns = columns.splice(0)
-    const copyColumns = [...columns]
-    let data = {
-      title: `Nama`,
-      dataIndex: `va${variant}_option`,
-      key: `va${variant}_option`,
-      fixed: 'left',
-      width: 152,
-      align: "center",
-      isValid: true,
-      message: null,
-      render: (value) => value,
-    }
-    if(variant == 2){
-      copyColumns[0] = {
-        ...copyColumns[0],
-        fixed: 'left',
-        width: 150,
-        render: (value, row) => {
-          return {
-            children: value,
-            props: { rowSpan: row.rowSpan }
-          }
-        } // render
-      }
-    }
-    setColumns(copyColumns)
-    copyColumns.splice(variant-1, 0, data)
-  }
 
   const activeVariantHandler = (variant) => {
     setIsActiveVariation({ ...isActiveVariation, active: true, countVariation: countVariation + 1 })
-    addColumVariantHandler(variant)
+    addColumVariantHandler(variant, columns, setColumns)
     addVariant(variant)
     setIsSetAll(false)
   }
@@ -349,6 +350,7 @@ const TableVariant = ({
     let variants = []
     const copyDataSource = [...dataSource]
 
+
     for(let [key1, val1] of Object.entries(va1Option)){
       let variant_tmp = []
       if(vaOption.va2Option.length){
@@ -366,7 +368,7 @@ const TableVariant = ({
             })
             isSetAll && setIsSetAll(false)
           } else {
-            if(!isSetAll){
+            if(!isSetAll && !initialFetch.isInit){
               variant_tmp.push({
                 ...initialData,
                 price: { value: val2.price.value, isValid: true, message: null },
@@ -440,7 +442,7 @@ const TableVariant = ({
             ...initialData,
           })
         } else {
-          if(!isSetAll){
+          if(!isSetAll && !initialFetch.isInit){
             variant_tmp.push({
               ...initialData,
               price: { value: val1.price.value, isValid: true, message: null },
@@ -449,11 +451,31 @@ const TableVariant = ({
               barcode: { value: val1.barcode.value, isValid: true, message: null },
             })
           }
+          if(initialFetch.isInit){ // for one variant only
+            setInitialFetch({ ...initialFetch, isInit: false })
+            variant_tmp.push({
+              ...initialData,
+              ...copyDataSource[key1]
+            })
+          }
         }
       }
       for(let item of variant_tmp){
         variants.push(item)
       }
+    }
+
+    if(initialFetch.isInit){
+      let newColumns = [...columns]
+      const { dataVariant } = initialFetch
+
+      if(dataVariant.hasOwnProperty("va1_name") && !dataVariant.hasOwnProperty("va2_name")){
+        newColumns[0].title = dataVariant.va1_name
+        newColumns[0].isValid = true
+        newColumns[0].message = null
+      }
+      setColumns(newColumns)
+      setInitialFetch({ isInit: false, dataVariant: null })
     }
 
     if(countVariation == 2 && isSetAll){
@@ -546,7 +568,7 @@ const TableVariant = ({
       setIsDeleting(false)
     }
 
-    if(!isSetAll && !isDeleting){
+    if(!isSetAll && !isDeleting && !initialFetch.isInit){
       const tmpVar = copyDataSource.map(data => data.key)
       const tmpDataSource = variants.map(data => data.key)
 
@@ -573,7 +595,8 @@ const TableVariant = ({
       }
     }
 
-    setDataSource(variants)
+    if(initialFetch.isInit && vaOption.va2Option.length) return
+    else setDataSource(variants)
   },[vaOption, isDeleting, isSetAll])
 
   const onTableChange = (e, item, index) => {

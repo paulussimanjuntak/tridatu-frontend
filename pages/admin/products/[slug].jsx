@@ -1,32 +1,33 @@
 import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { Form, Input, Select, InputNumber, Button, Cascader, Space, Upload, Row, Col, Radio, message } from 'antd'
+import { Form, Input, InputNumber, Button, Space, Upload, Row, Col, Radio, message } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { AnimatePresence, motion } from "framer-motion";
 
 import _ from 'lodash'
 import cx from 'classnames'
+import Router from "next/router";
 import isIn from 'validator/lib/isIn'
 import isEmpty from 'validator/lib/isEmpty'
 import Card from 'react-bootstrap/Card'
 import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature_exp } from 'lib/axios'
 
+import makeid from 'lib/makeid'
 import getIndex from 'lib/getIndex'
 import { formImage, formImageIsValid } from 'formdata/formImage'
 import { imagePreview, uploadButton } from 'lib/imageUploader'
 import { imageValidationProduct, multipleImageValidation } from 'lib/imageProductUploader'
 import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
 
+import InformationProducts from 'components/Admin/Products/InformationProducts'
+import NoVariantComponent from 'components/Admin/Products/NoVariant'
+
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
-// import ErrorMessage from "components/ErrorMessage";
 import TableVariant from 'components/Admin/Variant/TableVariant'
 import AddStyleAdmin from 'components/Admin/addStyle'
 
-// import { categoryData } from 'components/Header/categoryData'
-// import { brandData } from 'data/brand'
-
-import { formItemLayout, initialColumn } from 'data/productsAdmin'
+import { initialColumn } from 'data/productsAdmin'
 
 import { formInformationProduct, formNoVariant } from 'formdata/formProduct'
 import { formNoVariantIsValid, formVa1OptionSingleVariantIsValid, formTableIsValid, formVariantTitleIsValid } from 'formdata/formProduct'
@@ -35,28 +36,25 @@ import { isValidProductInformation } from 'formdata/formProduct'
 
 import * as actions from "store/actions";
 
-/*
- * TODO:
- * search in select categories ✅
- * variant images ✅
- * validation error input ✅
- * check in all variant test ✅
- * validation images ✅
- * delete each variant not syncron with the image variant ✅
- * improve variant component 
- * connect to backend ✅
- */
+import { addColumVariantHandler, additional, initialValue } from 'components/Admin/Variant/TableVariant'
 
 const initialVaOption = { va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 }
 const initialActiveVariation = { active: false, countVariation: 0 }
 
-const NewProduct = () => {
-  const dispatch = useDispatch()
+/*
+ * TODO:
+ * image variant ✅
+ */
 
+const UpdateProduct = ({ productData }) => {
+  const dispatch = useDispatch()
   const [imageList, setImageList] = useState(formImage);
   const [imageVariants, setImageVariants] = useState(formImage);
   const [imageSizeGuide, setImageSizeGuide] = useState(formImage);
+  const [removedProductImage, setRemovedProductImage] = useState([]);
+  const [removedSizeGuideImage, setRemovedSizeGuideImage] = useState([]);
 
+  const [initialFetch, setInitialFetch] = useState({isInit: false, data: null})
   const [loading, setLoading] = useState(false)
   const [isPreorder, setIsPreorder] = useState(false)
   const [loadingImageProduct, setLoadingImageProduct] = useState(false)
@@ -80,7 +78,6 @@ const NewProduct = () => {
   const collapsed = useSelector(state => state.layout.adminCollapsed)
   const isMobile = useSelector(state => state.layout.adminIsMobile)
 
-  const brandsData = useSelector(state => state.brand.brand)
   const allCategoriesData = useSelector(state => state.categories.allCategories)
 
   const { va1Option, va1Total, va2Total } = vaOption
@@ -90,13 +87,220 @@ const NewProduct = () => {
   const { va1_price, va1_stock, va1_code, va1_barcode } = noVariant
   /* Destructuring Object Product */
 
-  const fetchBrands = () => {
-    dispatch(actions.getBrand())
-  }
 
-  const fetchCategories = () => {
-    dispatch(actions.getAllCategories())
-  }
+  /*SET DATA FROM SERVER*/
+  /*SET DATA FROM SERVER*/
+  useEffect(() => {
+    if(productData){
+      console.log(JSON.stringify(productData, null, 2))
+      dispatch(actions.getAllCategories())
+      dispatch(actions.getBrand())
+      const image_product = []
+      const { products_brand, products_category, products_image_size_guide, products_slug, products_image_product } = productData
+      const { products_preorder, products_variant } = productData
+      setInitialFetch({isInit: true, dataVariant: products_variant})
+
+      const stateProductInformation = JSON.parse(JSON.stringify(informationProduct))
+
+      for(let key in productData){
+        let newKey = key.split("_")[1]
+        if(stateProductInformation[newKey]){
+          stateProductInformation[newKey].value = productData[key]
+        }
+      }
+      if(products_preorder){
+        setIsPreorder(true)
+      }
+      if(products_brand.brands_id){
+        stateProductInformation.brand_id.value = products_brand.brands_id
+      }
+      if(products_category){
+        const { categories_name, sub_categories_name, item_sub_categories_name, item_sub_categories_id } = products_category
+        setCascaderValue([categories_name, sub_categories_name, item_sub_categories_name])
+        stateProductInformation.item_sub_category_id.value = item_sub_categories_id
+      }
+      if(products_image_size_guide){
+        const imageData = {
+          uid: -Math.abs(Math.random()),
+          url: `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${products_image_size_guide}`
+        }
+        const data = {
+          ...imageSizeGuide,
+          file: {value: [imageData], isValid: true, message: null}
+        }
+        setImageSizeGuide(data)
+      }
+      if(products_image_product){
+        for (const [key, value] of Object.entries(products_image_product)) {
+          image_product.push({
+            uid: -Math.abs(+key + 1),
+            url: `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${value}`
+          })
+        }
+        const data = {
+          ...imageList,
+          file: {value: image_product, isValid: true, message: null}
+        }
+        setImageList(data)
+      }
+
+      /* SET VARIANT FROM SERVER */
+      if(products_variant){
+        const { va1_name, va2_name, va1_items } = products_variant
+
+        /* NO VARIANT DATA */
+        if(va1_items && !va1_name && !va2_name){ 
+          const stateNoVariant = JSON.parse(JSON.stringify(noVariant))
+          for(let va1_item of va1_items){
+            for(let key in va1_item){
+              if(stateNoVariant[key]){
+                stateNoVariant[key].value = va1_item[key]
+              }
+            }
+          }
+          setNoVariant(stateNoVariant)
+        }
+
+        /* ONLY ONE VARIANT DATA */
+        if(va1_name && va1_items && !va2_name){
+          setIsActiveVariation({ active: true, countVariation: 1 })
+          addColumVariantHandler(1, columns, setColumns)
+
+          const newData = []
+          const va1Data = []
+          const image_variant = []
+          for(let [key, item] of Object.entries(va1_items)){
+            va1Data.push({
+              key: `va1_option_${makeid(10)}`, 
+              va1_option: { value: item.va1_option, isValid: true, message: null }, 
+              ...additional
+            })
+            if(item.va1_image){
+              image_variant.push({
+                uid: -Math.abs(+key + 1),
+                url: `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${item.va1_image}`
+              })
+            } else {
+              image_variant.push({})
+            }
+            newData.push({
+              price: { ...initialValue, value: item.va1_price },
+              stock: { ...initialValue, value: item.va1_stock },
+              code: { ...initialValue, value: item.va1_code || "" },
+              barcode: { ...initialValue, value: item.va1_barcode || "" },
+            })
+          }
+          const data = {
+            ...vaOption,
+            va1Option: va1Data,
+            va1Total: va1Total + va1_items.length
+          }
+          setVaOption(data)
+          const dataImageVariant = {
+            ...imageVariants,
+            file: {value: image_variant, isValid: true, message: null}
+          }
+          setImageVariants(dataImageVariant)
+          setDataSource(newData)
+        }
+
+
+        if(va2_name){
+          const propsColumn = { fixed: 'left', width: 152, align: "center", isValid: true, message: null, }
+          const col1 = {
+            ...propsColumn,
+            title: va1_name,
+            dataIndex: `va1_option`,
+            key: `va1_option`,
+            render: (value, row) => {
+              return {
+                children: value,
+                props: { rowSpan: row.rowSpan }
+              }
+            } // render
+          }
+          const col2 = {
+            ...propsColumn,
+            title: va2_name,
+            dataIndex: `va2_option`,
+            key: `va2_option`,
+            render: (value) => value,
+          }
+
+          let variant = []
+          let va1Option = []
+          let va2Option = []
+          for(let val2 of va1_items[0].va2_items){
+            va2Option.push({
+              key: `va2_option_${makeid(10)}`, 
+              va2_option: { value: val2.va2_option, isValid: true, message: null }, 
+              ...additional
+            })
+          }
+          for(let [key1, val1] of Object.entries(va1_items)){
+            let variant_tmp = []
+            va1Option.push({
+              key: `va1_option_${makeid(10)}`, 
+              va1_option: { value: val1.va1_option, isValid: true, message: null }, 
+              ...additional
+            })
+            for(let [key2, val2] of Object.entries(val1.va2_items)){
+              const initialData = {
+                key: makeid(10), 
+                va1_key: +key1,
+                va2_key: +key2,
+                va1_option: val1.va1_option,
+                va2_option: val2.va2_option,
+                price: { value: val2.va2_price, isValid: true, message: null },
+                stock: { value: val2.va2_stock, isValid: true, message: null },
+                code: { value: val2.va2_code || "", isValid: true, message: null },
+                barcode: { value: val2.va2_barcode || "", isValid: true, message: null },
+              }
+              variant_tmp.push(initialData)
+            }
+            for(let item of variant_tmp){
+              variant.push(item)
+            }
+          }
+
+          const image_variant = []
+          for(let [key, item] of Object.entries(va1_items)){
+            if(item.va1_image){
+              image_variant.push({
+                uid: -Math.abs(+key + 1),
+                url: `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${item.va1_image}`
+              })
+            } else {
+              image_variant.push({})
+            }
+          }
+
+          const data = {
+            ...vaOption,
+            va1Option: va1Option,
+            va2Option: va2Option,
+            va1Total: va1Total + va1_items.length,
+            va2Total: va2Total + va1_items[0].va2_items.length
+          }
+          setVaOption(data)
+
+          const dataImageVariant = {
+            ...imageVariants,
+            file: {value: image_variant, isValid: true, message: null}
+          }
+          setImageVariants(dataImageVariant)
+          setColumns(column => [col1, col2, ...column])
+          setIsActiveVariation({ active: true, countVariation: 2 })
+          setDataSource(variant)
+        }
+      }
+      /* SET VARIANT FROM SERVER */
+
+      setInformationProduct(stateProductInformation)
+    }
+  }, [])
+  /*SET DATA FROM SERVER*/
+  /*SET DATA FROM SERVER*/
 
   useEffect(() => {
     let copyCategory = _.cloneDeep(allCategoriesData)
@@ -139,7 +343,7 @@ const NewProduct = () => {
   /* Cascader category */
   const onFocusCascader = () => {
     setCascaderIsShow(true)
-    fetchCategories()
+    dispatch(actions.getAllCategories())
   }
 
   const onCascaderChange = (value, selectedOptions) => {
@@ -256,6 +460,22 @@ const NewProduct = () => {
     }
     setImageSizeGuide(data)
   };
+
+  const onRemoveImageProduct = file => {
+    if(file.url){
+      const imgSplit = file.url.split("/")
+      const imgUrl = imgSplit[imgSplit.length - 1]
+      setRemovedProductImage(str => str.concat(imgUrl))
+    }
+  }
+
+  const onRemoveImageSizeGuide = file => {
+    if(file.url){
+      const imgSplit = file.url.split("/")
+      const imgUrl = imgSplit[imgSplit.length - 1]
+      setRemovedSizeGuideImage(str => str.concat(imgUrl))
+    }
+  }
   /* Function for image changing */
 
   const onPreorderChange = e => {
@@ -302,7 +522,7 @@ const NewProduct = () => {
     formData.append("item_sub_category_id", item_sub_category_id.value);
     formData.append("ticket_variant", ticket);
     imageList.file.value.forEach(file => {
-      formData.append("image_product", file.originFileObj)
+      if(!file.hasOwnProperty('url')) formData.append('image_product', file.originFileObj)
     })
 
     //optional
@@ -316,12 +536,18 @@ const NewProduct = () => {
     }
     if(imageSizeGuide.file.value.length > 0){
       imageSizeGuide.file.value.forEach(file => {
-        formData.append("image_size_guide", file.originFileObj)
+        if(file.hasOwnProperty("originFileObj")) formData.append("image_size_guide", file.originFileObj)
       })
+    }
+    if(removedProductImage.length > 0){
+      formdata.append("image_product_delete", removedProductImage.join(","))
+    }
+    if(removedSizeGuideImage.length > 0){
+      formdata.append("image_size_guide_delete", removedSizeGuideImage.join())
     }
 
     setLoading(true)
-    axios.post("/products/create", formData, formHeaderHandler())
+    axios.put(`/products/update/${productData.products_id}`, formData, formHeaderHandler())
       .then(res => {
         setLoading(false)
         resNotification("success", "Success", res.data.detail)
@@ -448,13 +674,20 @@ const NewProduct = () => {
       let tableIsValid = false;
       const items = []
       const variantIsValid = vaOption[`va1Option`].map(data => data[`va1_option`].isValid)
+
       for(let i = 0; i < va1Total; i++){
+        const imageVariantsObj = imageVariants.file.value[i]
+        const imgSplit = imageVariantsObj.hasOwnProperty("url") && imageVariantsObj.url.split("/")
+        const imgUrl = imgSplit[imgSplit.length - 1]
+
         const item = {
           va1_option: va1Option[i].va1_option.value,
           va1_price: +dataSource[i].price.value,
           va1_stock: +dataSource[i].stock.value,
           va1_code: dataSource[i].code.value || null,
-          va1_barcode: dataSource[i].barcode.value || null
+          va1_barcode: dataSource[i].barcode.value || null,
+          va1_image: imageVariantsObj.hasOwnProperty("url") ? imgUrl : null
+
         }
         items.push(item)
         formIsValid = formVa1OptionSingleVariantIsValid(vaOption, setVaOption, i)
@@ -540,13 +773,18 @@ const NewProduct = () => {
       va1 = va1.filter((item, index, array) => array.indexOf(item) === index)
 
       let variants = []
-      for(let check of va1){
+      for(let i in va1){
+        const imageVariantsObj = imageVariants.file.value[i]
+        const imgSplit = imageVariantsObj.hasOwnProperty("url") && imageVariantsObj.url.split("/")
+        const imgUrl = imgSplit[imgSplit.length - 1]
+
         const va1_items = {
-          va1_option: check.split(" ")[0] === "Pilihan" ? "" : check,
+          va1_option: va1[i].split(" ")[0] === "Pilihan" ? "" : va1[i],
+          va1_image: imageVariantsObj.hasOwnProperty("url") ? imgUrl : null,
           va2_items: []
         }
         for(let val of dataSource){
-          if(val.va1_option === check){
+          if(val.va1_option === va1[i]){
             const va2_data = {
               va2_option: val.va2_option.split(" ")[0] === "Pilihan" ? "" : val.va2_option,
               va2_price: +val.price.value,
@@ -655,101 +893,16 @@ const NewProduct = () => {
 
   return(
     <>
-      <Card className="border-0 shadow-sm card-add-product">
-        <Card.Body className="p-3 border-bottom">
-          <h5 className="mb-0 fs-16-s">Informasi Produk</h5>
-        </Card.Body>
-        <Card.Body className="p-3">
-
-          <Form layout="vertical">
-            <Form.Item 
-              required
-              label="Nama Produk" 
-              validateStatus={!name.isValid && name.message && "error"}
-            >
-              <Input 
-                name="name"
-                placeholder="Nama Produk" 
-                className="h-35" 
-                value={name.value}
-                onChange={e => onInformationProductChange(e)}
-              />
-              <ErrorTooltip item={name} />
-            </Form.Item>
-            <Form.Item 
-              required
-              label="Deskripsi Produk" 
-              validateStatus={!desc.isValid && desc.message && "error"}
-            >
-              <Input.TextArea 
-                name="desc"
-                autoSize={{ minRows: 8, maxRows: 10 }} 
-                placeholder="Deskripsi produk" 
-                value={desc.value}
-                onChange={e => onInformationProductChange(e)}
-              />
-              <ErrorTooltip item={desc} />
-            </Form.Item>
-            <Form.Item 
-              required
-              label="Kategori" 
-              validateStatus={!item_sub_category_id.isValid && item_sub_category_id.message && "error"}
-            >
-              <Cascader 
-                changeOnSelect
-                allowClear={false}
-                value={cascaderValue}
-                popupVisible={cascaderIsShow}
-                showSearch={{ filter }}
-                onChange={onCascaderChange}
-                options={allCategoriesList} 
-                onFocus={onFocusCascader}
-                placeholder="Ketik dan cari / pilih Kategori" 
-                popupClassName="cascader-category-menus"
-              />
-              <ErrorTooltip item={item_sub_category_id} />
-            </Form.Item>
-            <Form.Item 
-              label="Brand"
-              validateStatus={!brand_id.isValid && brand_id.message && "error"}
-            >
-              <Select
-                showSearch
-                name="brand_id"
-                placeholder="Buat Brand"
-                value={brand_id.value}
-                onFocus={() => fetchBrands()}
-                onSelect={e => onInformationProductChange(e, "brand_id")}
-                filterOption={(input, option) =>
-                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {brandsData.map(data => (
-                  <Select.Option value={data.id} key={data.id}>{data.name}</Select.Option>
-                ))}
-              </Select>
-              <ErrorTooltip item={brand_id} />
-            </Form.Item>
-            <Form.Item 
-              required
-              label="Kondisi" 
-              validateStatus={!condition.isValid && condition.message && "error"}
-            >
-              <Select 
-                name="condition"
-                placeholder="Kondisi produk" 
-                value={condition.value}
-                onSelect={e => onInformationProductChange(e, "condition")}
-              >
-                <Select.Option value={true}>Baru</Select.Option>
-                <Select.Option value={false}>Bekas</Select.Option>
-              </Select>
-              <ErrorTooltip item={condition} />
-            </Form.Item>
-          </Form>
-
-        </Card.Body>
-      </Card>
+      <InformationProducts 
+        informationProduct={informationProduct}
+        onInformationProductChange={onInformationProductChange}
+        cascaderValue={cascaderValue}
+        cascaderIsShow={cascaderIsShow}
+        onCascaderChange={onCascaderChange}
+        allCategoriesList={allCategoriesList} 
+        onFocusCascader={onFocusCascader}
+        filter={filter}
+      />
 
       <Card className="border-0 shadow-sm card-add-product">
         <Card.Body className="p-3 border-bottom">
@@ -758,75 +911,10 @@ const NewProduct = () => {
         <Card.Body className="p-3">
 
           {!isActiveVariation.active && (
-            <Form layout="vertical" {...formItemLayout}>
-              <Form.Item 
-                required
-                label="Harga" 
-                validateStatus={!va1_price.isValid && va1_price.message && "error"}
-              >
-                <div className="ant-input-group-wrapper">
-                  <div className="ant-input-wrapper ant-input-group">
-                    <span className="ant-input-group-addon noselect">Rp</span>
-                    <InputNumber
-                      min={1}
-                      name="va_1price"
-                      className="w-100 bor-left-rad-0 h-33-custom-input"
-                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                      parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
-                      value={va1_price.value}
-                      onChange={e => onNoVariantChangeHandler(e, "va1_price")}
-                    />
-                  </div>
-                </div>
-                <ErrorTooltip item={va1_price} />
-              </Form.Item>
-
-              <Form.Item 
-                required
-                label="Stok" 
-                validateStatus={!va1_stock.isValid && va1_stock.message && "error"}
-              >
-                <InputNumber 
-                  min={0} 
-                  name="va1_stock"
-                  placeholder="Jumlah Stok"
-                  className="w-100 h-33-custom-input" 
-                  value={va1_stock.value}
-                  onChange={e => onNoVariantChangeHandler(e, "va1_stock")}
-                />
-                <ErrorTooltip item={va1_stock} />
-              </Form.Item>
-
-              <Form.Item 
-                label="Kode Variasi"
-                validateStatus={!va1_code.isValid && va1_code.message && "error"}
-              >
-                <Input 
-                  className="h-35" 
-                  name="va1_code"
-                  placeholder="Kode Variasi" 
-                  value={va1_code.value}
-                  onChange={e => onNoVariantChangeHandler(e)}
-                />
-                <ErrorTooltip item={va1_code} />
-              </Form.Item>
-
-              <Form.Item 
-                label="Barcode" 
-                className="mb-4"
-                validateStatus={!va1_barcode.isValid && va1_barcode.message && "error"}
-              >
-                <Input 
-                  className="h-35" 
-                  name="va1_barcode"
-                  placeholder="Barcode" 
-                  value={va1_barcode.value}
-                  onChange={e => onNoVariantChangeHandler(e)}
-                />
-                <ErrorTooltip item={va1_barcode} />
-              </Form.Item>
-
-            </Form>
+            <NoVariantComponent 
+              noVariant={noVariant}
+              onNoVariantChangeHandler={onNoVariantChangeHandler}
+            />
           )}
 
           <TableVariant 
@@ -841,8 +929,8 @@ const NewProduct = () => {
             imageVariants={imageVariants}
             setImageVariants={setImageVariants}
             onRemoveVariant={onRemoveVariant}
-            initialFetch={{ isInit: false, dataVariant: null }}
-            setInitialFetch={() => {}}
+            initialFetch={initialFetch}
+            setInitialFetch={setInitialFetch}
           />
 
         </Card.Body>
@@ -864,6 +952,7 @@ const NewProduct = () => {
                 onPreview={imagePreview}
                 fileList={imageList.file.value}
                 onChange={imageChangeHandler}
+                onRemove={onRemoveImageProduct}
                 beforeUpload={(file) => multipleImageValidation(file, imageList.file.value, "image_product", "/products/create", "post", setLoadingImageProduct)}
               >
                 {imageList.file.value.length >= 10 ? null : uploadButton(loadingImageProduct)}
@@ -910,6 +999,7 @@ const NewProduct = () => {
                   onPreview={imagePreview}
                   fileList={imageSizeGuide.file.value}
                   onChange={imageSizeGuideChangeHandler}
+                  onRemove={onRemoveImageSizeGuide}
                   beforeUpload={(file) => imageValidationProduct(file, "image_size_guide", "/products/create", "post", setLoadingImageSizeGuide)}
                 >
                   {imageSizeGuide.file.value.length >= 1 ? null : uploadButton(loadingImageSizeGuide)}
@@ -1045,4 +1135,34 @@ const NewProduct = () => {
   )
 }
 
-export default withAuth(NewProduct)
+UpdateProduct.getInitialProps = async ctx => {
+  const { slug } = ctx.query
+  try{
+    const res = await axios.get(`/products/${slug}?recommendation=false`, jsonHeaderHandler())
+    if(res.status == 404){
+      process.browser
+        ? Router.replace("/admin/products", "/admin/products") //Redirec from Client Side
+        : ctx.res.writeHead(302, { Location: "/admin/products" }); //Redirec from Server Side
+      !process.browser && ctx.res.end()
+    } else {
+      return {
+        productData: res.data
+      }
+    }
+  }
+  catch (err) {
+    const res = await axios.get(`/products/${slug}?recommendation=false`)
+    if(res.status == 404){
+      process.browser
+        ? Router.replace("/admin/products", "/admin/products") //Redirec from Client Side
+        : ctx.res.writeHead(302, { Location: "/admin/products" }); //Redirec from Server Side
+      !process.browser && ctx.res.end()
+    } else {
+      return {
+        productData: res.data
+      }
+    }
+  }
+}
+
+export default withAuth(UpdateProduct)

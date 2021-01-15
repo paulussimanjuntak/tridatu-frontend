@@ -23,11 +23,26 @@ import ProductsStyle from "components/Products/style";
 const CardProductMemo = React.memo(CardProduct);
 
 const renderTitle = (title) => <b className="text-dark">{title}</b> 
-const renderSubTitle = (title) => <span className="text-muted">{title}</span>
+const renderSubTitle = (title, item, type) => (
+  <span 
+    className="text-muted w-100 d-block bg-danger" 
+    onClick={e => {
+      e.stopPropagation()
+      console.log(JSON.stringify(item, null, 2))
+    }}
+  >
+    {title}
+  </span>
+)
 
 const brandList = ['Adidas', 'Billabong', 'Bershka', 'Converse', 'Deus', 'GAP', 'Giordano', 'Gucci', 'H&M', 'Mango', 'New Balance', 'Pull & Bear', 'Louis Vuitton', 'Levis', 'Nike', 'Top Man', 'Uniqlo', 'Supreme', 'Zara']
 const sortList = ['Paling Sesuai', 'Harga Tertinggi', 'Harga Terendah']
 const ratingList = ['4 Ketas', '3 Keatas']
+
+/*
+ * TODO:
+ * filter category - make like tokopedia
+ */
 
 const ProductContainer = () => {
   const dispatch = useDispatch()
@@ -159,9 +174,17 @@ const ProductContainer = () => {
                   title={renderTitle('Kategori')} 
                 >
                   {allCategories.map(category => (
-                    <Menu.SubMenu key={category.categories_id} title={renderSubTitle(category.categories_name)}>
+                    <Menu.SubMenu 
+                      key={category.categories_id} 
+                      title={renderSubTitle(category.categories_name, category, "category")}
+                      onTitleClick={e => console.log(e)}
+                    >
                       {category.sub_categories.map(sub => (
-                        <Menu.SubMenu key={sub.sub_categories_id} title={renderSubTitle(sub.sub_categories_name)} className="pl-3">
+                        <Menu.SubMenu 
+                          key={sub.sub_categories_id} 
+                          title={renderSubTitle(sub.sub_categories_name, sub, "sub")} 
+                          className="pl-3"
+                        >
                           {sub.item_sub_categories.map(item => (
                             <Menu.Item 
                               key={item.item_sub_categories_id} 
