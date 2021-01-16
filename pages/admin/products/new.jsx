@@ -308,7 +308,9 @@ const NewProduct = () => {
     //optional
     if(!isEmpty(video.value)) formData.append("video", video.value);
     if(isPreorder && preorder.value !== null && !isEmpty(preorder.value.toString())) formData.append("preorder", preorder.value);
-    if(brand_id.value.length !== 0 && !isEmpty(brand_id.value.toString())) formData.append("brand_id", brand_id.value);
+    if(brand_id.value !== "" && brand_id.value.length !== 0 && !isEmpty(brand_id.value.toString())){
+      formData.append("brand_id", brand_id.value);
+    }
     if(isActiveVariation.active && imageVariants.file.value.length > 0){
       imageVariants.file.value.forEach(file => {
         if(file.hasOwnProperty("originFileObj")) formData.append("image_variant", file.originFileObj)
@@ -724,6 +726,7 @@ const NewProduct = () => {
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
+                <Select.Option value="" key={null}>Tidak ada brand</Select.Option>
                 {brandsData.map(data => (
                   <Select.Option value={data.id} key={data.id}>{data.name}</Select.Option>
                 ))}

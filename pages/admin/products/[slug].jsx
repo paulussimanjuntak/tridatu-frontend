@@ -45,6 +45,7 @@ const initialActiveVariation = { active: false, countVariation: 0 }
  * TODO:
  * image variant ✅
  */
+
 const UpdateProduct = ({ productData }) => {
   const dispatch = useDispatch()
   const [imageList, setImageList] = useState(formImage);
@@ -158,6 +159,8 @@ const UpdateProduct = ({ productData }) => {
             }
           }
           setNoVariant(stateNoVariant)
+          setIsActiveVariation({ active: false, countVariation: 0 })
+          setInitialFetch({isInit: false, dataVariant: null})
         }
 
         /* ONLY ONE VARIANT DATA */
@@ -527,7 +530,9 @@ const UpdateProduct = ({ productData }) => {
     //optional
     if(!isEmpty(video.value)) formData.append("video", video.value);
     if(isPreorder && preorder.value !== null && !isEmpty(preorder.value.toString())) formData.append("preorder", preorder.value);
-    if(brand_id.value.length !== 0 && !isEmpty(brand_id.value.toString())) formData.append("brand_id", brand_id.value);
+    if(brand_id.value !== "" && brand_id.value.length !== 0 && !isEmpty(brand_id.value.toString())){
+      formData.append("brand_id", brand_id.value);
+    }
     if(isActiveVariation.active && imageVariants.file.value.length > 0){
       imageVariants.file.value.forEach(file => {
         if(file.hasOwnProperty("originFileObj")) formData.append("image_variant", file.originFileObj)
@@ -539,10 +544,10 @@ const UpdateProduct = ({ productData }) => {
       })
     }
     if(removedProductImage.length > 0){
-      formdata.append("image_product_delete", removedProductImage.join(","))
+      formData.append("image_product_delete", removedProductImage.join(","))
     }
     if(removedSizeGuideImage.length > 0){
-      formdata.append("image_size_guide_delete", removedSizeGuideImage.join())
+      formData.append("image_size_guide_delete", removedSizeGuideImage.join())
     }
 
     setLoading(true)
@@ -551,6 +556,7 @@ const UpdateProduct = ({ productData }) => {
         setLoading(false)
         resNotification("success", "Success", res.data.detail)
         resetAllData()
+        Router.push("/admin/products")
       })
       .catch(err => {
         setLoading(false)
@@ -634,6 +640,7 @@ const UpdateProduct = ({ productData }) => {
           onSubmitProduct(res.data.ticket)
         })
         .catch(err => {
+          console.log(err)
           const errDetail = err.response.data.detail;
           if(errDetail == signature_exp){
             axios.post(urlVariant, data, jsonHeaderHandler())
@@ -816,6 +823,7 @@ const UpdateProduct = ({ productData }) => {
             onSubmitProduct(res.data.ticket)
           })
           .catch(err => {
+            console.log(err)
             const errDetail = err.response.data.detail;
             console.log(errDetail)
             if(errDetail == signature_exp){

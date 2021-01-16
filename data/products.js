@@ -8,9 +8,9 @@ export const formItemLayout = {
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 24 },
-    md: { span: 18 },
-    lg: { span: 14 },
-    xl: { span: 12 },
+    md: { span: 24 },
+    lg: { span: 24 },
+    xl: { span: 24 },
   },
 };
 

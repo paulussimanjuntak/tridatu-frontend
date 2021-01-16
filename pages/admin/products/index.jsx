@@ -131,6 +131,7 @@ const Products = () => {
     if(products !== null){
       setCurrentPage(products.page)
     }
+    setCurrentPage(1)
   }, [])
 
   return(

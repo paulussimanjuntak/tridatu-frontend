@@ -106,6 +106,7 @@ const InformationProducts = ({
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
+                <Select.Option value="" key={null}>Tidak ada brand</Select.Option>
                 {brandsData.map(data => (
                   <Select.Option value={data.id} key={data.id}>{data.name}</Select.Option>
                 ))}

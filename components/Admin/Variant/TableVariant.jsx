@@ -350,7 +350,6 @@ const TableVariant = ({
     let variants = []
     const copyDataSource = [...dataSource]
 
-
     for(let [key1, val1] of Object.entries(va1Option)){
       let variant_tmp = []
       if(vaOption.va2Option.length){
@@ -442,6 +441,7 @@ const TableVariant = ({
             ...initialData,
           })
         } else {
+          // if(!isSetAll){
           if(!isSetAll && !initialFetch.isInit){
             variant_tmp.push({
               ...initialData,
@@ -677,7 +677,7 @@ const TableVariant = ({
   return(
     <>
       <Row>
-        <Col xs={24} sm={24} md={18} lg={16} xl={14}>
+        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
           {[...Array(countVariation)].map((_, i) => (
             <React.Fragment key={i}>
             <Card.Body className="p-3 bg-light mb-3 bor-rad-5px">
