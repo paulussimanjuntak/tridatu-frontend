@@ -45,7 +45,6 @@ const initialActiveVariation = { active: false, countVariation: 0 }
  * TODO:
  * image variant ✅
  */
-
 const UpdateProduct = ({ productData }) => {
   const dispatch = useDispatch()
   const [imageList, setImageList] = useState(formImage);
