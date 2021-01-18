@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import _ from 'lodash'
 import cx from 'classnames'
 import Router from "next/router";
+import Link from "next/link";
 import isIn from 'validator/lib/isIn'
 import isEmpty from 'validator/lib/isEmpty'
 import Card from 'react-bootstrap/Card'
@@ -1106,7 +1107,9 @@ const UpdateProduct = ({ productData }) => {
         <Button className="btn-tridatu" onClick={onSubmitHandler} disabled={loading}>
           {loading ? <LoadingOutlined /> : "Simpan"}
         </Button>
-        <Button onClick={resetAllData}>Batal</Button>
+        <Link href="/admin/products">
+          <Button>Batal</Button>
+        </Link>
       </Space>
 
       <SizeGuideModal 

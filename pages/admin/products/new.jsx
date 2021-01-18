@@ -1,7 +1,7 @@
 import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { Form, Input, Select, InputNumber, Button, Cascader, Space, Upload, Row, Col, Radio, message } from 'antd'
+import { Form, Input, InputNumber, Button, Space, Upload, Row, Col, Radio, message } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -18,6 +18,9 @@ import { imagePreview, uploadButton } from 'lib/imageUploader'
 import { imageValidationProduct, multipleImageValidation } from 'lib/imageProductUploader'
 import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
 
+import InformationProducts from 'components/Admin/Products/InformationProducts'
+import NoVariantComponent from 'components/Admin/Products/NoVariant'
+
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
 // import ErrorMessage from "components/ErrorMessage";
 import TableVariant from 'components/Admin/Variant/TableVariant'
@@ -26,7 +29,7 @@ import AddStyleAdmin from 'components/Admin/addStyle'
 // import { categoryData } from 'components/Header/categoryData'
 // import { brandData } from 'data/brand'
 
-import { formItemLayout, initialColumn } from 'data/productsAdmin'
+import { initialColumn } from 'data/productsAdmin'
 
 import { formInformationProduct, formNoVariant } from 'formdata/formProduct'
 import { formNoVariantIsValid, formVa1OptionSingleVariantIsValid, formTableIsValid, formVariantTitleIsValid } from 'formdata/formProduct'
@@ -45,6 +48,7 @@ import * as actions from "store/actions";
  * delete each variant not syncron with the image variant ✅
  * improve variant component 
  * connect to backend ✅
+ * change to use one component ✅
  */
 
 const initialVaOption = { va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 }
@@ -80,7 +84,6 @@ const NewProduct = () => {
   const collapsed = useSelector(state => state.layout.adminCollapsed)
   const isMobile = useSelector(state => state.layout.adminIsMobile)
 
-  const brandsData = useSelector(state => state.brand.brand)
   const allCategoriesData = useSelector(state => state.categories.allCategories)
 
   const { va1Option, va1Total, va2Total } = vaOption
@@ -89,10 +92,6 @@ const NewProduct = () => {
   const { name, desc, item_sub_category_id, brand_id, condition, weight, preorder, video } = informationProduct;
   const { va1_price, va1_stock, va1_code, va1_barcode } = noVariant
   /* Destructuring Object Product */
-
-  const fetchBrands = () => {
-    dispatch(actions.getBrand())
-  }
 
   const fetchCategories = () => {
     dispatch(actions.getAllCategories())
@@ -657,102 +656,16 @@ const NewProduct = () => {
 
   return(
     <>
-      <Card className="border-0 shadow-sm card-add-product">
-        <Card.Body className="p-3 border-bottom">
-          <h5 className="mb-0 fs-16-s">Informasi Produk</h5>
-        </Card.Body>
-        <Card.Body className="p-3">
-
-          <Form layout="vertical">
-            <Form.Item 
-              required
-              label="Nama Produk" 
-              validateStatus={!name.isValid && name.message && "error"}
-            >
-              <Input 
-                name="name"
-                placeholder="Nama Produk" 
-                className="h-35" 
-                value={name.value}
-                onChange={e => onInformationProductChange(e)}
-              />
-              <ErrorTooltip item={name} />
-            </Form.Item>
-            <Form.Item 
-              required
-              label="Deskripsi Produk" 
-              validateStatus={!desc.isValid && desc.message && "error"}
-            >
-              <Input.TextArea 
-                name="desc"
-                autoSize={{ minRows: 8, maxRows: 10 }} 
-                placeholder="Deskripsi produk" 
-                value={desc.value}
-                onChange={e => onInformationProductChange(e)}
-              />
-              <ErrorTooltip item={desc} />
-            </Form.Item>
-            <Form.Item 
-              required
-              label="Kategori" 
-              validateStatus={!item_sub_category_id.isValid && item_sub_category_id.message && "error"}
-            >
-              <Cascader 
-                changeOnSelect
-                allowClear={false}
-                value={cascaderValue}
-                popupVisible={cascaderIsShow}
-                showSearch={{ filter }}
-                onChange={onCascaderChange}
-                options={allCategoriesList} 
-                onFocus={onFocusCascader}
-                placeholder="Ketik dan cari / pilih Kategori" 
-                popupClassName="cascader-category-menus"
-              />
-              <ErrorTooltip item={item_sub_category_id} />
-            </Form.Item>
-            <Form.Item 
-              label="Brand"
-              validateStatus={!brand_id.isValid && brand_id.message && "error"}
-            >
-              <Select
-                showSearch
-                name="brand_id"
-                placeholder="Buat Brand"
-                value={brand_id.value}
-                onFocus={() => fetchBrands()}
-                onSelect={e => onInformationProductChange(e, "brand_id")}
-                filterOption={(input, option) =>
-                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                <Select.Option value="" key={null}>Tidak ada brand</Select.Option>
-                {brandsData.map(data => (
-                  <Select.Option value={data.id} key={data.id}>{data.name}</Select.Option>
-                ))}
-              </Select>
-              <ErrorTooltip item={brand_id} />
-            </Form.Item>
-            <Form.Item 
-              required
-              label="Kondisi" 
-              validateStatus={!condition.isValid && condition.message && "error"}
-            >
-              <Select 
-                name="condition"
-                placeholder="Kondisi produk" 
-                value={condition.value}
-                onSelect={e => onInformationProductChange(e, "condition")}
-              >
-                <Select.Option value={true}>Baru</Select.Option>
-                <Select.Option value={false}>Bekas</Select.Option>
-              </Select>
-              <ErrorTooltip item={condition} />
-            </Form.Item>
-          </Form>
-
-        </Card.Body>
-      </Card>
+      <InformationProducts 
+        informationProduct={informationProduct}
+        onInformationProductChange={onInformationProductChange}
+        cascaderValue={cascaderValue}
+        cascaderIsShow={cascaderIsShow}
+        onCascaderChange={onCascaderChange}
+        allCategoriesList={allCategoriesList} 
+        onFocusCascader={onFocusCascader}
+        filter={filter}
+      />
 
       <Card className="border-0 shadow-sm card-add-product">
         <Card.Body className="p-3 border-bottom">
@@ -761,75 +674,10 @@ const NewProduct = () => {
         <Card.Body className="p-3">
 
           {!isActiveVariation.active && (
-            <Form layout="vertical" {...formItemLayout}>
-              <Form.Item 
-                required
-                label="Harga" 
-                validateStatus={!va1_price.isValid && va1_price.message && "error"}
-              >
-                <div className="ant-input-group-wrapper">
-                  <div className="ant-input-wrapper ant-input-group">
-                    <span className="ant-input-group-addon noselect">Rp</span>
-                    <InputNumber
-                      min={1}
-                      name="va_1price"
-                      className="w-100 bor-left-rad-0 h-33-custom-input"
-                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                      parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
-                      value={va1_price.value}
-                      onChange={e => onNoVariantChangeHandler(e, "va1_price")}
-                    />
-                  </div>
-                </div>
-                <ErrorTooltip item={va1_price} />
-              </Form.Item>
-
-              <Form.Item 
-                required
-                label="Stok" 
-                validateStatus={!va1_stock.isValid && va1_stock.message && "error"}
-              >
-                <InputNumber 
-                  min={0} 
-                  name="va1_stock"
-                  placeholder="Jumlah Stok"
-                  className="w-100 h-33-custom-input" 
-                  value={va1_stock.value}
-                  onChange={e => onNoVariantChangeHandler(e, "va1_stock")}
-                />
-                <ErrorTooltip item={va1_stock} />
-              </Form.Item>
-
-              <Form.Item 
-                label="Kode Variasi"
-                validateStatus={!va1_code.isValid && va1_code.message && "error"}
-              >
-                <Input 
-                  className="h-35" 
-                  name="va1_code"
-                  placeholder="Kode Variasi" 
-                  value={va1_code.value}
-                  onChange={e => onNoVariantChangeHandler(e)}
-                />
-                <ErrorTooltip item={va1_code} />
-              </Form.Item>
-
-              <Form.Item 
-                label="Barcode" 
-                className="mb-4"
-                validateStatus={!va1_barcode.isValid && va1_barcode.message && "error"}
-              >
-                <Input 
-                  className="h-35" 
-                  name="va1_barcode"
-                  placeholder="Barcode" 
-                  value={va1_barcode.value}
-                  onChange={e => onNoVariantChangeHandler(e)}
-                />
-                <ErrorTooltip item={va1_barcode} />
-              </Form.Item>
-
-            </Form>
+            <NoVariantComponent 
+              noVariant={noVariant}
+              onNoVariantChangeHandler={onNoVariantChangeHandler}
+            />
           )}
 
           <TableVariant 
