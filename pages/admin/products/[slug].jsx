@@ -990,13 +990,14 @@ const UpdateProduct = ({ productData }) => {
                         disabled={loadingImageVariant}
                         onPreview={imagePreview}
                         onRemove={() => onRemoveImageVariant(i)}
-                        fileList={imageVariants.file.value && imageVariants.file.value[i] && 
-                                  imageVariants.file.value[i].uid && [imageVariants.file.value[i]]
+                        fileList={imageVariants.file && imageVariants.file.value && 
+                                  imageVariants.file.value[i] && imageVariants.file.value[i].uid && 
+                                  imageVariants.file.value.length > 0 && [imageVariants.file.value[i]]
                         }
                         onChange={imageVariantChangeHandler(i)}
                         beforeUpload={(file) => multipleImageValidation(file, imageVariants.file.value, "image_variant", "/products/create", "post", setLoadingImageVariant )}
                       >
-                        {va1Total && !imageVariants.file.value[i].hasOwnProperty("uid") ? uploadButton(loadingImageVariant) : null}
+                        {va1Total ? uploadButton(loadingImageVariant) : null}
                       </Upload>
                       <p className="text-center noselect">
                         {va.va1_option.value || "Pilihan"} {imageList.file.value.length == va1Total}

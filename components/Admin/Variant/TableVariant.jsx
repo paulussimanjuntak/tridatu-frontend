@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Table, Input, Form, InputNumber, Row, Col } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons'
 
-import _ from 'lodash'
 import Card from 'react-bootstrap/Card'
 import Media from 'react-bootstrap/Media'
 import ButtonColor from "antd-button-color"
