@@ -23,7 +23,6 @@ const CardBrandMemo = React.memo(CardBrand);
 const CardBannerMemo = React.memo(CardBanner);
 
 import { brandSettings, bannerSettings, infoStoreSettings, infoStoreSettingsMobile } from "lib/slickSetting";
-import { brandData } from "data/brand";
 
 let banners = ['/static/images/promo/Thumbnail-600x328.jpg', '/static/images/banner/2.jpeg', '/static/images/promo/Thumbnail-600x328.jpg', '/static/images/banner/4.jpeg', '/static/images/banner/5.jpeg', '/static/images/banner/5.jpeg']
 
@@ -39,7 +38,7 @@ const Home = () => {
   const products = useSelector(state => state.products.products)
 
   useEffect(() => {
-    dispatch(actions.getProducts({ page: 1, per_page: 10, live: "true" }))
+    dispatch(actions.getProducts({ page: 1, per_page: 10, live: "true", order_by: "visitor" }))
   }, [user])
 
   return (

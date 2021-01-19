@@ -23,6 +23,7 @@ import ProductsStyle from "components/Products/style";
 const CardProductMemo = React.memo(CardProduct);
 
 const renderTitle = (title) => <b className="text-dark">{title}</b> 
+
 const renderSubTitle = (title, item, type) => (
   <span 
     className="text-muted w-100 d-block bg-danger" 
@@ -473,6 +474,11 @@ const ProductContainer = () => {
       `}</style>
     </>
   )
+}
+
+ProductContainer.getInitialProps = async ctx => {
+  const searchQuery = ctx.query
+
 }
 
 export default ProductContainer

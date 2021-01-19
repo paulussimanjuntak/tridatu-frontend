@@ -10,24 +10,20 @@ import cx from 'classnames'
 import isIn from 'validator/lib/isIn'
 import isEmpty from 'validator/lib/isEmpty'
 import Card from 'react-bootstrap/Card'
-import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature_exp } from 'lib/axios'
+import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature_exp, formErrorMessage } from 'lib/axios'
 
 import getIndex from 'lib/getIndex'
 import { formImage, formImageIsValid } from 'formdata/formImage'
 import { imagePreview, uploadButton } from 'lib/imageUploader'
-import { imageValidationProduct, multipleImageValidation } from 'lib/imageProductUploader'
+import { imageValidationProduct, multipleImageValidation, checkVariantImage } from 'lib/imageProductUploader'
 import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
 
 import InformationProducts from 'components/Admin/Products/InformationProducts'
 import NoVariantComponent from 'components/Admin/Products/NoVariant'
 
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
-// import ErrorMessage from "components/ErrorMessage";
 import TableVariant from 'components/Admin/Variant/TableVariant'
 import AddStyleAdmin from 'components/Admin/addStyle'
-
-// import { categoryData } from 'components/Header/categoryData'
-// import { brandData } from 'data/brand'
 
 import { initialColumn } from 'data/productsAdmin'
 
@@ -53,6 +49,7 @@ import * as actions from "store/actions";
 
 const initialVaOption = { va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 }
 const initialActiveVariation = { active: false, countVariation: 0 }
+const checkMessage = "Pastikan kolom sudah terisi semua."
 
 const NewProduct = () => {
   const dispatch = useDispatch()
@@ -343,16 +340,11 @@ const NewProduct = () => {
           state.name.isValid = false;
           state.name.message = errDetail;
           setInformationProduct(state)
+          formErrorMessage(errDetail)
         } else if(typeof errDetail === "string" && errDetail === uniqueImage){
-          message.error({ 
-            content: errDetail, 
-            style: { marginTop: '10vh' },
-          });
+          formErrorMessage(errDetail)
         } else if(typeof errDetail === "string" && errDetail === variantImage){
-          message.error({ 
-            content: errDetail, 
-            style: { marginTop: '10vh' },
-          });
+          formErrorMessage(errDetail)
         } else {
           const state = JSON.parse(JSON.stringify(informationProduct));
           errDetail.map(data => {
@@ -377,7 +369,9 @@ const NewProduct = () => {
               state[key].isValid = false;
               state[key].message = data.msg;
             }
-
+            if(key !== "image_product"){
+              formErrorMessage(checkMessage)
+            }
           })
           setInformationProduct(state)
         }
@@ -394,14 +388,12 @@ const NewProduct = () => {
        formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
     ){
       const data = {
-        va1_items: [
-          {
-            va1_price: va1_price.value,
-            va1_stock: va1_stock.value,
-            va1_code: va1_code.value || null,
-            va1_barcode: va1_barcode.value || null
-          }
-        ]
+        va1_items: [{
+          va1_price: va1_price.value,
+          va1_stock: va1_stock.value,
+          va1_code: va1_code.value || null,
+          va1_barcode: va1_barcode.value || null
+        }]
       }
 
       console.log(JSON.stringify(data, null, 2))
@@ -419,6 +411,7 @@ const NewProduct = () => {
           } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
             resNotification("error", "Error", errDetail)
           } else {
+            formErrorMessage(checkMessage)
             const state = JSON.parse(JSON.stringify(noVariant));
             errDetail.map(data => {
               const key = data.loc[data.loc.length - 1];
@@ -442,6 +435,11 @@ const NewProduct = () => {
         })
     } // end of no variant
       // end of no variant
+    else {
+      if(!isActiveVariation.active){
+        formErrorMessage(checkMessage)
+      }
+    }
 
 
     if(isActiveVariation.active && isActiveVariation.countVariation === 1){
@@ -486,6 +484,7 @@ const NewProduct = () => {
             } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
               resNotification("error", "Error", errDetail)
             } else {
+              formErrorMessage(checkMessage)
               errDetail.map(data => {
                 const key = data.loc[data.loc.length - 1];
                 const idx = data.loc[data.loc.length - 2];
@@ -515,6 +514,9 @@ const NewProduct = () => {
               })
             }
           })
+      }
+      else {
+        formErrorMessage(checkMessage)
       }
     } // end of single variant
       // end of single variant
@@ -590,6 +592,7 @@ const NewProduct = () => {
             } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
               resNotification("error", "Error", errDetail)
             } else {
+              formErrorMessage(checkMessage)
               errDetail.map(data => {
                 const key = data.loc[data.loc.length - 1];
                 const idx = data.loc[data.loc.length - 2];
@@ -642,7 +645,9 @@ const NewProduct = () => {
             }
           })
       }
-
+      else {
+        formErrorMessage(checkMessage)
+      }
     } // end of two variant
   }
 
@@ -651,6 +656,10 @@ const NewProduct = () => {
       setNoVariant(formNoVariant)
     }
   }, [isActiveVariation])
+
+  useEffect(() => {
+    checkVariantImage(imageVariants.file.value)
+  }, [va1Total])
 
   const invalidProductImage = cx({ "invalid-upload": !imageList.file.isValid });
 

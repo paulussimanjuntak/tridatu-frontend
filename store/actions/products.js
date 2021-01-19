@@ -72,9 +72,9 @@ const unloveProductFail = (error) => {
 
 export const getProducts = ({ page = 1, per_page = 10, live, order_by, q, p_min, p_max, item_sub_cat, brand, pre_order, condition }) => {
   let rest = ""
+  if(q) rest = rest + `&q=${q}`
   if(live) rest = `&live=${live}`
   if(order_by) rest = rest + `&order_by=${order_by}`
-  if(q) rest = rest + `&q=${q}`
   if(p_min) rest = rest + `&p_min=${p_min}` 
   if(p_max) rest = rest + `&p_max=${p_max}` 
   if(item_sub_cat) rest = rest + `&item_sub_cat=${item_sub_cat}` 

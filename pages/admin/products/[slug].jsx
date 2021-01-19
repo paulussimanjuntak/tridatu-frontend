@@ -12,13 +12,13 @@ import Link from "next/link";
 import isIn from 'validator/lib/isIn'
 import isEmpty from 'validator/lib/isEmpty'
 import Card from 'react-bootstrap/Card'
-import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature_exp } from 'lib/axios'
+import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature_exp, formErrorMessage } from 'lib/axios'
 
 import makeid from 'lib/makeid'
 import getIndex from 'lib/getIndex'
 import { formImage, formImageIsValid } from 'formdata/formImage'
 import { imagePreview, uploadButton } from 'lib/imageUploader'
-import { imageValidationProduct, multipleImageValidation } from 'lib/imageProductUploader'
+import { imageValidationProduct, multipleImageValidation, checkVariantImage } from 'lib/imageProductUploader'
 import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
 
 import InformationProducts from 'components/Admin/Products/InformationProducts'
@@ -41,6 +41,7 @@ import { addColumVariantHandler, additional, initialValue } from 'components/Adm
 
 const initialVaOption = { va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 }
 const initialActiveVariation = { active: false, countVariation: 0 }
+const checkMessage = "Pastikan kolom sudah terisi semua."
 
 /*
  * TODO:
@@ -439,7 +440,6 @@ const UpdateProduct = ({ productData }) => {
     setImageVariants(dataImgVariants)
   }
 
-
   const onRemoveVariant = i => {
     const element = document.getElementById(`variant-upload-${i}`)
     const child = element.childNodes[0].childNodes[0].childNodes[0]
@@ -562,7 +562,6 @@ const UpdateProduct = ({ productData }) => {
       .catch(err => {
         setLoading(false)
         const errDetail = err.response.data.detail;
-        console.log(errDetail)
         const uniqueImage = "Each image must be unique."
         const variantImage = "You must fill all variant images or even without images."
         const errName = "The name has already been taken."
@@ -574,16 +573,11 @@ const UpdateProduct = ({ productData }) => {
           state.name.isValid = false;
           state.name.message = errDetail;
           setInformationProduct(state)
+          formErrorMessage(errDetail)
         } else if(typeof errDetail === "string" && errDetail === uniqueImage){
-          message.error({ 
-            content: errDetail, 
-            style: { marginTop: '10vh' },
-          });
+          formErrorMessage(errDetail)
         } else if(typeof errDetail === "string" && errDetail === variantImage){
-          message.error({ 
-            content: errDetail, 
-            style: { marginTop: '10vh' },
-          });
+          formErrorMessage(errDetail)
         } else {
           const state = JSON.parse(JSON.stringify(informationProduct));
           errDetail.map(data => {
@@ -608,7 +602,9 @@ const UpdateProduct = ({ productData }) => {
               state[key].isValid = false;
               state[key].message = data.msg;
             }
-
+            if(key !== "image_product"){
+              formErrorMessage(checkMessage)
+            }
           })
           setInformationProduct(state)
         }
@@ -625,14 +621,12 @@ const UpdateProduct = ({ productData }) => {
        formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
     ){
       const data = {
-        va1_items: [
-          {
-            va1_price: va1_price.value,
-            va1_stock: va1_stock.value,
-            va1_code: va1_code.value || null,
-            va1_barcode: va1_barcode.value || null
-          }
-        ]
+        va1_items: [{
+          va1_price: va1_price.value,
+          va1_stock: va1_stock.value,
+          va1_code: va1_code.value || null,
+          va1_barcode: va1_barcode.value || null
+        }]
       }
 
       console.log(JSON.stringify(data, null, 2))
@@ -651,6 +645,7 @@ const UpdateProduct = ({ productData }) => {
           } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
             resNotification("error", "Error", errDetail)
           } else {
+            formErrorMessage(checkMessage)
             const state = JSON.parse(JSON.stringify(noVariant));
             errDetail.map(data => {
               const key = data.loc[data.loc.length - 1];
@@ -674,6 +669,11 @@ const UpdateProduct = ({ productData }) => {
         })
     } // end of no variant
       // end of no variant
+    else {
+      if(!isActiveVariation.active){
+        formErrorMessage(checkMessage)
+      }
+    }
 
 
     if(isActiveVariation.active && isActiveVariation.countVariation === 1){
@@ -694,7 +694,6 @@ const UpdateProduct = ({ productData }) => {
           va1_code: dataSource[i].code.value || null,
           va1_barcode: dataSource[i].barcode.value || null,
           va1_image: imageVariantsObj.hasOwnProperty("url") ? imgUrl : null
-
         }
         items.push(item)
         formIsValid = formVa1OptionSingleVariantIsValid(vaOption, setVaOption, i)
@@ -725,6 +724,7 @@ const UpdateProduct = ({ productData }) => {
             } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
               resNotification("error", "Error", errDetail)
             } else {
+              formErrorMessage(checkMessage)
               errDetail.map(data => {
                 const key = data.loc[data.loc.length - 1];
                 const idx = data.loc[data.loc.length - 2];
@@ -754,6 +754,9 @@ const UpdateProduct = ({ productData }) => {
               })
             }
           })
+      }
+      else {
+        formErrorMessage(checkMessage)
       }
     } // end of single variant
       // end of single variant
@@ -835,6 +838,7 @@ const UpdateProduct = ({ productData }) => {
             } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
               resNotification("error", "Error", errDetail)
             } else {
+              formErrorMessage(checkMessage)
               errDetail.map(data => {
                 const key = data.loc[data.loc.length - 1];
                 const idx = data.loc[data.loc.length - 2];
@@ -887,8 +891,11 @@ const UpdateProduct = ({ productData }) => {
             }
           })
       }
-
+      else {
+        formErrorMessage(checkMessage)
+      }
     } // end of two variant
+
   }
 
   useEffect(() => {
@@ -896,6 +903,10 @@ const UpdateProduct = ({ productData }) => {
       setNoVariant(formNoVariant)
     }
   }, [isActiveVariation])
+
+  useEffect(() => {
+    checkVariantImage(imageVariants.file.value)
+  }, [va1Total])
 
   const invalidProductImage = cx({ "invalid-upload": !imageList.file.isValid });
 
@@ -979,14 +990,13 @@ const UpdateProduct = ({ productData }) => {
                         disabled={loadingImageVariant}
                         onPreview={imagePreview}
                         onRemove={() => onRemoveImageVariant(i)}
-                        fileList={imageVariants.file && imageVariants.file.value && 
-                                  imageVariants.file.value[i] && imageVariants.file.value[i].uid && 
-                                  imageVariants.file.value.length > 0 && [imageVariants.file.value[i]]
+                        fileList={imageVariants.file.value && imageVariants.file.value[i] && 
+                                  imageVariants.file.value[i].uid && [imageVariants.file.value[i]]
                         }
                         onChange={imageVariantChangeHandler(i)}
                         beforeUpload={(file) => multipleImageValidation(file, imageVariants.file.value, "image_variant", "/products/create", "post", setLoadingImageVariant )}
                       >
-                        {va1Total ? uploadButton(loadingImageVariant) : null}
+                        {va1Total && !imageVariants.file.value[i].hasOwnProperty("uid") ? uploadButton(loadingImageVariant) : null}
                       </Upload>
                       <p className="text-center noselect">
                         {va.va1_option.value || "Pilihan"} {imageList.file.value.length == va1Total}

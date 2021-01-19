@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Table, Input, Form, InputNumber, Row, Col } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons'
 
+import _ from 'lodash'
 import Card from 'react-bootstrap/Card'
 import Media from 'react-bootstrap/Media'
 import ButtonColor from "antd-button-color"
@@ -34,7 +35,6 @@ const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
 export const addColumVariantHandler = (variant, columns, setColumns) => {
-  // const copyColumns = columns.splice(0)
   const copyColumns = [...columns]
   let data = {
     title: `Nama`,
@@ -69,10 +69,6 @@ const TableVariant = ({
   imageVariants, setImageVariants, onRemoveVariant, initialFetch, setInitialFetch
 }) => {
   const [count, setCount] = useState(0)
-  // const [columns, setColumns] = useState(initialColumn)
-  // const [dataSource, setDataSource] = useState([])
-  // const [vaOption, setVaOption] = useState({ va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 })
-  // const [isActiveVariation, setIsActiveVariation] = useState({ active: false, countVariation: 0 })
   const [infoVariant, setInfoVariant] = useState(additional)
   const [isSetAll, setIsSetAll] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -417,8 +413,6 @@ const TableVariant = ({
               message: priceVal ? null : copyDataSource[key1].price.message
             },
             stock: { 
-              // value: stockVal !== "" ? stockVal : copyDataSource[key1].stock.value ? copyDataSource[key1].stock.value : stockDataSource,
-              // value: stockVal || stockVal == 0 ? stockVal : copyDataSource[key1].stock.value, 
               value: finalStockValue,
               isValid: stockVal ? true : copyDataSource[key1].stock.isValid, 
               message: stockVal ? null : copyDataSource[key1].stock.message
@@ -441,7 +435,6 @@ const TableVariant = ({
             ...initialData,
           })
         } else {
-          // if(!isSetAll){
           if(!isSetAll && !initialFetch.isInit){
             variant_tmp.push({
               ...initialData,
@@ -517,7 +510,6 @@ const TableVariant = ({
             message: priceVal ? null : dataPrice.message
           },
           stock: { 
-            // value: stockVal || stockVal == 0 ? stockVal : dataStock.value, 
             value: finalStockValue, 
             isValid: stockVal ? true : dataStock.isValid, 
             message: stockVal ? null : dataStock.message
@@ -539,25 +531,13 @@ const TableVariant = ({
     if(isDeleting){
       isSetAll && setIsSetAll(false)
       const tmpVar = copyDataSource.map(data => data.key)
-      const tmpDataSource = variants.map(data => data.key)
 
       for(var i = 0; i < variants.length; i++){
         for(let val of tmpVar){
-          if(variants[i].key === val){
+          if(dataSource[i].key === val){
             for(let prop of arrProp){
               variants[i][prop] = {
-                value:   copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
-                isValid: true,
-                message: null,
-              }
-            }
-          }
-        }
-        for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
-          if(variants[i].key === val){
-            for(let prop of arrProp){
-              variants[i][prop] = {
-                value: "",
+                value:   dataSource[getIndex(val, dataSource, "key")][prop].value,
                 isValid: true,
                 message: null,
               }
@@ -572,28 +552,47 @@ const TableVariant = ({
       const tmpVar = copyDataSource.map(data => data.key)
       const tmpDataSource = variants.map(data => data.key)
 
-      for(var i = 0; i < variants.length; i++){
-        for(let val of tmpVar){
-          if(variants[i].key === val){
-            for(let prop of arrProp){
-              variants[i][prop] = {
-                value: copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
-                isValid: copyDataSource[getIndex(val, copyDataSource, "key")][prop].isValid,
-                message: copyDataSource[getIndex(val, copyDataSource, "key")][prop].message,
+      if(countVariation == 1){
+        for(var i = 0; i < variants.length; i++){
+          for(let val of tmpVar){
+            if(variants[i].key === val){
+              for(let prop of arrProp){
+                variants[i][prop] = {
+                  value: copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
+                  isValid: copyDataSource[getIndex(val, copyDataSource, "key")][prop].isValid,
+                  message: copyDataSource[getIndex(val, copyDataSource, "key")][prop].message,
+                }
+              }
+            }
+          }
+          for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
+            if(variants[i].key === val){
+              variants[i]['price'] = { value: "", isValid: true, message: null, }
+              variants[i]['stock'] = { value: "0", isValid: true, message: null, }
+              variants[i]['code'] = { value: "", isValid: true, message: null, }
+              variants[i]['barcode'] = { value: "", isValid: true, message: null, }
+            }
+          }
+        }
+      }
+
+      if(countVariation == 2){
+        for(let [key1, val1] of Object.entries(variants)){
+          for(let [key2, val2] of Object.entries(copyDataSource)){
+            if(val2.va1_key == val1.va1_key && val2.va2_key == val1.va2_key){
+              for(let prop of arrProp){
+                variants[key1][prop] = {
+                  value: copyDataSource[key2][prop].value,
+                  isValid: copyDataSource[key2][prop].isValid,
+                  message: copyDataSource[key2][prop].message,
+                }
               }
             }
           }
         }
-        for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
-          if(variants[i].key === val){
-            variants[i]['price'] = { value: "", isValid: true, message: null, }
-            variants[i]['stock'] = { value: "0", isValid: true, message: null, }
-            variants[i]['code'] = { value: "", isValid: true, message: null, }
-            variants[i]['barcode'] = { value: "", isValid: true, message: null, }
-          }
-        }
       }
-    }
+
+    } //!isSetAll && !isDeleting && !initialFetch.isInit
 
     if(initialFetch.isInit && vaOption.va2Option.length) return
     else setDataSource(variants)
