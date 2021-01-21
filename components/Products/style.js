@@ -24,7 +24,8 @@ const ProductsStyle = css`
 :global(.filter-menu .ant-menu-submenu-title){
   height: 30px !important;
   line-height: 30px !important;
-  padding-left: 20px !important;
+  padding-left: 10px !important;
+  margin-left: 5px !important;
 }
 :global(.filter-menu .ant-menu-sub.ant-menu-inline > .ant-menu-item){
   height: 30px !important;

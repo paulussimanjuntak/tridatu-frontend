@@ -1,5 +1,6 @@
 import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from "react-redux";
 import { Tabs, Row, Col, Input, Select, Empty } from 'antd'
 import { EditOutlined, EllipsisOutlined } from '@ant-design/icons'
@@ -8,10 +9,13 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import ColB from 'react-bootstrap/Col'
+import isEmpty from 'validator/lib/isEmpty';
 
 import * as actions from "store/actions";
 import Pagination from "components/Pagination";
 import CardProductAdmin from "components/Card/Admin/Product/Card"
+
+import { productsColumns, productsData } from 'data/productsAdmin'
 
 const CardProductMemo = React.memo(CardProductAdmin);
 
@@ -24,8 +28,6 @@ const orderList = [
   { name: "Harga Tertinggi", value: "high_price", },
   { name: "Harga Terendah", value: "low_price", }
 ]
-
-import { productsColumns, productsData } from 'data/productsAdmin'
 
 const EmptyProduct = ({ loading, products }) => (
   <AnimatePresence>
@@ -43,20 +45,21 @@ const EmptyProduct = ({ loading, products }) => (
   </AnimatePresence>
 )
 
-const ProductComponent = ({ products, dispatch }) => (
+const ProductComponent = ({ products, dispatch, router }) => (
   <AnimatePresence>
     {products && products.data && products.data.length > 0 && products.data.map(product => (
       <Col xl={4} lg={6} md={6} sm={8} xs={12} key={product.products_id}>
         <CardProductMemo 
           data={product} 
           aliveArchive={(id) => dispatch(actions.aliveArchiveProduct(id))}
+          deleteProduct={(id) => dispatch(actions.deleteProduct(id, router.query))}
         />
       </Col>
     ))}
   </AnimatePresence>
 )
 
-const SearchComponent = ({ search, setSearch, orderBy, setOrderBy }) => (
+const SearchComponent = ({ search, setSearch, order_by, setOrderBy }) => (
   <Form>
     <Form.Row>
       <Form.Group as={ColB} lg={8} md={6}>
@@ -72,7 +75,7 @@ const SearchComponent = ({ search, setSearch, orderBy, setOrderBy }) => (
           placeholder="Urutkan" 
           style={{ width: "100%"}}
           className="product-search-select"
-          value={orderBy}
+          value={order_by}
           onChange={e => setOrderBy(e)}
         >
           {orderList.map((list, i) => (
@@ -84,30 +87,24 @@ const SearchComponent = ({ search, setSearch, orderBy, setOrderBy }) => (
   </Form>
 )
 
-const perPage = 18;
-const Products = () => {
+const per_page = 18;
+const Products = ({ searchQuery }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  
   const [activeTab, setActiveTab] = useState(ALL)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [page, setPage] = useState(1)
   const [live, setLive] = useState("")
   const [search, setSearch] = useState("")
-  const [orderBy, setOrderBy] = useState(orderList[0].value)
+  const [order_by, setOrderBy] = useState(orderList[0].value)
 
   const loading = useSelector(state => state.products.loading)
   const aliveArchiving = useSelector(state => state.products.aliveArchiving)
   const products = useSelector(state => state.products.products)
 
-  let queryString = {
-    page: currentPage,
-    per_page: perPage,
-    order_by: orderBy,
-    live: live,
-    q: search
-  }
-
   const onTabClick = key => {
     setActiveTab(key)
-    setCurrentPage(1)
+    setPage(1)
     setSearch("")
     setOrderBy(orderList[0].value)
     if(key === ALL) setLive("")
@@ -116,23 +113,46 @@ const Products = () => {
   }
 
   const pageChange = page => {
-    setCurrentPage(page)
+    setPage(page)
   }
 
   useEffect(() => {
-    dispatch(actions.getProducts({ ...queryString }))
-  },[currentPage, orderBy, live])
+    let queryString = router.query
+
+    if(page) queryString["page"] = page
+
+    if(!isEmpty(search)) queryString["q"] = search
+    else delete queryString["q"]
+
+    if(order_by !== "") queryString["order_by"] = order_by
+    else delete queryString["order_by"]
+
+    if(!isEmpty(live)) queryString["live"] = live
+    else delete queryString["live"]
+
+    router.replace({
+      pathname: "/admin/products",
+      query: queryString
+    })
+  },[page, order_by, live, search])
 
   useEffect(() => {
-    dispatch(actions.getProducts({ ...queryString }))
-  }, [search, aliveArchiving])
-
-  useEffect(() => {
-    if(products !== null){
-      setCurrentPage(products.page)
+    if(!searchQuery) return
+    if(searchQuery.hasOwnProperty("page")) {
+      setPage(searchQuery.page)
     }
-    setCurrentPage(1)
+    if(searchQuery.hasOwnProperty("live")) {
+      setLive(searchQuery.live)
+    }
+    if(searchQuery.hasOwnProperty("order_by")) {
+      setOrderBy([searchQuery.order_by])
+    }
   }, [])
+
+  useEffect(() => {
+    let queryString = router.query
+    dispatch(actions.getProducts({ ...queryString, per_page: per_page }))
+  }, [aliveArchiving])
 
   return(
     <>
@@ -156,7 +176,7 @@ const Products = () => {
                       placeholder="Urutkan" 
                       style={{ width: "100%"}}
                       className="product-search-select"
-                      value={orderBy}
+                      value={order_by}
                       onChange={e => setOrderBy(e)}
                     >
                       {orderList.map((list, i) => (
@@ -168,7 +188,7 @@ const Products = () => {
               </Form>
 
               <Row gutter={[10, 10]}>
-                <ProductComponent products={products} dispatch={dispatch} />
+                <ProductComponent products={products} dispatch={dispatch} router={router} />
                 <EmptyProduct loading={loading} products={products} />
               </Row>
 
@@ -177,9 +197,9 @@ const Products = () => {
                   <Pagination 
                     total={products.total} 
                     goTo={pageChange} 
-                    current={currentPage} 
+                    current={page} 
                     hideOnSinglePage 
-                    pageSize={perPage}
+                    pageSize={per_page}
                   />
                 </Card.Body>
               )}
@@ -187,15 +207,34 @@ const Products = () => {
 
 
             <Tabs.TabPane tab="Live" key={LIVE}>
-              <SearchComponent 
-                search={search}
-                setSearch={setSearch}
-                orderBy={orderBy}
-                setOrderBy={setOrderBy}
-              />
+              <Form>
+                <Form.Row>
+                  <Form.Group as={ColB} lg={8} md={6}>
+                    <Input 
+                      placeholder="Cari berdasarkan nama" 
+                      prefix={<i className="far fa-search" />}
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                    />
+                  </Form.Group>
+                  <Form.Group as={ColB} lg={4} md={6}>
+                    <Select 
+                      placeholder="Urutkan" 
+                      style={{ width: "100%"}}
+                      className="product-search-select"
+                      value={order_by}
+                      onChange={e => setOrderBy(e)}
+                    >
+                      {orderList.map((list, i) => (
+                        <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Group>
+                </Form.Row>
+              </Form>
 
               <Row gutter={[10, 10]}>
-                <ProductComponent products={products} dispatch={dispatch} />
+                <ProductComponent products={products} dispatch={dispatch} router={router} />
                 <EmptyProduct loading={loading} products={products} />
               </Row>
 
@@ -204,9 +243,9 @@ const Products = () => {
                   <Pagination 
                     total={products.total} 
                     goTo={pageChange} 
-                    current={currentPage} 
+                    current={page} 
                     hideOnSinglePage 
-                    pageSize={perPage}
+                    pageSize={per_page}
                   />
                 </Card.Body>
               )}
@@ -214,15 +253,34 @@ const Products = () => {
 
 
             <Tabs.TabPane tab="Diarsipkan" key={ARCHIVE}>
-              <SearchComponent 
-                search={search}
-                setSearch={setSearch}
-                orderBy={orderBy}
-                setOrderBy={setOrderBy}
-              />
+              <Form>
+                <Form.Row>
+                  <Form.Group as={ColB} lg={8} md={6}>
+                    <Input 
+                      placeholder="Cari berdasarkan nama" 
+                      prefix={<i className="far fa-search" />}
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                    />
+                  </Form.Group>
+                  <Form.Group as={ColB} lg={4} md={6}>
+                    <Select 
+                      placeholder="Urutkan" 
+                      style={{ width: "100%"}}
+                      className="product-search-select"
+                      value={order_by}
+                      onChange={e => setOrderBy(e)}
+                    >
+                      {orderList.map((list, i) => (
+                        <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Group>
+                </Form.Row>
+              </Form>
 
               <Row gutter={[10, 10]}>
-                <ProductComponent products={products} dispatch={dispatch} />
+                <ProductComponent products={products} dispatch={dispatch} router={router} />
                 <EmptyProduct loading={loading} products={products} />
               </Row>
 
@@ -231,9 +289,9 @@ const Products = () => {
                   <Pagination 
                     total={products.total} 
                     goTo={pageChange} 
-                    current={currentPage} 
+                    current={page} 
                     hideOnSinglePage 
-                    pageSize={perPage}
+                    pageSize={per_page}
                   />
                 </Card.Body>
               )}
@@ -256,6 +314,12 @@ const Products = () => {
       `}</style>
     </>
   )
+}
+
+Products.getInitialProps = async ctx => {
+  const searchQuery = ctx.query
+  await ctx.store.dispatch(actions.getProducts({ ...searchQuery, per_page: per_page }))
+  return { searchQuery: searchQuery }
 }
 
 export default withAuth(Products)

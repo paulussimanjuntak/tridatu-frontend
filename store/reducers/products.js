@@ -3,6 +3,7 @@ import { updateObject } from "lib/utility";
 
 const initialState = {
   products: [],
+  searchName: [],
   loading: false,
   aliveArchiving: true,
   error: null,
@@ -52,6 +53,47 @@ const aliveArchiveProductFail = (state, action) => {
   });
 }
 
+const searchNameStart = (state, _) => {
+  return updateObject(state, {
+    loading: false,
+  });
+}
+
+const searchNameSuccess = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    searchName: action.searchName,
+  })
+}
+
+const searchNameFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error,
+  })
+}
+
+
+const deleteProductStart = (state, _) => {
+  return updateObject(state, {
+    loading: false,
+  });
+}
+
+const deleteProductSuccess = (state, _) => {
+  return updateObject(state, {
+    loading: false,
+  })
+}
+
+const deleteProductFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error,
+  })
+}
+
+
 const reducer = (state = initialState, action) => {
   switch(action.type){
     case actionType.GET_ALLPRODUCTS_START:
@@ -67,6 +109,20 @@ const reducer = (state = initialState, action) => {
       return aliveArchiveProductSuccess(state, action)
     case actionType.ALIVE_ARCHIVE_FAIL:
       return aliveArchiveProductFail(state, action)
+
+    case actionType.SEARCH_NAME_START:
+      return searchNameStart(state, action)
+    case actionType.SEARCH_NAME_SUCCESS:
+      return searchNameSuccess(state, action)
+    case actionType.SEARCH_NAME_FAIL:
+      return searchNameFail(state, action)
+
+    case actionType.DELETE_PRODUCTS_START:
+      return deleteProductStart(state, action)
+    case actionType.DELETE_PRODUCTS_SUCCESS:
+      return deleteProductSuccess(state, action)
+    case actionType.DELETE_PRODUCTS_FAIL:
+      return deleteProductFail(state, action)
 
     default:
       return state;

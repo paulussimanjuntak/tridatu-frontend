@@ -1,8 +1,15 @@
 const formFilter = {
-  sort: {value: ['Paling Sesuai']},
-  category: {value: []},
-  rating: {value: []},
-  brand: {value: []},
-}
+  q: { value: "" },
+  order_by: { value: [""] },
+  p_min: { value: "" },
+  p_max: { value: "" },
+  item_sub_cat: { value: [] },
+  brand: { value: [] },
+  pre_order: { value: [] },
+  condition: { value: [] },
 
-export default formFilter
+  category: { value: [] },
+  rating: { value: [] },
+};
+
+export default formFilter;

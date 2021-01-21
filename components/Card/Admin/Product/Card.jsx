@@ -1,4 +1,5 @@
-import { Card as CardAnt, Dropdown, Menu } from 'antd'
+import { useState } from 'react'
+import { Card as CardAnt, Dropdown, Menu, Modal, Space } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EditOutlined, EllipsisOutlined } from '@ant-design/icons'
 
@@ -9,9 +10,15 @@ import Button from "antd-button-color"
 
 import formatNumber from 'lib/formatNumber'
 
-const CardProductAdmin = ({ data, aliveArchive }) => {
+const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
   const { products_id, products_name, products_slug, products_image_product, products_live, variants_price } = data;
-        
+
+  const [showModal, setShowModal] = useState(false)
+
+  const onDeleteProduct = () => {
+    deleteProduct(products_id)
+    setShowModal(false)
+  }
   return(
     <>
       <motion.div
@@ -37,6 +44,9 @@ const CardProductAdmin = ({ data, aliveArchive }) => {
                   <Menu.Item onClick={() => aliveArchive(products_id)}>
                     {products_live ? "Arisipkan" : "Tampilkan" }
                   </Menu.Item>
+                  <Menu.Item onClick={() => setShowModal(true)} className="text-danger">
+                    Hapus
+                  </Menu.Item>
                 </Menu>
               } 
             >
@@ -51,6 +61,7 @@ const CardProductAdmin = ({ data, aliveArchive }) => {
                 height={270}
                 src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${products_image_product[0]}`}
                 alt="Tridatu Bali"
+                onClick={() => setShowModal(true)}
               />
             </div>
             <AnimatePresence>
@@ -88,6 +99,27 @@ const CardProductAdmin = ({ data, aliveArchive }) => {
           </Card.Body>
         </CardAnt>
       </motion.div>
+
+      <Modal
+        centered
+        visible={showModal}
+        zIndex={3000}
+        width={416}
+        closable={false}
+        footer={null}
+        className="modal-rad-10 text-center"
+      >
+        <div className="text-dark">
+          <h5 className="mb-3">Hapus produk?</h5>
+          <p className="text-black-50 fs-14">{products_name}</p>
+          <p className="text-black-50">Penghapusan produk tidak dapat dibatalkan</p>
+
+          <Space>
+            <Button onClick={() => setShowModal(false)}>Batal</Button>
+            <Button type="primary" className="btn-tridatu" onClick={onDeleteProduct}>Hapus</Button>
+          </Space>
+        </div>
+      </Modal>
 
       <style jsx>{`
         :global(.product-card-admin .ant-card-actions > li){
