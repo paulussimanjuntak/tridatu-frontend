@@ -110,7 +110,19 @@ const getActiveMenu = (routes, router) => {
   let getRoutes = rsSplit[2]
   let getRouter = rrSplit[2]
 
-  if(getRoutes) return getRoutes.startsWith(getRouter)
+  if(getRoutes && getRoutes !== "products") {
+    return getRoutes.startsWith(getRouter)
+  }
+
+  if(getRoutes && getRoutes === "products") {
+    if(lastPathrr.startsWith('[slu')){
+      rrSplit.pop()
+      return rsSplit.join("/"), rrSplit.join("/")
+    } else {
+      console.log(",asi")
+      return rsSplit.join("/") === rrSplit.join("/")
+    }
+  }
 }
 
 const AdminLayout = ({ children }) => {
@@ -226,7 +238,8 @@ const AdminLayout = ({ children }) => {
                 className={`${collapsed && 'text-center'} mobile-last-item`}
                 title={<span className="font-weight-bold fs-12"> {key.toUpperCase()} </span>}
               >
-                {val.map(route => (
+                {val.map(route => {
+                  return (
                   <Menu.Item 
                     text={key}
                     key={route.link} 
@@ -235,7 +248,8 @@ const AdminLayout = ({ children }) => {
                   >
                     {!collapsed && <>{route.text}</>}
                   </Menu.Item>
-                ))}
+                )
+                })}
               </Menu.ItemGroup>
             ))}
           </Menu>
@@ -556,7 +570,5 @@ const AdminLayout = ({ children }) => {
     </>
   )
 }
-
-AdminLayout.whyDidYouRender = true;
 
 export default AdminLayout
