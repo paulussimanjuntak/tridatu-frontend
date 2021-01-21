@@ -119,7 +119,6 @@ const getActiveMenu = (routes, router) => {
       rrSplit.pop()
       return rsSplit.join("/"), rrSplit.join("/")
     } else {
-      console.log(",asi")
       return rsSplit.join("/") === rrSplit.join("/")
     }
   }
