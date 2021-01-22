@@ -33,6 +33,10 @@ export const additional = { price: initialValue, stock: initialValue, code: init
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
+  /*
+   * TODO: REFLECTED INPUT TABLE PRICE
+   */
+
 export const addColumVariantHandler = (variant, columns, setColumns) => {
   const copyColumns = [...columns]
   let data = {
@@ -65,7 +69,7 @@ export const addColumVariantHandler = (variant, columns, setColumns) => {
 
 const TableVariant = ({
   isActiveVariation, setIsActiveVariation, dataSource, setDataSource, columns, setColumns, vaOption, setVaOption, 
-  imageVariants, setImageVariants, onRemoveVariant, initialFetch, setInitialFetch
+  imageVariants, setImageVariants, onRemoveVariant, initialFetch, setInitialFetch, activeGrosir, grosirPrice, setGrosirPrice
 }) => {
   const [count, setCount] = useState(0)
   const [infoVariant, setInfoVariant] = useState(additional)
@@ -92,14 +96,22 @@ const TableVariant = ({
     setIsSetAll(false)
     const dataLength = dataSource.length
     const va2Length = va2Option.length
+
+    let initAdditional = additional
+    if(activeGrosir) {
+      initAdditional.price = grosirPrice.price
+    } else {
+      initAdditional.price = { value: "", isValid: true, message: null }
+    }
+
     if(variant == 1){
       const data = {
         ...vaOption,
         va1Option: [
           ...va1Option, {
+            ...initAdditional,
             key: `va${variant}_option${dataLength+1+count}_${makeid(10)}`, 
             va1_option: { value: "", isValid: true, message: null }, 
-            ...additional
           }
         ],
         va1Total: va1Total + 1
@@ -117,9 +129,9 @@ const TableVariant = ({
         ...vaOption,
         va2Option: [
           ...va2Option, {
+            ...initAdditional,
             key: `va${variant}_option${va2Length}_${makeid(10)}`, 
             va2_option: { value: "", isValid: true, message: null }, 
-            ...additional
           }
         ],
         va2Total: va2Total + 1
@@ -339,6 +351,7 @@ const TableVariant = ({
       })
       setVaOption({ ...vaOption, va2Option: oldVa2 })
     }
+    if(activeGrosir) setGrosirPrice({ ...grosirPrice, price: infoVariant.price })
   }
 
   useEffect(() => {
@@ -386,6 +399,7 @@ const TableVariant = ({
           const codeVal = code.value
           const barcodeVal = barcode.value
           const stockDSValue = copyDataSource[key1].stock.value
+
 
           let finalStockValue = 0
           if(stockVal === null){
@@ -551,42 +565,44 @@ const TableVariant = ({
       const tmpVar = copyDataSource.map(data => data.key)
       const tmpDataSource = variants.map(data => data.key)
 
-      if(countVariation == 1){
-        for(var i = 0; i < variants.length; i++){
-          for(let val of tmpVar){
-            if(variants[i].key === val){
-              for(let prop of arrProp){
-                variants[i][prop] = {
-                  value: copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
-                  isValid: copyDataSource[getIndex(val, copyDataSource, "key")][prop].isValid,
-                  message: copyDataSource[getIndex(val, copyDataSource, "key")][prop].message,
-                }
+      for(var i = 0; i < variants.length; i++){
+        for(let val of tmpVar){
+          if(variants[i].key === val){
+            for(let prop of arrProp){
+              variants[i][prop] = {
+                value: copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
+                isValid: copyDataSource[getIndex(val, copyDataSource, "key")][prop].isValid,
+                message: copyDataSource[getIndex(val, copyDataSource, "key")][prop].message,
               }
             }
-          }
-          for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
-            if(variants[i].key === val){
-              variants[i]['price'] = { value: "", isValid: true, message: null, }
-              variants[i]['stock'] = { value: "0", isValid: true, message: null, }
-              variants[i]['code'] = { value: "", isValid: true, message: null, }
-              variants[i]['barcode'] = { value: "", isValid: true, message: null, }
+          } else {
+            if(countVariation == 2){
+              for(let [key1, val1] of Object.entries(variants)){
+                for(let [key2, val2] of Object.entries(copyDataSource)){
+                  if(val2.va1_key == val1.va1_key && val2.va2_key == val1.va2_key){
+                    for(let prop of arrProp){
+                      variants[key1][prop] = {
+                        value: copyDataSource[key2][prop].value,
+                        isValid: copyDataSource[key2][prop].isValid,
+                        message: copyDataSource[key2][prop].message,
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
-      }
-
-      if(countVariation == 2){
-        for(let [key1, val1] of Object.entries(variants)){
-          for(let [key2, val2] of Object.entries(copyDataSource)){
-            if(val2.va1_key == val1.va1_key && val2.va2_key == val1.va2_key){
-              for(let prop of arrProp){
-                variants[key1][prop] = {
-                  value: copyDataSource[key2][prop].value,
-                  isValid: copyDataSource[key2][prop].isValid,
-                  message: copyDataSource[key2][prop].message,
-                }
-              }
+        for(let val of tmpDataSource.filter(x => !tmpVar.includes(x))){
+          if(variants[i].key === val){
+            if(activeGrosir){
+              variants[i]['price'] = grosirPrice.price
+            } else {
+              variants[i]['price'] = { value: "", isValid: true, message: null, }
             }
+            variants[i]['stock'] = { value: "0", isValid: true, message: null, }
+            variants[i]['code'] = { value: "", isValid: true, message: null, }
+            variants[i]['barcode'] = { value: "", isValid: true, message: null, }
           }
         }
       }
@@ -595,7 +611,7 @@ const TableVariant = ({
 
     if(initialFetch.isInit && vaOption.va2Option.length) return
     else setDataSource(variants)
-  },[vaOption, isDeleting, isSetAll])
+  },[vaOption, isDeleting, isSetAll, activeGrosir])
 
   const onTableChange = (e, item, index) => {
     const newData = [...dataSource]
@@ -648,6 +664,7 @@ const TableVariant = ({
         editable: col.editable,
         dataIndex: col.dataIndex,
         inputType: col.inputType,
+        disabled: activeGrosir,
         onChange: e => onTableChange(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
         onBlur: e => onValidateTableVariantCheck(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
         maxCode: maxCode
