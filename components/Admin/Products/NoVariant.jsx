@@ -14,34 +14,37 @@ import ErrorTooltip from "components/ErrorMessage/Tooltip";
 
 import { formItemLayout } from 'data/productsAdmin'
 
-const NoVariant = ({ noVariant, onNoVariantChangeHandler }) => {
+const NoVariant = ({ noVariant, onNoVariantChangeHandler, isActiveGrosir }) => {
 
+  const { activeGrosir } = isActiveGrosir
   const { va1_price, va1_stock, va1_code, va1_barcode } = noVariant
 
   return(
     <>
       <Form layout="vertical" {...formItemLayout}>
-        <Form.Item 
-          required
-          label="Harga" 
-          validateStatus={!va1_price.isValid && va1_price.message && "error"}
-        >
-          <div className="ant-input-group-wrapper">
-            <div className="ant-input-wrapper ant-input-group">
-              <span className="ant-input-group-addon noselect">Rp</span>
-              <InputNumber
-                min={1}
-                name="va_1price"
-                className="w-100 bor-left-rad-0 h-33-custom-input"
-                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
-                value={va1_price.value}
-                onChange={e => onNoVariantChangeHandler(e, "va1_price")}
-              />
+        {!activeGrosir && (
+          <Form.Item 
+            required
+            label="Harga" 
+            validateStatus={!va1_price.isValid && va1_price.message && "error"}
+          >
+            <div className="ant-input-group-wrapper">
+              <div className="ant-input-wrapper ant-input-group">
+                <span className="ant-input-group-addon noselect">Rp</span>
+                <InputNumber
+                  min={1}
+                  name="va_1price"
+                  className="w-100 bor-left-rad-0 h-33-custom-input"
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                  parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
+                  value={va1_price.value}
+                  onChange={e => onNoVariantChangeHandler(e, "va1_price")}
+                />
+              </div>
             </div>
-          </div>
-          <ErrorTooltip item={va1_price} />
-        </Form.Item>
+            <ErrorTooltip item={va1_price} />
+          </Form.Item>
+        )}
 
         <Form.Item 
           required

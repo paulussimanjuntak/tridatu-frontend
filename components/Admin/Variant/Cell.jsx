@@ -15,6 +15,7 @@ const EditableCell = ({
   index,
   onBlur,
   maxCode,
+  disabled,
   ...restProps
 }) => {
 
@@ -46,12 +47,14 @@ const EditableCell = ({
             <div>
               <div className="ant-input-group-wrapper">
                 <div className="ant-input-wrapper ant-input-group input-group-variant" style={{ zIndex: 1 }}>
-                  <span className="ant-input-group-addon noselect fs-12 bg-transparent">Rp</span>
+                  <span className={`ant-input-group-addon noselect fs-12 ${disabled ? "disabled-input-price" : "bg-transparent"}`}>Rp</span>
                   <InputNumber
                     {...initProps}
                     min={1}
                     name="price"
                     placeholder="Masukkan harga"
+                    disabled={disabled}
+                    readOnly={disabled}
                     className="w-100 bor-left-rad-0 h-33-custom-input fs-12 input-number-variant"
                     formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
                     parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
@@ -118,7 +121,11 @@ const EditableCell = ({
           border-right: 1px solid #f0f0f0;
           padding: 5px;
           padding-right: 8px;
-          color: #6c757d!important;
+          color: #6c757d;
+        }
+        :global(.disabled-input-price){
+          background-color: #f5f5f5 !important;
+          color: #bfbfbf !important;
         }
         :global(.input-number-variant){
           border: 0 !important;

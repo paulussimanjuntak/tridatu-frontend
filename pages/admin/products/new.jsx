@@ -20,6 +20,7 @@ import SizeGuideModal from 'components/Modal/Admin/Products/SizeGuide'
 
 import InformationProducts from 'components/Admin/Products/InformationProducts'
 import NoVariantComponent from 'components/Admin/Products/NoVariant'
+import TableGrosir from 'components/Admin/Products/Grosir'
 
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
 import TableVariant from 'components/Admin/Variant/TableVariant'
@@ -31,6 +32,7 @@ import { formInformationProduct, formNoVariant } from 'formdata/formProduct'
 import { formNoVariantIsValid, formVa1OptionSingleVariantIsValid, formTableIsValid, formVariantTitleIsValid } from 'formdata/formProduct'
 import { formVa2OptionDoubleVariantIsValid, formTitleIsValid } from 'formdata/formProduct'
 import { isValidProductInformation } from 'formdata/formProduct'
+import { validateFormGrosirPrice, validateFormGrosirQty } from 'formdata/formGrosir.js'
 
 import * as actions from "store/actions";
 
@@ -45,11 +47,16 @@ import * as actions from "store/actions";
  * improve variant component 
  * connect to backend ✅
  * change to use one component ✅
+ * connect grosir to backend
  */
 
 const initialVaOption = { va1Option: [], va2Option: [], va1Total: 0, va2Total: 0 }
 const initialActiveVariation = { active: false, countVariation: 0 }
+const initialActiveGrosir = { activeGrosir: false, countGrosir: 0 }
+const formGrosirPrice = { price: { value: "", isValid: true, message: null } }
 const checkMessage = "Pastikan kolom sudah terisi semua."
+const stockMessage = "Stok tidak boleh kurang dari 0."
+const priceMessage = "Harga harus lebih dari 1."
 
 const NewProduct = () => {
   const dispatch = useDispatch()
@@ -71,9 +78,12 @@ const NewProduct = () => {
   const [dataSource, setDataSource] = useState([])
   const [vaOption, setVaOption] = useState(initialVaOption)
   const [isActiveVariation, setIsActiveVariation] = useState(initialActiveVariation)
+  const [isActiveGrosir, setIsActiveGrosir] = useState(initialActiveGrosir)
 
   const [informationProduct, setInformationProduct] = useState(formInformationProduct)
   const [noVariant, setNoVariant] = useState(formNoVariant)
+  const [grosirPrice, setGrosirPrice] = useState(formGrosirPrice)
+  const [grosir, setGrosir] = useState([])
 
   const [cascaderIsShow, setCascaderIsShow] = useState(false)
   const [cascaderValue, setCascaderValue] = useState([])
@@ -83,6 +93,7 @@ const NewProduct = () => {
 
   const allCategoriesData = useSelector(state => state.categories.allCategories)
 
+  const { activeGrosir } = isActiveGrosir
   const { va1Option, va1Total, va2Total } = vaOption
 
   /* Destructuring Object Product */
@@ -193,6 +204,14 @@ const NewProduct = () => {
       }
       setNoVariant(data)
     }
+    if((item == "va1_stock" && (e < 0 || e === "" || e == null)) || (item == "va1_price" && (e < 1 || e === "" || e == null))) {
+      const data = {
+        ...noVariant,
+        [item]: { ...noVariant[item], value: e, isValid: false, message: item == "va1_stock" ? stockMessage : priceMessage }
+      }
+      setNoVariant(data)
+    }
+    // console.log(e == "", item == "va1_stock" && e == null)
   }
   /* No variant product change handler */
 
@@ -268,9 +287,12 @@ const NewProduct = () => {
 
   const resetAllData = () => {
     setIsActiveVariation(initialActiveVariation)
+    setIsActiveGrosir(initialActiveGrosir)
     setColumns(initialColumn)
     setDataSource([])
     setVaOption(initialVaOption)
+    setGrosirPrice(formGrosirPrice)
+    setGrosir([])
 
     setInformationProduct(formInformationProduct)
     setNoVariant(formNoVariant)
@@ -288,7 +310,7 @@ const NewProduct = () => {
     setCascaderValue([])
   }
 
-  const onSubmitProduct = (ticket) => {
+  const onSubmitProduct = (ticket_variant, ticket_grosir) => {
     const formData = new FormData();
 
     formData.append("name", name.value);
@@ -296,12 +318,13 @@ const NewProduct = () => {
     formData.append("condition", condition.value);
     formData.append("weight", weight.value);
     formData.append("item_sub_category_id", item_sub_category_id.value);
-    formData.append("ticket_variant", ticket);
+    formData.append("ticket_variant", ticket_variant);
     imageList.file.value.forEach(file => {
       formData.append("image_product", file.originFileObj)
     })
 
     //optional
+    if(activeGrosir && ticket_grosir) formData.append("ticket_wholesale", ticket_grosir);
     if(!isEmpty(video.value)) formData.append("video", video.value);
     if(isPreorder && preorder.value !== null && !isEmpty(preorder.value.toString())) formData.append("preorder", preorder.value);
     if(brand_id.value !== "" && brand_id.value.length !== 0 && !isEmpty(brand_id.value.toString())){
@@ -334,6 +357,7 @@ const NewProduct = () => {
         const errName = "The name has already been taken."
         if(errDetail == signature_exp){
           resNotification("success", "Success", "Successfully add a new product.")
+          resetAllData()
         } else if (typeof errDetail === "string" && errDetail === errName) {
           const state = JSON.parse(JSON.stringify(informationProduct));
           state.name.value = state.name.value;
@@ -349,10 +373,6 @@ const NewProduct = () => {
           const state = JSON.parse(JSON.stringify(informationProduct));
           errDetail.map(data => {
             const key = data.loc[data.loc.length - 1];
-            /*
-             * TODO:
-             * Image validator from server
-             */
             if(key === "image_product"){
               message.error({ 
                 content: "image product " + data.msg, 
@@ -378,6 +398,62 @@ const NewProduct = () => {
       })
   }
 
+  const onSubmitGrosir = (ticket_variant) => {
+    if(!activeGrosir) return
+
+    const urlGrosir = "/wholesale/create-ticket"
+    const grosirList = grosir.map(data => {
+      const container = {}
+      container["min_qty"] = data.min_qty.value;
+      container["price"] = data.price.value;
+      return container
+    })
+
+    if(validateFormGrosirPrice(grosir, setGrosir, grosirPrice.price, va1_price, isActiveVariation.active) && 
+       validateFormGrosirQty(grosir, setGrosir)
+    ){
+      const data = {
+        variant: ticket_variant,
+        items: grosirList
+      }
+      axios.post(urlGrosir, data, jsonHeaderHandler())
+        .then(res => {
+          onSubmitProduct(ticket_variant, res.data.ticket)
+        })
+        .catch(err => {
+          console.log(err.response.data)
+          const errDetail = err.response.data.detail;
+          if(errDetail == signature_exp){
+            axios.post(urlGrosir, data, jsonHeaderHandler())
+              .then(res => {
+                onSubmitProduct(ticket_variant, res.data.ticket)
+              })
+          } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
+            resNotification("error", "Error", errDetail)
+          } else {
+            errDetail.map(data => {
+              const newGrosir = [...grosir]
+              if(isIn(data.loc, ["min_qty", "price"])){
+                const key = data.loc[data.loc.length - 1];
+                const idx = data.loc[data.loc.length - 2];
+                newGrosir[idx][key].isValid = false
+                newGrosir[idx][key].message = msg
+              } else {
+                const key = msg.split(" ")[0]
+                const idx = parseInt(msg.split(" ")[1])
+                const msgSplit = msg.split(":")
+                newGrosir[idx][key].isValid = false
+                newGrosir[idx][key].message = msgSplit[0].split(" ")[0] + " " + (parseInt(msgSplit[0].split(" ")[1])+1) +":" + msgSplit[1]
+              }
+              setGrosir(newGrosir)
+            })
+          }
+
+
+        })
+    }
+  }
+
   const onSubmitHandler = e => {
     e.preventDefault()
     const urlVariant = "/variants/create-ticket"
@@ -399,14 +475,22 @@ const NewProduct = () => {
       console.log(JSON.stringify(data, null, 2))
       axios.post(urlVariant, data, jsonHeaderHandler())
         .then(res => {
-          onSubmitProduct(res.data.ticket)
+          if(activeGrosir){
+            onSubmitGrosir(res.data.ticket)
+          } else {
+            onSubmitProduct(res.data.ticket, false)
+          }
         })
         .catch(err => {
           const errDetail = err.response.data.detail;
           if(errDetail == signature_exp){
             axios.post(urlVariant, data, jsonHeaderHandler())
               .then(res => {
-                onSubmitProduct(res.data.ticket)
+                if(activeGrosir){
+                  onSubmitGrosir(res.data.ticket)
+                } else {
+                  onSubmitProduct(res.data.ticket, false)
+                }
               })
           } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
             resNotification("error", "Error", errDetail)
@@ -472,14 +556,22 @@ const NewProduct = () => {
         console.log(JSON.stringify(data, null, 2))
         axios.post(urlVariant, data, jsonHeaderHandler())
           .then(res => {
-            onSubmitProduct(res.data.ticket)
+            if(activeGrosir){
+              onSubmitGrosir(res.data.ticket)
+            } else {
+              onSubmitProduct(res.data.ticket, false)
+            }
           })
           .catch(err => {
             const errDetail = err.response.data.detail;
             if(errDetail == signature_exp){
               axios.post(urlVariant, data, jsonHeaderHandler())
                 .then(res => {
-                  onSubmitProduct(res.data.ticket)
+                  if(activeGrosir){
+                    onSubmitGrosir(res.data.ticket)
+                  } else {
+                    onSubmitProduct(res.data.ticket, false)
+                  }
                 })
             } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
               resNotification("error", "Error", errDetail)
@@ -579,7 +671,11 @@ const NewProduct = () => {
 
         axios.post(urlVariant, data, jsonHeaderHandler())
           .then(res => {
-            onSubmitProduct(res.data.ticket)
+            if(activeGrosir){
+              onSubmitGrosir(res.data.ticket)
+            } else {
+              onSubmitProduct(res.data.ticket, false)
+            }
           })
           .catch(err => {
             const errDetail = err.response.data.detail;
@@ -587,7 +683,11 @@ const NewProduct = () => {
             if(errDetail == signature_exp){
               axios.post(urlVariant, data, jsonHeaderHandler())
                 .then(res => {
-                  onSubmitProduct(res.data.ticket)
+                  if(activeGrosir){
+                    onSubmitGrosir(res.data.ticket)
+                  } else {
+                    onSubmitProduct(res.data.ticket, false)
+                  }
                 })
             } else if(typeof(errDetail) === "string" && errDetail !== signature_exp){
               resNotification("error", "Error", errDetail)
@@ -686,6 +786,7 @@ const NewProduct = () => {
             <NoVariantComponent 
               noVariant={noVariant}
               onNoVariantChangeHandler={onNoVariantChangeHandler}
+              isActiveGrosir={isActiveGrosir}
             />
           )}
 
@@ -703,6 +804,23 @@ const NewProduct = () => {
             onRemoveVariant={onRemoveVariant}
             initialFetch={{ isInit: false, dataVariant: null }}
             setInitialFetch={() => {}}
+            activeGrosir={activeGrosir}
+            grosirPrice={grosirPrice}
+            setGrosirPrice={setGrosirPrice}
+          />
+
+          <TableGrosir
+            isActiveVariation={isActiveVariation}
+            isActiveGrosir={isActiveGrosir}
+            setIsActiveGrosir={setIsActiveGrosir}
+            grosirPrice={grosirPrice}
+            setGrosirPrice={setGrosirPrice}
+            dataSource={dataSource}
+            setDataSource={setDataSource}
+            noVariant={noVariant}
+            onNoVariantChangeHandler={onNoVariantChangeHandler}
+            grosir={grosir}
+            setGrosir={setGrosir}
           />
 
         </Card.Body>
