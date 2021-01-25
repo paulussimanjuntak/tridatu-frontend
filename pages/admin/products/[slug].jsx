@@ -104,7 +104,7 @@ const UpdateProduct = ({ productData }) => {
   useEffect(() => {
     if(productData){
       console.log(JSON.stringify(productData, null, 2))
-      console.log(productData)
+
       dispatch(actions.getAllCategories())
       dispatch(actions.getBrand())
       const image_product = []
@@ -209,12 +209,12 @@ const UpdateProduct = ({ productData }) => {
             va1Option: va1Data,
             va1Total: va1Total + va1_items.length
           }
-          setVaOption(data)
           const dataImageVariant = {
             ...imageVariants,
             file: {value: image_variant, isValid: true, message: null}
           }
           setImageVariants(dataImageVariant)
+          setVaOption(data)
           setDataSource(newData)
         }
 
@@ -306,12 +306,13 @@ const UpdateProduct = ({ productData }) => {
           setColumns(column => [col1, col2, ...column])
           setIsActiveVariation({ active: true, countVariation: 2 })
           setDataSource(variant)
+
         }
       }
       /* SET VARIANT FROM SERVER */
 
       /* SET GROSIR FROM SERVER */
-      if(products_wholesale){
+      if(products_wholesale.length){
         let dataGrosir = []
 
         for(let val of products_wholesale){
