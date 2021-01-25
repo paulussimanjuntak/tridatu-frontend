@@ -861,9 +861,6 @@ const UpdateProduct = ({ productData }) => {
             }
           })
       }
-      else {
-        formErrorMessage(checkMessage)
-      }
     } // end of single variant
       // end of single variant
 
@@ -1004,9 +1001,6 @@ const UpdateProduct = ({ productData }) => {
               })
             }
           })
-      }
-      else {
-        formErrorMessage(checkMessage)
       }
     } // end of two variant
 

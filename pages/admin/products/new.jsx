@@ -610,9 +610,6 @@ const NewProduct = () => {
             }
           })
       }
-      else {
-        formErrorMessage(checkMessage)
-      }
     } // end of single variant
       // end of single variant
 
@@ -747,9 +744,6 @@ const NewProduct = () => {
               })
             }
           })
-      }
-      else {
-        formErrorMessage(checkMessage)
       }
     } // end of two variant
   }

@@ -140,26 +140,23 @@ const Grosir = ({
   useEffect(() => {
     if(active && activeGrosir){
       const copyDataSource = [...dataSource]
-      copyDataSource.map(obj => {
-        obj.key = obj.key
-        obj.price = { value: price.value ? price.value : copyDataSource[0].price.value, isValid: true, message: null }
-        obj.stock = obj.stock
-        obj.code = obj.code
-        obj.barcode = obj.barcode
-        return obj
-      })
+      if(copyDataSource[0].key){
+        copyDataSource.map(obj => {
+          obj.price = { value: price.value ? price.value : copyDataSource[0].price.value, isValid: true, message: null }
+          return obj
+        })
+        setDataSource(copyDataSource)
+      }
     }
     if(active && !activeGrosir){
       const copyDataSource = [...dataSource]
-      copyDataSource.map(obj => {
-        obj.key = obj.key
-        obj.price = { value: copyDataSource[0].price.value, isValid: true, message: null }
-        obj.stock = obj.stock
-        obj.code = obj.code
-        obj.barcode = obj.barcode
-        return obj
-      })
-      setDataSource(copyDataSource)
+      if(copyDataSource[0].key){
+        copyDataSource.map(obj => {
+          obj.price = { value: copyDataSource[0].price.value, isValid: true, message: null }
+          return obj
+        })
+        setDataSource(copyDataSource)
+      }
     }
   }, [price, activeGrosir])
 
