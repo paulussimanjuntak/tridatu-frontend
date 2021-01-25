@@ -106,7 +106,7 @@ const deleteProductFail = (error) => {
 }
 
 export const getProducts = ({ 
-  page = 1, per_page = 10, q, live, order_by, p_min, p_max, item_sub_cat, brand, pre_order, condition 
+  page = 1, per_page = 10, q, live, order_by, p_min, p_max, item_sub_cat, brand, pre_order, condition, wholesale
 }) => {
   let queryString = {}
   if(page) queryString["page"] = page
@@ -137,6 +137,9 @@ export const getProducts = ({
 
   if(condition && isBoolean(condition.toString())) queryString["condition"] = condition
   else delete queryString["condition"]
+
+  if(wholesale && isBoolean(wholesale.toString())) queryString["wholesale"] = wholesale
+  else delete queryString["wholesale"]
 
   return dispatch => {
     dispatch(getProductStart())
@@ -216,7 +219,16 @@ export const searchName = q => {
     axios.get(`/products/search-by-name?q=${q}&limit=10`)
       .then(res => {
         let names = res.data.map(obj => {
-          obj['value'] = obj['value'].replace(new RegExp(q, "gi"), (match) => `<b class="text-danger">${match}</b>`)
+          const index = obj['value'].indexOf(q)
+          if(index !== -1){
+            const length = q.length
+            const prefix = obj['value'].substring(0, index)
+            const suffix = obj['value'].substring(index + length)
+            const match = obj['value'].substring(index, index + length)
+
+            obj['value'] = obj['value']
+            obj['label'] = <span className="text-muted fw-500">{prefix}<span className="text-black">{match}</span>{suffix}</span>
+          }
           return obj 
         })
         dispatch(searchNameSuccess(names))

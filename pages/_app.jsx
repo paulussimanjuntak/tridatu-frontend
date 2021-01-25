@@ -452,6 +452,9 @@ const App = ({ Component, pageProps, store }) => {
         .text-tridatu-light {
           color: #ff4d4f;
         }
+        .text-black {
+          color: rgba(0, 0, 0, 1); 
+        }
 
         /*CUSTOM BUTTON*/
         .btn-tridatu {

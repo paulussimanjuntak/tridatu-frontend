@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
+import { motion } from 'framer-motion'
 import { Rate } from "antd";
 
 import Link from "next/link";
@@ -39,11 +40,17 @@ const CardProduct = ({ data }) => {
 
   return (
     <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: ".2" }}
+      >
       <Card className="border-0 shadow h-100">
         <Image 
           width={270}
           height={270}
-          src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${products_image_product[0]}`}
+          src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${products_image_product}`}
           alt="Tridatu Bali"
           className="img-fit img-product noselect"
         />
@@ -74,6 +81,7 @@ const CardProduct = ({ data }) => {
           </a>
         </Link>
       </Card>
+      </motion.div>
 
       <style jsx>{`
         .card-discount{

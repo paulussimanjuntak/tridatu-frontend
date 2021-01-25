@@ -433,22 +433,25 @@ const NewProduct = () => {
           } else {
             errDetail.map(data => {
               const newGrosir = [...grosir]
-              if(isIn(data.loc, ["min_qty", "price"])){
+              if(isIn(data.loc.join(" "), ["min_qty", "price"])){
                 const key = data.loc[data.loc.length - 1];
                 const idx = data.loc[data.loc.length - 2];
                 newGrosir[idx][key].isValid = false
-                newGrosir[idx][key].message = msg
+                newGrosir[idx][key].message = data.msg
               } else {
-                const key = msg.split(" ")[0]
-                const idx = parseInt(msg.split(" ")[1])
-                const msgSplit = msg.split(":")
-                newGrosir[idx][key].isValid = false
-                newGrosir[idx][key].message = msgSplit[0].split(" ")[0] + " " + (parseInt(msgSplit[0].split(" ")[1])+1) +":" + msgSplit[1]
+                if(isIn(data.msg, ["min_qty", "price"])){
+                  const key = data.msg.split(" ")[0]
+                  const idx = parseInt(data.msg.split(" ")[1])
+                  const msgSplit = data.msg.split(":")
+                  newGrosir[idx][key].isValid = false
+                  newGrosir[idx][key].message = msgSplit[0].split(" ")[0] + " " + (parseInt(msgSplit[0].split(" ")[1])+1) +":" + msgSplit[1]
+                } else {
+                  formErrorMessage(checkMessage)
+                }
               }
               setGrosir(newGrosir)
             })
           }
-
 
         })
     }

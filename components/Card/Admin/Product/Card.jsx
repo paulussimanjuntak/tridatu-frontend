@@ -59,7 +59,7 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
               <Image 
                 width={270}
                 height={270}
-                src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${products_image_product[0]}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${products_image_product}`}
                 alt="Tridatu Bali"
                 onClick={() => setShowModal(true)}
               />

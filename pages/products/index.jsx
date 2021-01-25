@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from "react-redux";
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, Rate, Tag, InputNumber, Checkbox, Drawer, Tabs, Select, Collapse, Col, Row, Empty } from 'antd';
 
+import axios from 'lib/axios'
 import RowB from "react-bootstrap/Row";
 import ColB from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -11,6 +12,8 @@ import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
 import ButtonBoot from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
+import isBoolean from 'validator/lib/isBoolean';
+import isIn from 'validator/lib/isIn';
 
 import CardProduct from "components/Card/Product";
 import Pagination from "components/Pagination";
@@ -26,7 +29,7 @@ const renderTitle = (title) => <b className="text-dark">{title}</b>
 
 const renderSubTitle = (title, item, type) => (
   <span 
-    className="text-muted w-100 d-block bg-danger" 
+    className="text-muted w-100 d-block bg-warning"
     onClick={e => {
       e.stopPropagation()
       console.log(JSON.stringify(item, null, 2))
@@ -36,8 +39,11 @@ const renderSubTitle = (title, item, type) => (
   </span>
 )
 
-const brandList = ['Adidas', 'Billabong', 'Bershka', 'Converse', 'Deus', 'GAP', 'Giordano', 'Gucci', 'H&M', 'Mango', 'New Balance', 'Pull & Bear', 'Louis Vuitton', 'Levis', 'Nike', 'Top Man', 'Uniqlo', 'Supreme', 'Zara']
-const sortList = ['Paling Sesuai', 'Harga Tertinggi', 'Harga Terendah']
+const sortList = [
+  { value: "", label: "Paling Sesuai" }, 
+  { value: "high_price", label: "Harga Tertinggi" }, 
+  { value: "low_price", label: "Harga Terendah" }
+] 
 const ratingList = ['4 Ketas', '3 Keatas']
 
 /*
@@ -45,28 +51,36 @@ const ratingList = ['4 Ketas', '3 Keatas']
  * filter category - make like tokopedia
  */
 
-const ProductContainer = () => {
+const ProductContainer = ({ searchQuery }) => {
   const dispatch = useDispatch()
   const router = useRouter();
 
   const [visible, setVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState(formFilter);
 
+  const [page, setPage] = useState(1)
+  const [brandList, setBrandList] = useState([]);
+  const [preorderList, setPreorderList] = useState([]);
+  const [conditionList, setConditionList] = useState([]);
+  const [wholesaleList, setWholesaleList] = useState([]);
+
   const allCategories = useSelector(state => state.categories.allCategories)
   const products = useSelector(state => state.products.products)
+  const loadingProduct = useSelector(state => state.products.loading)
   const user = useSelector(state => state.auth.user)
+  const brands = useSelector(state => state.brand.brand)
 
-  const { sort, category, rating, brand } = activeFilter;
+  const { order_by, category, rating, brand, p_min, p_max, pre_order, condition, wholesale } = activeFilter;
 
   const showDrawer = () => { setVisible(true); };
   const onClose = () => { setVisible(false); };
 
   const onSortChange = e => {
-    const data = { ...activeFilter, sort: {...sort, value: [e]} }
+    const data = { ...activeFilter, order_by: {...order_by, value: [e]} }
     setActiveFilter(data)
   }
   const onSortMobileChange = e => {
-    const data = { ...activeFilter, sort: {...sort, value: [e]} }
+    const data = { ...activeFilter, order_by: {...order_by, value: [e]} }
     setActiveFilter(data)
   }
   const onCategoryChange = (e, fn) => {
@@ -81,16 +95,64 @@ const ProductContainer = () => {
     if(e.slice(-1)[0] !== undefined) setActiveFilter(data)
     else setActiveFilter(emptydata)
   }
+
   const onRatingChange = e => {
     const data = { ...activeFilter, rating: {...rating, value: [e.slice(-1)[0]]} }
     const emptydata = { ...activeFilter, rating: {...rating, value: []} }
     if(e.slice(-1)[0] !== undefined) setActiveFilter(data)
     else setActiveFilter(emptydata)
   }
-  const onBrandChange = e => {
+
+  const onPriceChange = (value, item) => {
+    const data = { 
+      ...activeFilter, 
+      [item]: { ...[item], value: value } 
+    }
+    setActiveFilter(data)
+  }
+  const onConditionChange = (e, label) => {
+    if(label){
+      if(e.target.checked) setConditionList([e.target.label])
+      else setConditionList([])
+    } else {
+      const data = { ...activeFilter, condition: { ...condition, value: [e.slice(-1)[0]] } }
+      const emptydata = { ...activeFilter, condition: { ...condition, value: [] } }
+      if(e.slice(-1)[0] !== undefined) setActiveFilter(data)
+      else setActiveFilter(emptydata)
+    }
+  }
+  const onBrandChange = (e, label) => {
+    if(label){
+      if(e.target.checked) setBrandList(brand => brand.concat(e.target.label))
+      else setBrandList(brandList.filter(brand => brand !== e.target.label))
+    }
     const data = { ...activeFilter, brand: {...brand, value: e} }
     setActiveFilter(data)
   }
+  const onPreOrderChange = (e, label) => {
+    if(label){
+      if(e.target.checked) setPreorderList([e.target.label])
+      else setPreorderList([])
+    } else {
+      const data = { ...activeFilter, pre_order: { ...pre_order, value: [e.slice(-1)[0]] } }
+      const emptydata = { ...activeFilter, pre_order: { ...pre_order, value: [] } }
+      if(e.slice(-1)[0] !== undefined) setActiveFilter(data)
+      else setActiveFilter(emptydata)
+    }
+  }
+  const onWholesaleChange = (e, label) => {
+    if(label){
+      if(e.target.checked) setWholesaleList([e.target.label])
+      else setWholesaleList([])
+    } else {
+      const data = { ...activeFilter, wholesale: { ...wholesale, value: [e.slice(-1)[0]] } }
+      const emptydata = { ...activeFilter, wholesale: { ...wholesale, value: [] } }
+      if(e.slice(-1)[0] !== undefined) setActiveFilter(data)
+      else setActiveFilter(emptydata)
+    }
+  }
+
+
 
   const onRemoveFilter = (key, value) => {
     const state = JSON.parse(JSON.stringify(activeFilter));
@@ -103,32 +165,116 @@ const ProductContainer = () => {
 
   const renderFilterList = () => {
     let list = []
+    let finalList = []
     for(let key in activeFilter){
       let tmp = []
-      if(key !== 'sort'){
+      // if(key !== 'order_by' && key !== "brand" && key !== "pre_order" && key !== "condition"){
+      if(!isIn(key, ["order_by", "brand", "pre_order", "condition", "p_min", "p_max", "wholesale", "category"])){
         if(activeFilter[key].hasOwnProperty("value")){
           if(activeFilter[key].value.length > 0){
             activeFilter[key].value.forEach(x => tmp.push({value: x, key: key}))
           }
         }
       }
-
-      tmp.forEach(x => list.push(
-        <Tag key={x.value} closable 
+      tmp.forEach(x => list.push(x.value))
+    }
+    const merged = brandList.concat(preorderList, conditionList, wholesaleList, list)
+    for(let val of merged){
+      finalList.push(
+        <Tag key={val} closable 
           className="filter-tag"
           closeIcon={<i className="fas fa-times" />}
-          onClose={() => onRemoveFilter(x.key, x.value)}
+          onClose={() => onRemoveFilter(val)}
         >
-          {x.value}
+          {val}
         </Tag>
-      ))
+      )
     }
-     return list
+    return finalList
   }
 
   useEffect(() => {
-    dispatch(actions.getProducts({ page: 1, per_page: 20, live: "true" }))
-  }, [user])
+    dispatch(actions.getBrand())
+  }, [])
+
+  useEffect(() => {
+    let queryString = router.query
+    if(page) queryString["page"] = page
+
+    if(order_by.value[0] !== "") queryString["order_by"] = order_by.value[0]
+    else delete queryString["order_by"]
+
+    if(p_min.value) queryString["p_min"] = p_min.value
+    else delete queryString["p_min"]
+
+    if(p_max.value) queryString["p_max"] = p_max.value
+    else delete queryString["p_max"]
+
+    // item_sub_cat
+
+    if(brand.value.length) queryString["brand"] = brand.value.join(",")
+    else delete queryString["brand"]
+
+    if(isBoolean(pre_order.value.toString())) queryString["pre_order"] = pre_order.value
+    else delete queryString["pre_order"]
+
+    if(isBoolean(condition.value.toString())) queryString["condition"] = condition.value
+    else delete queryString["condition"]
+
+    if(isBoolean(wholesale.value.toString())) queryString["wholesale"] = wholesale.value
+    else delete queryString["wholesale"]
+
+    router.replace({
+      pathname: "/products",
+      query: queryString
+    })
+  }, [activeFilter, user])
+
+  useEffect(() => {
+    if(!searchQuery) return
+    console.log(searchQuery)
+    const state = JSON.parse(JSON.stringify(activeFilter))
+    if(searchQuery.hasOwnProperty("page")) {
+      setPage(searchQuery.page)
+    }
+    if(searchQuery.hasOwnProperty("order_by")) {
+      state.order_by.value = [searchQuery.order_by]
+    }
+    if(searchQuery.hasOwnProperty("p_min")){
+      state.p_min.value = searchQuery.p_min
+    }
+    if(searchQuery.hasOwnProperty("p_max")){
+      state.p_max.value = searchQuery.p_max
+    }
+    // item_sub_cat
+    if(searchQuery.hasOwnProperty("brand")){
+      const brands = searchQuery.brand.split(",").map(x => parseInt(x))
+      state.brand.value = brands
+      for(let val of brands) {
+        axios.get(`/brands/get-brand/${val}`)
+          .then(res => {
+            setBrandList(brand => brand.concat(res.data.name))
+          })
+      }
+    }
+    if(searchQuery.hasOwnProperty("pre_order")){
+      state.pre_order.value = [searchQuery.pre_order]
+      if(searchQuery.pre_order == "true") setPreorderList("Pre Order")
+      else setPreorderList("Ready Stock")
+      
+    }
+    if(searchQuery.hasOwnProperty("condition")){
+      state.condition.value = [searchQuery.condition]
+      if(searchQuery.condition == "true") setConditionList("Baru")
+      else setConditionList("Bekas")
+    }
+    if(searchQuery.hasOwnProperty("wholesale")){
+      state.wholesale.value = [searchQuery.wholesale]
+      if(searchQuery.wholesale == "true") setWholesaleList("Harga Grosir")
+      else setWholesaleList([])
+    }
+    setActiveFilter(state)
+  }, [])
 
   return(
     <>
@@ -144,9 +290,9 @@ const ProductContainer = () => {
               <Form.Label className="my-1 mr-2">
                 Urutkan:
               </Form.Label>
-              <Select value={sort.value} style={{ width: 150 }} onChange={onSortChange} dropdownClassName="idx-1020">
-                {sortList.map(x => (
-                  <Select.Option key={x} value={x}>{x}</Select.Option>
+              <Select value={order_by.value} style={{ width: 150 }} onChange={onSortChange} dropdownClassName="idx-1020">
+                {sortList.map(sort => (
+                  <Select.Option key={sort.value} value={sort.value}>{sort.label}</Select.Option>
                 ))}
               </Select>
             </Form>
@@ -162,7 +308,7 @@ const ProductContainer = () => {
             <Card className="border-0 shadow-filter">
               <Menu
                 className="filter-menu noselect"
-                defaultOpenKeys={['kategori', 'rating', 'harga', 'brand']}
+                defaultOpenKeys={['kategori', 'rating', 'harga', 'brand', 'kondisi', 'lainnya']}
                 mode="inline"
                 multiple={true}
                 selectedKeys={category.value}
@@ -200,6 +346,7 @@ const ProductContainer = () => {
                   ))}
                 </Menu.SubMenu>
 
+                {/*
                 <Menu.SubMenu key="rating" className="filter-checkbox title-filter" title={renderTitle('Rating')}>
                   <div className="p-l-20 p-r-20">
                     <Checkbox.Group className="w-100" onChange={onRatingChange} value={rating.value}>
@@ -212,6 +359,7 @@ const ProductContainer = () => {
                     </Checkbox.Group>
                   </div>
                 </Menu.SubMenu>
+                */}
 
                 <Menu.SubMenu key="harga" className="filter-checkbox title-filter" title={renderTitle('Harga')}>
                   <div className="p-l-20 p-r-20 mt-3">
@@ -219,32 +367,97 @@ const ProductContainer = () => {
                       <Form.Label className="text-secondary m-b-13">Harga Minimum</Form.Label>
                       <InputNumber formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                         parser={value => value.replace(/\Rp\s?|(\.*)/g, "")}
+                        min={1}
                         className={`w-100`}
+                        value={p_min.value}
+                        onChange={(e) => onPriceChange(e, "p_min")}
                       />
                     </Form.Group>
                     <Form.Group className="mb-2">
                       <Form.Label className="text-secondary m-b-13">Harga Maksimum</Form.Label>
                       <InputNumber formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                         parser={value => value.replace(/\Rp\s?|(\.*)/g, "")}
+                        min={2}
                         className={`w-100`}
+                        value={p_max.value}
+                        onChange={(e) => onPriceChange(e, "p_max")}
                       />
                     </Form.Group>
                   </div>
                   <Menu.Item className="checkbox-item">
-                    <Checkbox>
-                      <span className="text-secondary">Diskon</span>
-                    </Checkbox>
+                    <Checkbox.Group className="w-100" onChange={onWholesaleChange} value={wholesale.value}>
+                      <Checkbox
+                        value="true"
+                        label="Harga Grosir" 
+                        className="rating-checkbox" 
+                        onChange={(e) => onWholesaleChange(e, "label")}
+                      >
+                        <span className="text-secondary">Harga Grosir</span>
+                      </Checkbox>
+                    </Checkbox.Group>
                   </Menu.Item>
+                </Menu.SubMenu>
+
+                <Menu.SubMenu key="kondisi" className="scrollable-submenu title-filter" title={renderTitle('Kondisi')}>
+                  <div className="p-l-20 p-r-20">
+                    <Checkbox.Group className="w-100" onChange={onConditionChange} value={condition.value}>
+                      <Checkbox 
+                        value="true"
+                        label="Baru" 
+                        className="rating-checkbox" 
+                        onChange={(e) => onConditionChange(e, "label")}
+                      >
+                        <span className="text-secondary">Baru</span>
+                      </Checkbox>
+                      <Checkbox 
+                        value="false"
+                        label="Bekas" 
+                        className="rating-checkbox" 
+                        onChange={(e) => onConditionChange(e, "label")}
+                      >
+                        <span className="text-secondary">Bekas</span>
+                      </Checkbox>
+                    </Checkbox.Group>
+                  </div>
                 </Menu.SubMenu>
 
                 <Menu.SubMenu key="brand" className="scrollable-submenu title-filter" title={renderTitle('Brand')}>
                   <div className="p-l-20 p-r-20">
                     <Checkbox.Group className="w-100" onChange={onBrandChange} value={brand.value}>
-                      {brandList.map(x => (
-                        <Checkbox value={x} className="rating-checkbox" key={x}>
-                          <span className="text-secondary">{x}</span>
+                      {brands && brands.length > 0 && brands.map(({id, name}) => (
+                        <Checkbox 
+                          key={id} 
+                          value={id} 
+                          label={name} 
+                          className="rating-checkbox" 
+                          onChange={(e) => onBrandChange(e, "label")}
+                        >
+                          <span className="text-secondary">{name}</span>
                         </Checkbox>
                       ))}
+                    </Checkbox.Group>
+                  </div>
+                </Menu.SubMenu>
+
+                <Menu.SubMenu key="lainnya" className="scrollable-submenu title-filter" title={renderTitle('Lainnya')}>
+                  <div className="p-l-20 p-r-20">
+                    <Checkbox.Group className="w-100" onChange={onPreOrderChange} value={pre_order.value}>
+                      <Checkbox 
+                        value="true"
+                        label="Pre Order" 
+                        className="rating-checkbox" 
+                        onChange={(e) => onPreOrderChange(e, "label")}
+                      >
+                        <span className="text-secondary">Pre Order</span>
+                      </Checkbox>
+                      <Checkbox 
+                        value="false"
+                        label="Ready Stock" 
+                        className="rating-checkbox" 
+                        onChange={(e) => onPreOrderChange(e, "label")}
+                      >
+                        <span className="text-secondary">Ready Stock</span>
+                      </Checkbox>
                     </Checkbox.Group>
                   </div>
                 </Menu.SubMenu>
@@ -252,6 +465,9 @@ const ProductContainer = () => {
               </Menu>
             </Card>
           </ColB> 
+
+
+
 
           <ColB>
             <h4 className="mb-2 d-none d-lg-block">Produk</h4>
@@ -270,6 +486,19 @@ const ProductContainer = () => {
                     <CardProductMemo data={product} />
                   </Col>
                 ))}
+              </AnimatePresence>
+              <AnimatePresence>
+                {!loadingProduct && products && products.data && products.data.length == 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: ".2" }}
+                    className="w-100 mt-5"
+                  >
+                    <Empty className="my-5" description={<span className="text-secondary">Produk tidak tersedia</span>} />
+                  </motion.div>
+                )}
               </AnimatePresence>
             </Row>
 
@@ -306,6 +535,16 @@ const ProductContainer = () => {
           </ColB>
         </RowB>
       </Container>
+
+
+
+
+
+
+
+
+
+
 
 
       {/*FILTER MOBILE*/}
@@ -351,7 +590,7 @@ const ProductContainer = () => {
             {sortList.map(tag => (
               <Tag.CheckableTag
                 key={tag}
-                checked={sort.value.indexOf(tag) > -1}
+                checked={order_by.value.indexOf(tag) > -1}
                 onChange={() => onSortMobileChange(tag)}
                 className="filter-tag filter-tag-mobile"
               >
@@ -437,9 +676,9 @@ const ProductContainer = () => {
           <Card.Body>
             <h6>Brand</h6>
             <Checkbox.Group className="w-100 scrollable-submenu" onChange={onBrandChange} value={brand.value}>
-              {brandList.map(x => (
-                <Checkbox value={x} className="rating-checkbox" key={x}>
-                  <span className="text-secondary">{x}</span>
+              {brands && brands.length > 0 && brands.map(({id, name}) => (
+                <Checkbox value={name} className="rating-checkbox" key={id}>
+                  <span className="text-secondary">{name}</span>
                 </Checkbox>
               ))}
             </Checkbox.Group>
@@ -478,7 +717,8 @@ const ProductContainer = () => {
 
 ProductContainer.getInitialProps = async ctx => {
   const searchQuery = ctx.query
-
+  await ctx.store.dispatch(actions.getProducts({ ...searchQuery, per_page: 20, live: "true" }))
+  return { searchQuery: searchQuery }
 }
 
 export default ProductContainer

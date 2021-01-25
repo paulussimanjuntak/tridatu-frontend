@@ -21,10 +21,17 @@ export const validateFormGrosirPrice = (grosir, setGrosir, price, va1_price, act
         newGrosir[i]["price"].isValid = false
         newGrosir[i]["price"].message = price50SmallerMessage
       }
+      if(newGrosir[i].price.value >= initialPrice && newGrosir[i].price.value < checkPrice){
+        isGood = true;
+        newGrosir[i]["price"].isValid = true
+        newGrosir[i]["price"].message = null
+        setGrosir(newGrosir)
+      }
       if(i > 0 && newGrosir[i+1]){
         if(newGrosir[i].price.value < newGrosir[i-1].price.value && 
            newGrosir[i].price.value > newGrosir[i+1].price.value && 
-           newGrosir[i].price.value > initialPrice
+           newGrosir[i].price.value > initialPrice && 
+           (newGrosir[i].price.value >= initialPrice && newGrosir[i].price.value < checkPrice)
         ){
           isGood = true;
           newGrosir[i]["price"].isValid = true
@@ -47,7 +54,7 @@ export const validateFormGrosirPrice = (grosir, setGrosir, price, va1_price, act
       } else {
         if(i > 0 && 
           newGrosir[i].price.value < newGrosir[i-1].price.value && 
-          newGrosir[i].price.value >= initialPrice
+          (newGrosir[i].price.value >= initialPrice && newGrosir[i].price.value < checkPrice)
         ){
           isGood = true;
           newGrosir[i]["price"].isValid = true

@@ -45,6 +45,8 @@ const Grosir = ({
     if(countGrosir == 1){
       setIsActiveGrosir({ activeGrosir: false, countGrosir: countGrosir - 1 })
       setGrosirPrice({ price: { value: "", isValid: true, message: null } })
+      setGrosir([])
+
     } else {
       setIsActiveGrosir({ activeGrosir: true, countGrosir: countGrosir - 1 })
     }
@@ -143,7 +145,15 @@ const Grosir = ({
         return obj
       })
       setDataSource(copyDataSource)
-    } 
+    }
+    if(active && !activeGrosir){
+      const copyDataSource = [...dataSource]
+      copyDataSource.map(obj => {
+        obj.price = { value: copyDataSource[0].price.value, isValid: true, message: null }
+        return obj
+      })
+      setDataSource(copyDataSource)
+    }
   }, [price, activeGrosir])
 
   useEffect(() => {
@@ -159,7 +169,7 @@ const Grosir = ({
     if(activeGrosir){
       validateFormGrosirPrice(grosir, setGrosir, price, va1_price, active)
     }
-  }, [price, va1_price, activeGrosir])
+  }, [noVariant, price, va1_price, activeGrosir])
 
   const isValidButton = () => {
     let checkMinQty = grosir.map(x => x.min_qty.isValid)

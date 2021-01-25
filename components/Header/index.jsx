@@ -13,6 +13,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
+import isEmpty from 'validator/lib/isEmpty';
 
 import Login from "../Header/Auth/Login";
 import ExtraAuth from "../Header/Auth/ExtraAuth";
@@ -28,17 +29,6 @@ const routes = [
   {link: "/account/orders", text: "Pesanan Saya"},
   {link: "/account/favorite", text: "Favorit"},
 ]
-
-const options = [
-  { value: 'baju', },
-  { value: 'baju anak', },
-  { value: 'baju wanita', },
-  { value: 'baju tidur', },
-  { value: 'baju renang', },
-  { value: 'baju formal', },
-  { value: 'baju kasual panjang', },
-  { value: 'baju kemeja jeans panjang', },
-];
 
 const accountMenu = (logoutHandler, { role }) => (
   <Menu className="d-none d-lg-block">
@@ -134,6 +124,7 @@ const Header = () => {
   const [showExtraAuth, setShowExtraAuth] = useState(formExtraAuth)
 
   const user = useSelector(state => state.auth.user)
+  const searchNameValue = useSelector(state => state.products.searchName)
   const allCategories = useSelector(state => state.categories.allCategories)
 
   // LOGIN, RESET & REGISTER HANDLER
@@ -196,17 +187,40 @@ const Header = () => {
 
   // Search navbar
   const onSearchChange = e => {
+    const queryString = router.query
     const value = e.target.value;
+    dispatch(actions.searchName(value))
     setSearchQuery(value)
+
+    queryString["q"] = value
+    if(isEmpty(value)){
+      delete queryString["q"]
+      router.push({
+        pathname: router.pathname,
+        query: queryString
+      })
+    }
   }
   const onSelectSuggestionHandler = e => {
-    let url = `/products?q=${e}`
-    goToHandler(url)
+    const queryString = router.query
+    queryString["q"] = e
+    if(isEmpty(searchQuery)) delete queryString["q"]
+
+    router.push({
+      pathname: "/products",
+      query: queryString
+    })
   }
   const onPressEnter = e => {
     e.preventDefault()
-    let url = `/products?q=${searchQuery}`
-    goToHandler(url)
+    const queryString = router.query
+    queryString["q"] = searchQuery
+    if(isEmpty(searchQuery)) delete queryString["q"]
+
+    router.push({
+      pathname: "/products",
+      query: queryString
+    })
   }
   // Search navbar
 
@@ -349,7 +363,7 @@ const Header = () => {
                   <AutoComplete 
                     className="w-100"
                     dropdownClassName="position-fixed list-suggestion"
-                    options={options}
+                    options={searchNameValue}
                     value={searchQuery}
                     onSelect={onSelectSuggestionHandler}
                   >
@@ -631,7 +645,5 @@ const Header = () => {
     </>
   );
 };
-
-Header.whyDidYouRender = true;
 
 export default Header;
