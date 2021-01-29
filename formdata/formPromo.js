@@ -17,10 +17,10 @@ export const formPeriodIsValid = (state, setState) => {
     start.isValid = false
     start.message = "Waktu mulai harus setelah waktu saat ini"
   }
-  if(moment(end.value).format("L") === moment(start.value).format("L") && moment(end.value).subtract(1, "hour") < moment(start.value)){
+  if(moment(end.value).format("L") === moment(start.value).format("L") && moment(end.value).subtract(10, "minutes") < moment(start.value)){
     isGood = false
     start.isValid = false
-    start.message = "Waktu berakhir minimal satu jam lebih lama dari waktu mulai"
+    start.message = "Waktu berakhir minimal 10 menit lebih lama dari waktu mulai"
   }
 
   if(!isGood) setState({ ...state, start, end })
@@ -35,6 +35,7 @@ export const formTablePromoIsValid = (state, setState, idx) => {
   let normalPriceValue = newState[idx]["product"]["normal_price"].value
   let priceValue = newState[idx]["product"]["price"].value
   let discountValue = newState[idx]["product"]["discount"].value
+  let activeValue = newState[idx]["product"]["active"].value
 
   if(priceValue < (normalPriceValue - (normalPriceValue * (95/100)))){
     isGood = false
@@ -52,7 +53,12 @@ export const formTablePromoIsValid = (state, setState, idx) => {
     newState[idx]["product"]["discount"].isValid = false
     newState[idx]["product"]["discount"].message = "Diskon masksimal 95%"
   }
-  if(discountValue < 0){
+  if(discountValue <= 0 && discountValue >= 95 && activeValue){
+    isGood = false
+    newState[idx]["product"]["discount"].isValid = false
+    newState[idx]["product"]["discount"].message = "Diskon tidak valid"
+  }
+  if(discountValue < 0 && discountValue >= 95 && !activeValue){
     isGood = false
     newState[idx]["product"]["discount"].isValid = false
     newState[idx]["product"]["discount"].message = "Diskon tidak valid"

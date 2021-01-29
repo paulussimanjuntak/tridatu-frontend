@@ -87,6 +87,7 @@ const AddPromoModal = ({ visible, onClose, product }) => {
             variant.push({ key: makeid(10), product: item })
           }
         }
+        console.log(JSON.stringify(variant, null, 2))
         setDataSource(variant)
       }
     }

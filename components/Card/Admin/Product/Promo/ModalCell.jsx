@@ -43,7 +43,7 @@ const EditableCell = ({ record, index, children, type, editable, onChange, onBlu
               <div className="ant-input-group-wrapper">
                 <div className="ant-input-wrapper ant-input-group input-group-variant" style={{ zIndex: 1 }}>
                   <InputNumber
-                    min={0}
+                    min={record.product["active"].value ? 1 : 0}
                     max={95}
                     placeholder="Diskon"
                     className="w-100 h-33-custom-input fs-12 input-number-variant bor-right-rad-0"
