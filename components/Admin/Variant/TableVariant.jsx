@@ -33,10 +33,6 @@ export const additional = { price: initialValue, stock: initialValue, code: init
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
-  /*
-   * TODO: REFLECTED INPUT TABLE PRICE
-   */
-
 export const addColumVariantHandler = (variant, columns, setColumns) => {
   const copyColumns = [...columns]
   let data = {

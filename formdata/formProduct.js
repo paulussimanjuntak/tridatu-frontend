@@ -1,3 +1,5 @@
+import { formErrorMessage } from 'lib/axios'
+
 import isInt from 'validator/lib/isInt'
 import isEmpty from 'validator/lib/isEmpty'
 import isLength from 'validator/lib/isLength'
@@ -5,7 +7,6 @@ import isEquals from 'validator/lib/equals'
 import isBoolean from 'validator/lib/isBoolean'
 
 import getIndex from 'lib/getIndex'
-
 const emptyMessage = "Variasi tidak boleh kosong"
 const emptyColumnMessage = "Kolom tidak boleh kosong"
 const duplicateMessage = "Pilihan variasi harus berbeda."
@@ -286,6 +287,14 @@ export const formTableIsValid = (state, setState, idx) => {
   const newDataSource = [...state]
   let isGood = true
 
+  const variant_price_list = newDataSource.map(x => x.price.value)
+  const max = Math.max(...variant_price_list)
+  const min = Math.min(...variant_price_list)
+
+  if(max > (min * 7)){
+    isGood = false;
+    formErrorMessage("Perbedaan harga antar variasi terlalu besar, mohon tetapkan harga variasi yang sesuai.")
+  }
   if(newDataSource[idx].price.value < 1){
     isGood = false;
     newDataSource[idx].price.isValid = false;
