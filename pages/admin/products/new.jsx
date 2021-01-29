@@ -567,6 +567,7 @@ const NewProduct = () => {
           })
           .catch(err => {
             const errDetail = err.response.data.detail;
+            console.log(err.response)
             if(errDetail == signature_exp){
               axios.post(urlVariant, data, jsonHeaderHandler())
                 .then(res => {
@@ -609,6 +610,9 @@ const NewProduct = () => {
               })
             }
           })
+      }
+      else {
+        formErrorMessage(checkMessage)
       }
     } // end of single variant
       // end of single variant
@@ -744,6 +748,9 @@ const NewProduct = () => {
               })
             }
           })
+      }
+      else {
+        formErrorMessage(checkMessage)
       }
     } // end of two variant
   }
