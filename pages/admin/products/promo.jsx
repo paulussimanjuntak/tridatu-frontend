@@ -2,10 +2,9 @@ import { useState, useEffect  } from 'react'
 import { Table, Input, Select } from 'antd'
 import { useSelector, useDispatch } from "react-redux";
 
-import { orderList, columns, dataNoVar, dataVar1, dataVar2 } from 'data/discount'
+import { orderList, columns, dataNoVar, dataVar1, dataVar2, productsList, product1, product2, product3 } from 'data/discount'
 
 import axios, { signature_exp, resNotification } from "lib/axios";
-import * as actions from "store/actions";
 import ColB from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Card from 'react-bootstrap/Card'
@@ -18,30 +17,12 @@ import EditPromoModal from 'components/Modal/Admin/Products/EditPromo'
 const components = { body: { cell: EditableCell } };
 
 const Discount = () => {
-  const dispatch = useDispatch()
 
   const [show, setShow] = useState(false)
   const [showUpdate, setShowUpdate] = useState(false)
-  const [product, setProduct] = useState({})
   const [dataSourceProducts, setDataSourceProducts] = useState([])
+  const [product, setProduct] = useState({})
 
-  const products = useSelector(state => state.products.products)
-
-  const setPromoHandler = slug => {
-    axios.get(`/products/${slug}`, { params: { recommendation: false }})
-      .then(res => {
-        const resDetail = res.data.detail
-        if(res.status == 404) resNotification("error", "Error", resDetail)
-        else {
-          setShow(true)
-          setProduct(res.data)
-        }
-      })
-      .catch(err => {
-        const errDetail = err.response.data.detail;
-        if(errDetail == signature_exp) setPromoHandler(slug)
-      })
-  }
 
   const closeModalSetPromoHandler = () => {
     setShow(false)
@@ -53,6 +34,13 @@ const Discount = () => {
     if(index == 1) setProduct(dataVar1)
     if(index == 2) setProduct(dataVar2)
     setShowUpdate(true)
+  }
+
+  const setPromoHandler = (index) => {
+    if(index == 3) setProduct(product1)
+    if(index == 4) setProduct(product2)
+    if(index == 5) setProduct(product3)
+    setShow(true)
   }
 
   const closeUpdatePromoHandler = () => {
@@ -68,19 +56,15 @@ const Discount = () => {
         record,
         index: index,
         action: col.action,
-        onSet: (slug) => setPromoHandler(slug),
+        onSet: () => setPromoHandler(index),
         onUpdate: () => updatePromoHandler(index),
       })
     }
   })
 
   useEffect(() => {
-    dispatch(actions.getProducts({ page: 1, per_page: 10, live: "true" }))
-  }, [])
-
-  useEffect(() => {
-    if(products && products.data){
-      products.data.map((obj, i) => {
+    if(productsList && productsList.data){
+      productsList.data.map((obj, i) => {
         obj["products_discount"] = i == 0 && 10 || i == 1 && 50 || i == 2 && 20 || false
         obj["promo_active"] = i == 0 && true || i == 1 && true || i == 2 && true || false
         obj["promo_status"] = i == 0 && "Akan Datang" || i == 1 && "Akan Datang" || i == 2 && "Sedang Berjalan" || "Tidak Aktif"
@@ -90,13 +74,13 @@ const Discount = () => {
       })
       
       let tmp = []
-      for(let val of products.data){
+      for(let val of productsList.data){
         tmp.push({ key: val.products_id, products: val })
       }
 
       setDataSourceProducts(tmp)
     }
-  }, [products])
+  }, [productsList])
 
   return(
     <>
