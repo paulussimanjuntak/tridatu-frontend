@@ -1,4 +1,3 @@
-import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Form, Input, InputNumber, Button, Space, Upload, Row, Col, Radio, message } from 'antd'
@@ -1318,4 +1317,4 @@ UpdateProduct.getInitialProps = async ctx => {
   }
 }
 
-export default withAuth(UpdateProduct)
+export default UpdateProduct

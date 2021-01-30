@@ -1,4 +1,3 @@
-import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Form, Input, InputNumber, Button, Space, Upload, Row, Col, Radio, message } from 'antd'
@@ -1027,4 +1026,4 @@ const NewProduct = () => {
   )
 }
 
-export default withAuth(NewProduct)
+export default NewProduct
