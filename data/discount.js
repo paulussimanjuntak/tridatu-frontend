@@ -188,229 +188,6 @@ export const columnsProductVariant = [
 
 /* ################## */
 
-export const columnsProductUpdate = [
-  {
-    title: "Variasi",
-    colSpan: 0,
-    dataIndex: "variant",
-    key: "variant",
-    align: "center",
-    render: (item) => (
-      <p className="mb-0">
-        {item.var1}, {item.var2}
-      </p>
-    ),
-  },
-  {
-    title: "Harga Normal",
-    colSpan: 2,
-    dataIndex: "price",
-    key: "price",
-    align: "center",
-    render: (item) => (
-      <p className="mb-0">
-        <span></span>
-        Rp.{formatNumber(item.price)}
-      </p>
-    ),
-  },
-  {
-    title: "Harga Diskon",
-    dataIndex: "price",
-    key: "discount_price",
-    align: "center",
-    width: 150,
-    render: (item) => (
-      <div className="ant-input-group-wrapper">
-        <div
-          className="ant-input-wrapper ant-input-group input-group-variant"
-          style={{ zIndex: 1 }}
-        >
-          <span
-            className={`ant-input-group-addon noselect fs-12 bg-transparent`}
-          >
-            Rp
-          </span>
-          <InputNumber
-            min={1}
-            name="price"
-            placeholder="Masukkan harga"
-            value={item.price}
-            className="w-100 bor-left-rad-0 h-33-custom-input fs-12 input-number-variant"
-            formatter={(value) =>
-              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-            }
-            parser={(value) => value.replace(/\Rp\s?|(\.*)/g, "")}
-          />
-        </div>
-      </div>
-    ),
-  },
-  {
-    title: "Diskon (%)",
-    dataIndex: "price",
-    key: "discount",
-    align: "center",
-    width: 120,
-    render: (item) => (
-      <div className="ant-input-group-wrapper">
-        <div
-          className="ant-input-wrapper ant-input-group input-group-variant"
-          style={{ zIndex: 1 }}
-        >
-          <InputNumber
-            min={1}
-            name="price"
-            placeholder="Masukkan harga"
-            value={item.discount}
-            className="w-100 bor-right-rad-0 h-33-custom-input fs-12 input-number-variant"
-            formatter={(value) =>
-              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-            }
-            parser={(value) => value.replace(/\Rp\s?|(\.*)/g, "")}
-          />
-          <span
-            className={`ant-input-group-addon noselect fs-12 bg-transparent`}
-          >
-            %
-          </span>
-        </div>
-      </div>
-    ),
-  },
-  {
-    title: "Stok",
-    dataIndex: "stock",
-    key: "stock",
-    width: 120,
-    align: "center",
-    render: (item) => <p className="mb-0">{item}</p>,
-  },
-  {
-    title: "Aktif/Nonaktif",
-    dataIndex: "active",
-    key: "active",
-    align: "center",
-    render: (item) => <Switch defaultChecked={item} />,
-  },
-];
-
-export const dataSourceProductUpdate = [
-  {
-    key: "1",
-    product: {
-      name: "Baju Bekas",
-    },
-    variant: {
-      var1: "Putih",
-      var2: "S",
-      discount: 50,
-      price: 200000,
-    },
-    status: "Tidak Aktif",
-    price: {
-      discount: 50,
-      price: 200000,
-    },
-    stock: 10,
-    active: true,
-  },
-  {
-    key: "2",
-    product: {
-      name: "Baju Bekas",
-    },
-    variant: {
-      var1: "Putih",
-      var2: "M",
-      discount: 50,
-      price: 200000,
-    },
-    status: "Tidak Aktif",
-    price: {
-      discount: 50,
-      price: 200000,
-    },
-    stock: 10,
-    active: true,
-  },
-  {
-    key: "3",
-    product: {
-      name: "Baju Bekas",
-    },
-    variant: {
-      var1: "Hitam",
-      var2: "S",
-      discount: 50,
-      price: 200000,
-    },
-    status: "Tidak Aktif",
-    price: {
-      discount: 50,
-      price: 200000,
-    },
-    stock: 10,
-    active: true,
-  },
-  {
-    key: "4",
-    product: {
-      name: "Baju Bekas",
-    },
-    variant: {
-      var1: "Hitam",
-      var2: "M",
-      discount: 50,
-      price: 200000,
-    },
-    status: "Tidak Aktif",
-    price: {
-      discount: 50,
-      price: 200000,
-    },
-    stock: 10,
-    active: true,
-  },
-  {
-    key: "5",
-    product: {
-      name: "Baju Bekas",
-    },
-    variant: {
-      var1: "Merah",
-      var2: "S",
-      discount: 50,
-      price: 200000,
-    },
-    status: "Tidak Aktif",
-    price: {
-      discount: 50,
-      price: 200000,
-    },
-    stock: 10,
-    active: false,
-  },
-  {
-    key: "6",
-    product: {
-      name: "Baju Bekas",
-    },
-    variant: {
-      var1: "Merah",
-      var2: "M",
-      discount: 50,
-      price: 200000,
-    },
-    status: "Tidak Aktif",
-    price: {
-      discount: 50,
-      price: 200000,
-    },
-    stock: 10,
-    active: false,
-  },
-];
 
 
 
@@ -420,8 +197,54 @@ export const dataSourceProductUpdate = [
 
 
 
+export const dataNoVar = {
+  products_id: 1,
+  products_name: "KEMEJA LAPANGAN / KEMEJA PDL / KEMEJA OUTDOOR",
+  products_slug: "kemeja-lapangan-kemeja-pdl-kemeja-outdoor",
+  products_desc: "aaaaaaaaaaaaaaaaaaaa",
+  products_condition: true,
+  products_image_product: {
+    0: "b1ccd10086e94c9db58a31f37ecd96f5.jpeg",
+    1: "2f2f7bfd3aef413e871dfd8ce89e522a.jpeg",
+    2: "0732cbb0b0a04c6fbfe1a0b60e018049.jpeg",
+    3: "5efdda17d560450bba89d9a65637fc08.jpeg",
+    4: "6d67871b794d417da816fe3106d28c98.jpeg",
+  },
+  products_weight: 500,
+  products_live: false,
+  products_visitor: 0,
+  products_category: {
+    categories_id: 1,
+    categories_name: "Pria",
+    sub_categories_id: 1,
+    sub_categories_name: "Atasan",
+    item_sub_categories_id: 3,
+    item_sub_categories_name: "Kemeja",
+  },
+  products_brand: {
+    brands_id: 1,
+    brands_name: "nike",
+    brands_image: "f0025b3e2bb94e3a8834e2d30e5759b9.jpeg",
+  },
+  products_variant: {
+    va1_items: [
+      {
+        va1_id: 1,
+        va1_price: 75000,
+        va1_stock: 1,
+        va1_code: "1271521-899-SM",
+        va1_barcode: "889362033471",
+        va1_discount: 20,
+        va1_discount_active: true,
+      },
+    ],
+  },
+  products_wholesale: [],
+  products_created_at: "2021-01-29T18:09:11.983920",
+  products_updated_at: "2021-01-29T18:09:11.983920",
+};
 
-export const dataVar2 = {
+export const dataVar1 = {
   products_id: 2,
   products_name: "PAULMAY Sepatu Formal Pria Modena 01 - Hitam",
   products_slug: "paulmay-sepatu-formal-pria-modena-01-hitam",
@@ -482,4 +305,106 @@ export const dataVar2 = {
   products_wholesale: [],
   products_created_at: "2021-01-29T18:09:14.482518",
   products_updated_at: "2021-01-29T18:09:14.482518",
+};
+
+export const dataVar2 = {
+  products_id: 3,
+  products_name: "IPHONE XR",
+  products_slug: "iphone-xr",
+  products_desc: "aaaaaaaaaaaaaaaaaaaa",
+  products_condition: true,
+  products_image_product: {
+    0: "b7d5edc5d1cd4bc087e63064f1470bff.jpeg",
+    1: "039005b3759d4f679f71bf7d5f3e2f26.jpeg",
+    2: "4de0b76b58534743841a5dacdb45afc4.jpeg",
+    3: "16f7af57f05c491c85c3e17165caa95a.jpeg",
+    4: "bde9e077f894496da05099f4564d9fc3.jpeg",
+  },
+  products_weight: 500,
+  products_live: false,
+  products_visitor: 0,
+  products_category: {
+    categories_id: 1,
+    categories_name: "Pria",
+    sub_categories_id: 1,
+    sub_categories_name: "Atasan",
+    item_sub_categories_id: 2,
+    item_sub_categories_name: "Polo",
+  },
+  products_brand: {},
+  products_variant: {
+    va1_name: "Ukuran",
+    va2_name: "Warna",
+    va1_items: [
+      {
+        va1_option: "64GB",
+        va1_image: "54ba07f221aa47988c82f82ecae06742.jpeg",
+        va2_items: [
+          {
+            va2_id: 5,
+            va2_option: "Hitam",
+            va2_price: 7075000,
+            va2_stock: 2,
+            va2_discount: 10,
+            va2_discount_active: true,
+          },
+          {
+            va2_id: 6,
+            va2_option: "Red",
+            va2_price: 7075000,
+            va2_stock: 2,
+            va2_discount: 10,
+            va2_discount_active: true,
+          },
+        ],
+      },
+      {
+        va1_option: "256GB",
+        va1_image: "403acd45a9c840f9aacaee0aa77b0290.jpeg",
+        va2_items: [
+          {
+            va2_id: 7,
+            va2_option: "Hitam",
+            va2_price: 8175000,
+            va2_stock: 2,
+            va2_discount: 30,
+            va2_discount_active: true,
+          },
+          {
+            va2_id: 8,
+            va2_option: "Red",
+            va2_price: 8175000,
+            va2_stock: 2,
+            va2_discount: 20,
+            va2_discount_active: true,
+          },
+        ],
+      },
+      {
+        va1_option: "512GB",
+        va1_image: "18b202eaace64bbfa3076d2b6193278c.jpeg",
+        va2_items: [
+          {
+            va2_id: 9,
+            va2_option: "Hitam",
+            va2_price: 8175000,
+            va2_stock: 2,
+            va2_discount: 0,
+            va2_discount_active: false,
+          },
+          {
+            va2_id: 10,
+            va2_option: "Red",
+            va2_price: 8175000,
+            va2_stock: 2,
+            va2_discount: 0,
+            va2_discount_active: false,
+          },
+        ],
+      },
+    ],
+  },
+  products_wholesale: [],
+  products_created_at: "2021-01-29T18:09:17.661440",
+  products_updated_at: "2021-01-29T18:09:17.661440",
 };

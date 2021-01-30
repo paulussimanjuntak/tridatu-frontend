@@ -12,7 +12,7 @@ const EditableCell = ({ record, index, children, action, onSet, onUpdate, ...res
         <Button 
           type="primary" 
           with={`${record.products.promo_active && "dashed"}`}
-          onClick={record.products.promo_active ? onUpdate : () => onSet(record.products.products_slug)}
+          onClick={record.products.promo_active ? () => onUpdate(index) : () => onSet(record.products.products_slug)}
         >
           {text}
         </Button>
