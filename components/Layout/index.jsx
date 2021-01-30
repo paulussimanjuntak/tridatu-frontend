@@ -17,7 +17,6 @@ const Layout = ({ children }) => {
   const isAccount = router.pathname.startsWith('/account');
   const isAadmin = router.pathname.startsWith('/admin');
 
-  const onTryGetUser = () => dispatch(actions.getUser());
   const { csrf_access_token, csrf_refresh_token } = parseCookies();
 
   useEffect(() => {
@@ -25,12 +24,6 @@ const Layout = ({ children }) => {
       document.body.style.paddingTop = '0';
     }
   }, [isAadmin])
-
-  useEffect(() => {
-    if (csrf_access_token && csrf_refresh_token) {
-      onTryGetUser();
-    }
-  }, [parseCookies])
 
   const layout = isAadmin ? <AdminLayout>{children}</AdminLayout> : (
     <>
