@@ -105,6 +105,26 @@ const deleteProductFail = (error) => {
   }
 }
 
+
+const getProductSlugStart = () => {
+  return { type: actionType.GET_PRODUCT_SLUG_START }
+}
+
+export const getProductSlugSuccess = (product) => {
+  return {
+    type: actionType.GET_PRODUCT_SLUG_SUCCESS,
+    productSlug: product
+  }
+}
+
+const getProductSlugFail = (error) => {
+  return {
+    type: actionType.GET_PRODUCT_SLUG_FAIL,
+    error: error
+  }
+}
+
+
 export const getProducts = ({ 
   page = 1, per_page = 10, q, live, order_by, p_min, p_max, item_sub_cat, brand, pre_order, condition, wholesale
 }) => {
@@ -266,6 +286,27 @@ export const deleteProduct = (id, router) => {
             resNotification("error", "Error", errDetail)
             dispatch(deleteProductFail(errDetail))
           }
+        }
+      })
+  }
+}
+
+export const getSlugProduct = ({ slug, recommendation = true }) => {
+  return dispatch => {
+    dispatch(getProductSlugStart())
+    axios.get(`/products/${slug}`, { params: { recommendation: recommendation } })
+      .then(res => {
+        dispatch(getProductSlugSuccess(res.data))
+      })
+      .catch(err => {
+        if(err.response.data.detail === signature_exp){
+          axios.get(`/products/${slug}`, { params: { recommendation: recommendation } })
+            .then(res => {
+              dispatch(getProductSlugSuccess(res.data))
+            })
+            .catch(() => {})
+        } else {
+          dispatch(getProductSlugFail(err.response))
         }
       })
   }

@@ -5,6 +5,7 @@ const initialState = {
   products: [],
   searchName: [],
   loading: false,
+  productSlug: null,
   aliveArchiving: true,
   error: null,
 };
@@ -94,6 +95,28 @@ const deleteProductFail = (state, action) => {
 }
 
 
+const getProductSlugStart = (state, _) => {
+  return updateObject(state, {
+    loading: true,
+    error: null
+  })
+}
+
+export const getProductSlugSuccess = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    productSlug: action.product
+  })
+}
+
+const getProductSlugFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error
+  })
+}
+
+
 const reducer = (state = initialState, action) => {
   switch(action.type){
     case actionType.GET_ALLPRODUCTS_START:
@@ -123,6 +146,13 @@ const reducer = (state = initialState, action) => {
       return deleteProductSuccess(state, action)
     case actionType.DELETE_PRODUCTS_FAIL:
       return deleteProductFail(state, action)
+
+    case actionType.GET_PRODUCT_SLUG_START:
+      return getProductSlugStart(state, action)
+    case actionType.GET_PRODUCT_SLUG_SUCCESS:
+      return getProductSlugSuccess(state, action)
+    case actionType.GET_PRODUCT_SLUG_FAIL:
+      return getProductSlugFail(state, action)
 
     default:
       return state;

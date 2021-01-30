@@ -5,3 +5,4 @@ export { getBrand, getBrandSuccess } from './brand';
 export { getCategories, getCategoriesSuccess, getSubCategories, getItemSubCategories, getAllCategories } from './categories';
 export { getAdminCollapsed, getAdminIsMobile } from './layout'
 export { getProducts, aliveArchiveProduct, loveProduct, unloveProduct, deleteProduct, searchName } from './products'
+export { getSlugProduct, getProductSlugSuccess } from './products'

@@ -56,7 +56,7 @@ const CardProduct = ({ data }) => {
         />
         {/* <span className="card-discount noselect">70%</span> */}
         <i className={`fa${love ? "s":"r"} fa-heart card-wishlist hover-pointer`} onClick={() => loveHandler(products_id)} />
-        <Link href="/products/Tshirt-Deus-Ex-Machina-02" as="/products/Tshirt-Deus-Ex-Machina-02">
+        <Link href="/products/[slug]" as={`/products/${products_slug}`}>
           <a className="text-decoration-none text-secondary">
             <Card.Body className="p-2 card-body-height">
               <p className="fs-13 mb-0 text-break truncate-2">
