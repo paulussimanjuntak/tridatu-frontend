@@ -1,4 +1,6 @@
+import { withAuth } from 'lib/withAuth'
 import { Input, Select, Row, Col } from 'antd'
+
 import ColB from 'react-bootstrap/Col'
 import RowB from 'react-bootstrap/Row'
 import Card from 'react-bootstrap/Card'
@@ -6,11 +8,9 @@ import Form from 'react-bootstrap/Form'
 
 import CardProduct from "components/Card/Product";
 import Pagination from "components/Pagination";
-
-import { withAuth } from 'lib/withAuth'
+import * as actions from "store/actions";
 
 const CardProductMemo = React.memo(CardProduct);
-
 const sortList = ['Terbaru', 'Terlama']
 
 const Favorite = () => {
@@ -55,7 +55,7 @@ const Favorite = () => {
           <Row gutter={[10, 10]}>
             {[...Array(10)].map((_, i) => (
               <Col key={i} lg={5} md={6} sm={8} xs={12} className="modif-col">
-                <CardProductMemo />
+                {/* <CardProductMemo /> */}
               </Col>
             ))}
           </Row>
@@ -79,6 +79,12 @@ const Favorite = () => {
       `}</style>
     </>
   )
+}
+
+Favorite.getInitialProps = async ctx => {
+  const searchQuery = ctx.query
+  // await ctx.store.dispatch(actions.getProducts({ ...searchQuery, per_page: 20, live: "true" }))
+  return { searchQuery: searchQuery }
 }
 
 export default withAuth(Favorite)
