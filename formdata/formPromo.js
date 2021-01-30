@@ -12,15 +12,20 @@ export const formPeriodIsValid = (state, setState) => {
   const end = { ...state.end }
   let isGood = true
 
+  if(moment(end.value).diff(moment(start.value), "days") > 180){
+    isGood = false
+    start.isValid = false
+    start.message = "Periode Promo harus kurang dari 180 hari"
+  }
   if(moment(start.value) < moment()){
     isGood = false
     start.isValid = false
     start.message = "Waktu mulai harus setelah waktu saat ini"
   }
-  if(moment(end.value).format("L") === moment(start.value).format("L") && moment(end.value).subtract(10, "minutes") < moment(start.value)){
+  if(moment(end.value).format("L") === moment(start.value).format("L") && moment(end.value).subtract(1, "hour") < moment(start.value)){
     isGood = false
     start.isValid = false
-    start.message = "Waktu berakhir minimal 10 menit lebih lama dari waktu mulai"
+    start.message = "Waktu berakhir minimal satu jam lebih lama dari waktu mulai"
   }
 
   if(!isGood) setState({ ...state, start, end })
