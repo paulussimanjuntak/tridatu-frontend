@@ -171,7 +171,7 @@ export const getWishlist = ({ page = 1, per_page = 10, q, order_by }) => {
         dispatch(getWishlistSuccess(res.data))
       })
       .catch(err => {
-        if(err.response.data.detail === signature_exp){
+        if(err && err.response && err.response.data.detail === signature_exp){
           axios.get(`/wishlists/user`, { params: queryString })
             .then(res => {
               dispatch(getWishlistSuccess(res.data))
