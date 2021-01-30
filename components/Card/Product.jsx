@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { motion } from 'framer-motion'
-import { Rate } from "antd";
+import { Rate, Tag } from "antd";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -16,7 +16,7 @@ const CardProduct = ({ data }) => {
   const dispatch = useDispatch()
   const user = useSelector(state => state.auth.user)
 
-  const { products_id, products_name, products_slug, products_love, products_image_product, variants_price } = data;
+  const { products_id, products_name, products_slug, products_love, products_wholesale, products_image_product, variants_price } = data;
 
   const [love, setLove] = useState(products_love)
 
@@ -58,16 +58,16 @@ const CardProduct = ({ data }) => {
         <i className={`fa${love ? "s":"r"} fa-heart card-wishlist hover-pointer`} onClick={() => loveHandler(products_id)} />
         <Link href="/products/Tshirt-Deus-Ex-Machina-02" as="/products/Tshirt-Deus-Ex-Machina-02">
           <a className="text-decoration-none text-secondary">
-            <Card.Body className="p-2" style={{ height: "88px" }}>
+            <Card.Body className="p-2 card-body-height">
               <p className="fs-13 mb-0 text-break truncate-2">
                 {products_name}
               </p>
-              <p className="fs-13 fw-500 text-dark mb-0">
-                {/* <span className="text-danger"> */}
-                {/*   <s>Rp. 150.000</s> */}
-                {/* </span> */}
-                {/* <br /> */}
-                Rp.{formatNumber(variants_price)}
+              <Tag className="grosir-tag" visible={products_wholesale}>Grosir</Tag>
+              <p className="text-red-dicount text-truncate fs-10 mb-0">
+                <span className="fs-13 fw-500 text-dark">Rp.{formatNumber(variants_price)}</span>
+                <span className="ml-1">
+                  <s>Rp.{formatNumber(variants_price*2)}</s>
+                </span>
               </p>
               <div className="card-rating fs-12 mb-0">
                 <Rate
@@ -116,6 +116,22 @@ const CardProduct = ({ data }) => {
         :global(.img-product){
           border-top-left-radius: .25rem;
           border-top-right-radius: .25rem;
+        }
+        :global(.grosir-tag){
+          background-color: #d6ffde;
+          color: #03ac0e;
+          font-weight: bold;
+          border: 0;
+          font-size: 10px;
+          margin-bottom: 2px;
+          padding: 0 5px;
+          border-radius: .25rem;
+        }
+        :global(.card-body-height){
+          height: 112px;
+        }
+        :global(.text-red-dicount){
+          color: #dc3545b5 !important;
         }
       `}</style>
     </>

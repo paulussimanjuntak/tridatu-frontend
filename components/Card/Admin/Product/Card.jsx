@@ -92,10 +92,15 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
                 {products_name}
               </p>
             </div>
-            <p className="mb-0 text-tridatu text-truncate">Rp.{formatNumber(variants_price)}</p>
-            {/* <p className="mb-1 text-muted text-truncate"> */}
-            {/*   Stok <span className="text-dark text-truncate">30</span> */}
-            {/* </p> */}
+            <div className="d-flex justify-content-between noselect">
+              <span className="mb-0 text-tridatu text-truncate">Rp.{formatNumber(variants_price)}</span>
+              <span className="mb-0 text-muted text-truncate">Stok <span className="text-dark">30</span></span>
+            </div>
+            <div className="d-flex justify-content-between text-black-50 fs-12 noselect">
+              <span className="mb-0 text-truncate"><i className="fal fa-eye" />100</span>
+              <span className="mb-0 text-truncate mx-1"><i className="fal fa-heart" /> 30</span>
+              <span className="mb-0 text-truncate">Penjualan 1K</span>
+            </div>
           </Card.Body>
         </CardAnt>
       </motion.div>
