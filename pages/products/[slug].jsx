@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Space, Modal, Rate, InputNumber, Button, Select, Tabs, Progress, Breadcrumb, Input, Popover } from "antd";
-import { Comment, Avatar, Col as ColAntd, Row as RowAntd } from 'antd';
-import { motion, AnimatePresence } from "framer-motion"
+import { Space, Modal, Rate, Button, Select, Tabs, Progress, Breadcrumb, Input, AutoComplete } from "antd";
+import { Comment, Avatar, Col as ColAntd, Row as RowAntd, Skeleton, Alert } from 'antd';
+import { AnimatePresence, motion } from "framer-motion"
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
+import { SearchOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 import Link from 'next/link'
-import Slider from 'react-slick';
 import Router from "next/router";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -17,106 +17,111 @@ import Container from 'react-bootstrap/Container'
 
 import ImageGallery from 'react-image-gallery'
 
+import formatNumber from "lib/formatNumber";
 import Pagination from "components/Pagination";
 import UlasanContainer from 'components/Card/Ulasan'
 import DiskusiContainer from 'components/Card/Diskusi'
 import ShareModal from 'components/Card/ShareModal'
 import CardProduct from "components/Card/Product";
 
+import VariantProduct from "components/Products/Variants";
+import ShippingDisplayContainer from "components/Products/ShippingDisplay";
+
 import * as actions from "store/actions";
 import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature_exp, formErrorMessage } from 'lib/axios'
 
+import { shippingDummy } from 'data/products'
+import { renderLeftNav, renderRightNav, renderFullscreenButton } from 'components/Products/ImageGalleryButton'
+
+import PHOTOS from 'data/detailPhotoProduct'
 import SlugStyle from 'components/Products/slugStyle'
 
 const CardProductMemo = React.memo(CardProduct);
 
-import { renderLeftNav, renderRightNav, renderFullscreenButton } from 'components/Products/ImageGalleryButton'
-import { brandSettings } from "lib/slickSetting";
+const Fade = {
+  initial: { opacity: 0, },
+  in: { opacity: 1, },
+  out: { opacity: 0, },
+};
 
-import PHOTOS from 'data/detailPhotoProduct'
-
-const content = (
-  <Form>
-    <Form.Group>
-      <Form.Label className="d-block">Kota atau Kecamatan</Form.Label>
-      <Select
-        showSearch
-        showArrow={false}
-        name="region"
-        className="w-100"
-        placeholder="Tulis Nama Alamat / Kota / Kecamatan tujuan pengiriman"
-        notFoundContent={
-          <p className="text-center mb-2">
-            <i className="fad fa-map-marked-alt fs-35 text-center d-block my-2" />
-            <span className="text-center"></span>
-          </p>
-        }
-      >
-      </Select>
-    </Form.Group>
-    <Form.Group className="mb-1">
-      <Form.Label className="d-block">Kode Pos</Form.Label>
-      <Select
-        showSearch
-        showArrow={false}
-        name="region"
-        className="w-100"
-        placeholder="Tulis Nama Alamat / Kota / Kecamatan tujuan pengiriman"
-        notFoundContent={
-          <p className="text-center mb-2">
-            <i className="fad fa-map-marked-alt fs-35 text-center d-block my-2" />
-            <span className="text-center"></span>
-          </p>
-        }
-      >
-      </Select>
-    </Form.Group>
-  </Form>
-);
+const initialShippingLocation = { 
+  value: "Pilih lokasi untuk lihat ongkos kirim", 
+  origin: "Kota Denpasar, Bali",
+  shipping_cities_id: null, 
+  shipping_subdistricts_id: null,
+}
 
 const ProductDetail = ({ productData }) => {
   const dispatch = useDispatch()
 
-  const [quantity, setQuantity] = useState(1)
-  const [showNote, setShowNote] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const [showModalCart, setShowModalCart] = useState(false)
+  const [product, setProduct] = useState({})
+  const [courier, setCourier] = useState({})
+  const [shippingLocation, setShippingLocation] = useState(initialShippingLocation)
 
   const user = useSelector(state => state.auth.user)
-  const products = useSelector(state => state.products.products)
-
-  const quantityHandler = (e, val) => {
-    if(val == "input"){
-      setQuantity(e)
-    }
-    if(val === "min"){
-      if(quantity == 1) e.stopPropagation()
-      else setQuantity(quantity-1)
-    }
-    if(val === "plus"){
-      setQuantity(quantity+1) 
-    }
-  }
+  const loadingCost = useSelector(state => state.shipping.loading)
+  const listLocation = useSelector(state => state.shipping.listLocation)
+  const shippingCosts = useSelector(state => state.shipping.shippingCosts)
 
   const showModalCartHandler = () => { setShowModalCart(true) }
-  const showNoteHandler = () => { setShowNote(true) }
-  const closeNoteHandler = () => { setShowNote(false) }
 
   useEffect(() => {
-    dispatch(actions.getProducts({ page: 1, per_page: 6, live: "true" }))
-  }, [user])
+    setProduct(productData)
+  }, [productData])
 
-  console.log(productData)
+  useEffect(() => {
+    if(shippingCosts){
+      if(shippingCosts.costs_shipping.length > 0){
+        const { code, costs } = shippingCosts.costs_shipping[0]
+        if(costs && costs.length > 0){
+          let data = {
+            code: code,
+            services: costs[0].service,
+            etd: costs[0].cost[0].etd.split(" ")[0],
+            cost: costs[0].cost[0].value
+          }
+          setCourier(JSON.stringify(data))
+          setShippingLocation({...shippingLocation, origin: shippingCosts.origin_detail})
+        }
+      }
+    }
+  }, [shippingCosts])
+
+  const { products_id, products_brand, products_category, products_condition, products_desc, products_image_product } = productData
+  const { products_image_size_guide, products_love, products_name, products_recommendation, products_slug } = productData
+  const { products_variant, products_visitor, products_weight, products_wholesale } = productData
+
+  const searchHandlerClicked = () => setShowSearch(!showSearch)
+  const showSearchHandler = () => setShowSearch(true)
+  const closeSearchHandler = () => setShowSearch(false)
+
+  const onSearchChangeHandler = e => {
+    const value = e.target.value
+    dispatch(actions.searchCityDistrict({ q: value, limit: 50 }))
+  }
+
+  const onSearchSelectHandler = (_, option) => {
+    dispatch(actions.getShippingCost({ destination: option.shipping_subdistricts_id, weight: products_weight }))
+    setShippingLocation({ ...shippingLocation, ...option })
+    setShowSearch(false)
+  }
+
+
 
   return(
     <>
       <Container className="pt-4 pb-2">
         <Row className="mb-3">
           <Col className="col-12">
-            <Breadcrumb>
+            <Breadcrumb className="text-truncate">
               <Breadcrumb.Item href="/products">Products</Breadcrumb.Item>
-              <Breadcrumb.Item href="/products">Baju</Breadcrumb.Item>
-              <Breadcrumb.Item>Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih</Breadcrumb.Item>
+              <Breadcrumb.Item>{products_category.categories_name}</Breadcrumb.Item>
+              <Breadcrumb.Item>{products_category.sub_categories_name}</Breadcrumb.Item>
+              <Breadcrumb.Item>{products_category.item_sub_categories_name}</Breadcrumb.Item>
+              <Breadcrumb.Item>{products_name}</Breadcrumb.Item>
             </Breadcrumb>
           </Col>
         </Row>
@@ -137,143 +142,37 @@ const ProductDetail = ({ productData }) => {
           <Col lg={6}>
             {/* TITLE PRODUCTS INFORMATION */}
             <div className="header-product">
-              <h1 className="header-product-title fs-18-s">Kaos - Baju - Tshirt Deus Ex Machina 02 - Putih</h1>
-              <div className="header-product-rating">
+              <h1 className="header-product-title fs-18-s">{products_name}</h1>
+              <div className="header-product-rating text-muted">
+                <span className="header-product-rating-detail m-r-5">
+                  4.5
+                </span>
                 <Rate className="header-product-rating-rate" allowHalf disabled defaultValue={5} />
                 <span className="header-product-rating-detail">
-                  116 Ulasan • 127 Terjual • 169x Dilihat
+                  (116) • <b>Terjual 127 Produk</b> • <b>{products_visitor}x</b> Dilihat
                 </span>
               </div>
             </div>
             {/* TITLE PRODUCTS INFORMATION */}
 
-            {/* PRICE PRODUCTS INFORMATION */}
-            <div className="media info-product">
-              <h5 className="info-product-left">Harga</h5>
-              <div className="media-body info-product-body">
-                {/* <h5 className="info-product-body-title">Top-aligned media</h5> */}
-                <div className="fs-14 font-weight-light">
-                  {/*
-                  <span className="info-product-body-price-disc">
-                    <s>Rp. 150.000</s>
-                  </span>
-                  <br />
-                  */}
-                  <span className="info-product-body-price font-weight-bold h6 fs-14-s">Rp. 105.000</span>
-                </div>
-              </div>
-            </div>
-            {/* PRICE PRODUCTS INFORMATION */}
-
-            {/* COLOR PRODUCTS INFORMATION */}
-            <div className="media info-product">
-              <h5 className="info-product-left">Warna</h5>
-              <div className="media-body info-product-body">
-                <Form>
-                  <Form.Row>
-                    <Form.Group as={Col} lg={4} className="mb-0">
-                      <Select placeholder="Pilih warna" className="w-100">
-                        <Select.Option value="1">Hitam</Select.Option>
-                        <Select.Option value="3">Coklat</Select.Option>
-                        <Select.Option value="2">Hijau</Select.Option>
-                      </Select>
-                    </Form.Group>
-                  </Form.Row>
-                </Form>
-              </div>
-            </div>
-            {/* COLOR PRODUCTS INFORMATION */}
-
-            {/* SIZE PRODUCTS INFORMATION */}
-            <div className="media info-product">
-              <h5 className="info-product-left">Ukuran</h5>
-              <div className="media-body info-product-body">
-                <Form>
-                  <Form.Row>
-                    <Form.Group as={Col} lg={4} className="mb-0">
-                      <Select placeholder="Pilih ukuran" className="w-100">
-                        <Select.Option value="1">XS</Select.Option>
-                        <Select.Option value="3">S</Select.Option>
-                        <Select.Option value="2">M</Select.Option>
-                        <Select.Option value="4">L</Select.Option>
-                        <Select.Option value="5">XL</Select.Option>
-                        <Select.Option value="6">XXL</Select.Option>
-                      </Select>
-                    </Form.Group>
-                  </Form.Row>
-                </Form>
-              </div>
-            </div>
-            {/* SIZE PRODUCTS INFORMATION */}
-
-            {/* QUANTITY PRODUCTS INFORMATION */}
-            <div className="media info-product">
-              <h5 className="info-product-left">Jumlah</h5>
-              <div className="media-body info-product-body">
-                <span className="fs-14 va-super">
-                  Tersedia 12 pcs
-                </span>
-                <div className="mb-2">
-                  <Button 
-                    disabled={quantity == 1}
-                    icon={<i className="far fa-minus" />} 
-                    onClick={(e) => quantityHandler(e, 'min')} 
-                  />
-                  <InputNumber 
-                    size="middle"
-                    className="mx-2" 
-                    min={1} 
-                    value={quantity} 
-                    onChange={(e) => quantityHandler(e, 'input')} 
-                  />
-                  <Button 
-                    icon={<i className="far fa-plus" />} 
-                    onClick={(e) => quantityHandler(e, 'plus')} 
-                  />
-                </div>
-                <AnimatePresence>
-                  {showNote ? (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <div className="d-flex align-items-center mt-3">
-                        <Input /> <h6 className="ml-2 mb-0 fs-14 text-tridatu hover-pointer" onClick={closeNoteHandler}>Batal</h6>
-                      </div>
-                      <small className="text-secondary fs-12 mb-0">Contoh: Warna Putih, Size M</small>
-                    </motion.div>
-                  ) : (
-                    <motion.h6 
-                      className="fs-14 mb-0 text-tridatu hover-pointer" onClick={showNoteHandler}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      Tulis catatan untuk penjual
-                    </motion.h6>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-            {/* QUANTITY PRODUCTS INFORMATION */}
+            <VariantProduct product={product} />
 
             {/* PRODUCTS INFORMATION */}
             <div className="media info-product">
               <h5 className="info-product-left">Info produk</h5>
               <div className="media-body info-product-body">
-                <div className="d-flex">
+                <div className="d-flex noselect">
                   <div className="info-item">
                     <p>Berat</p>
-                    <p>100gr</p>
+                    <p>{products_weight}gr</p>
                   </div>
                   <div className="info-item">
                     <p>Kondisi</p>
-                    <p>Baru</p>
+                    <p>{products_condition ? "Baru" : "Bekas"}</p>
                   </div>
                   <div className="info-item">
                     <p>Kategori</p>
-                    <p>Baju</p>
+                    <p>{products_category.item_sub_categories_name}</p>
                   </div>
                 </div>
               </div>
@@ -284,12 +183,118 @@ const ProductDetail = ({ productData }) => {
             <div className="media info-product">
               <h5 className="info-product-left">Ongkos Kirim</h5>
               <div className="media-body info-product-body">
-                <div className="fs-14 text-secondary">
-                  Ke{" "} 
-                  <Popover arrowPointAtCenter trigger="click" placement="bottom" overlayClassName="ongkir-popover" content={content}> 
-                    <span className="font-weight-bold text-dark hover-pointer">Denpasar Bali</span>
-                  </Popover>
+                <div className="fs-14 text-secondary mb-2">
+                  <p className="mb-0 font-weight-light">
+                    Ke{" "}
+                    <a 
+                      className="fw-500 text-dark"
+                      style={{ borderBottom: "1px dashed #343a40" }}
+                      onClick={searchHandlerClicked}
+                    >
+                      {shippingLocation.value}
+                    </a>
+                  </p>
+                  <p className="mb-0 font-weight-light">
+                    Dari <span className="fw-500 text-dark">{shippingLocation.origin}</span>
+                  </p>
                 </div>
+
+                <AnimatePresence exitBeforeEnter>
+                  {showSearch ? (
+                    <motion.div initial="initial" animate="in" exit="out" variants={Fade} className="m-t-10" key={showSearch}>
+                      <Card>
+                        <Card.Body className="px-3" style={{ paddingTop: "9.5px", paddingBottom: "9.5px" }}>
+                          <AutoComplete 
+                            autoFocus 
+                            dropdownClassName="idx-1020"
+                            className="w-100"
+                            options={listLocation}
+                            onSelect={onSearchSelectHandler}
+                          >
+                            <Input
+                              placeholder="Search"
+                              onPressEnter={false}
+                              onChange={onSearchChangeHandler}
+                              prefix={<SearchOutlined className="text-black-50"/>}
+                            />
+                          </AutoComplete>
+                        </Card.Body>
+                      </Card>
+                    </motion.div>
+                  ) : (
+                    <motion.div initial="initial" animate="in" exit="out" variants={Fade} key={!showSearch}>
+                      <Select 
+                        className="w-100 select-courier"
+                        onChange={val => setCourier(val)}
+                        value={<ShippingDisplayContainer data={courier} />}
+                      >
+                        {shippingCosts && shippingCosts.costs_shipping.length > 0 && shippingCosts.costs_shipping.map((courier, i) => (
+                          <React.Fragment key={i}>
+                            {courier.costs.map(services => (
+                              services.cost.map(cost => {
+                                let etd = cost.etd.split(" ")
+                                let data = {
+                                  code: courier.code,
+                                  services: services.service,
+                                  etd: etd[0],
+                                  cost: cost.value
+                                }
+                                return (
+                                  <Select.Option value={JSON.stringify(data)} key={courier.code + services.service}>
+                                    <div className="d-flex justify-content-between noselect">
+                                      <div className="align-self-center" style={{ width: 'calc(100%/2)' }}>
+                                        <p className="mb-0 text-uppercase text-truncate"> 
+                                          <img 
+                                            className="courier-img" 
+                                            src={`/static/images/couriers/${courier.code}.png`} 
+                                          />
+                                          <span className="va-super">{courier.code || "-"} {services.service}</span>
+                                        </p>
+                                      </div>
+                                      <div className="align-self-center">
+                                        <p className="mb-0 text-truncate"> {etd[0] || 0} hari </p>
+                                      </div>
+                                      <div className="align-self-center m-r-17">
+                                        <p className="mb-0 text-truncate"> Rp.{formatNumber(cost.value || 0)} </p>
+                                      </div>
+                                    </div>
+                                  </Select.Option>
+                                )
+                              })
+                            ))}
+                          </React.Fragment>
+                        ))}
+                      </Select>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+
+                <AnimatePresence>
+                  {shippingCosts.costs_shipping.length > 0 && (
+                    <Alert banner showIcon 
+                      type="info" className="m-t-10 shadow-sm bor-rad-5px p-2"
+                      icon={<InfoCircleOutlined className="fs-18 m-r-10" />}
+                      message={
+                        <p className="mb-0 font-weight-light text-muted fs-12" style={{ lineHeight: "12px" }}>
+                          Estimasi Biaya Pengiriman
+                        </p>
+                      }
+                      description={
+                        <motion.div initial="initial" animate="in" exit="out" variants={Fade} className="mb-0 font-weight-light">
+                          {loadingCost ? (
+                            <Skeleton.Button active className="h-17" style={{ verticalAlign: "sub" }} />
+                          ):(
+                            <span className="fw-500 text-dark" style={{ lineHeight: "12px" }}>
+                              Rp.{formatNumber(shippingCosts.min_cost)} - Rp.{formatNumber(shippingCosts.max_cost)}
+                            </span>
+                          )}
+                        </motion.div>
+                      } 
+                    />
+                  )}
+                </AnimatePresence>
+
               </div>
             </div>
             {/* SHIPPING INFORMATION */}
@@ -308,8 +313,8 @@ const ProductDetail = ({ productData }) => {
                   icon={<i className="fal fa-heart" />} 
                 />
                 <Button 
-                  onClick={() => setShowShareModal(true)}
                   size="large"
+                  onClick={() => setShowShareModal(true)}
                   icon={<i className="fal fa-share-square" />} 
                 />
               </Space>
@@ -319,23 +324,31 @@ const ProductDetail = ({ productData }) => {
           </Col>
         </Row>
 
+
+
+
+
+
+
+
+
         <Row className="mt-5">
           <Col>
             <Tabs defaultActiveKey="1">
               <Tabs.TabPane tab="Deskripsi" key="1">
-                <p>
-                  1 pcs Rp 40.000<br />3pcs Rp 105.000 (motif boleh campur)<br /><br />Caranya : Klik 'BELI' di 1 Gambar saja, Lalu isi Kuantitinya 3pcs. Maka otomatis harga akan berubah menjadi 35rb.<br />Kemudian sebutkan nama motif yang ingin kamu order di kolom keterangan. Terima Kasih.<br /><br />Ukuran : ALL SIZE FIT TO L<br />LD (lingkar dada): 96 cm<br/>P (panjang): 65 cm<br />Bahan: Cotton combed 30s<br /><br />Jika masih belum mengerti untuk mendapatkan hrga 3pcs 105.000 dgn motif campur silahkan order melalui<br />line: @ellipses.inc (pakai @ ya) / Pin: D47B1DA4 WA : 081932547692<br /><br />Follow IG: @ellipses.inc</p>
+                <p className="ws-preline"> {products_desc} </p>
               </Tabs.TabPane>
 
               <Tabs.TabPane tab="Ulasan (20)" key="2">
                 <Row className="mt-4">
                   <Col className="col-auto align-self-center mr-3">
                     <div className="d-inline-flex">
+                      {/*
                       <CircularProgressbar 
                         className="wh-80 mr-3" 
                         strokeWidth={5} 
                         value={4.5} 
-                        text={4.5} 
+                        text={"4.5/5"}
                         minValue={0} 
                         maxValue={5} 
                         styles={buildStyles({
@@ -343,9 +356,11 @@ const ProductDetail = ({ productData }) => {
                           trailColor: "#f5f5f5",
                         })}
                       />
-                      <div className="align-self-center">
+                      */}
+                      <div className="align-self-center text-center">
+                        <h5 className="fs-55 display-1 mb-0">4.5<span className="fs-16 font-weight-light m-l-2">/5</span></h5>
                         <Rate
-                          className="header-product-rating-rate"
+                          className="header-product-rating-rate fs-20"
                           allowHalf
                           disabled
                           value={5}
@@ -365,7 +380,7 @@ const ProductDetail = ({ productData }) => {
                         className="ulasan-star-rating" 
                         percent={80} 
                         strokeWidth="5px" 
-                        format={percent => `${percent} %`}
+                        format={percent => `${percent}`}
                       />
                     </div>
                     <div className="ulasan-rating">
@@ -378,7 +393,7 @@ const ProductDetail = ({ productData }) => {
                         className="ulasan-star-rating" 
                         percent={100} 
                         strokeWidth="5px" 
-                        format={percent => `${percent} %`}
+                        format={percent => `${percent}`}
                       />
                     </div>
                     <div className="ulasan-rating">
@@ -391,7 +406,7 @@ const ProductDetail = ({ productData }) => {
                         className="ulasan-star-rating" 
                         percent={90} 
                         strokeWidth="5px" 
-                        format={percent => `${percent} %`}
+                        format={percent => `${percent}`}
                       />
                     </div>
                     <div className="ulasan-rating">
@@ -404,7 +419,7 @@ const ProductDetail = ({ productData }) => {
                         className="ulasan-star-rating" 
                         percent={30} 
                         strokeWidth="5px" 
-                        format={percent => `${percent} %`}
+                        format={percent => `${percent}`}
                       />
                     </div>
                     <div className="ulasan-rating">
@@ -415,9 +430,9 @@ const ProductDetail = ({ productData }) => {
                       <span className="ulasan-rating-text">1</span>
                       <Progress 
                         className="ulasan-star-rating" 
-                        percent={90} 
+                        percent={10} 
                         strokeWidth="5px" 
-                        format={percent => `${percent} %`}
+                        format={percent => `${percent}`}
                       />
                     </div>
                   </Col>
@@ -472,6 +487,12 @@ const ProductDetail = ({ productData }) => {
                     </DiskusiContainer>
                   </section>
                 ))}
+
+                <Row className="mt-3">
+                  <Col className="align-self-center text-right">
+                    <Pagination />
+                  </Col>
+                </Row>
               </Tabs.TabPane>
 
             </Tabs>
@@ -482,7 +503,7 @@ const ProductDetail = ({ productData }) => {
           <h4 className="fs-20-s mb-4">Rekomendasi produk lainnya</h4>
           <RowAntd gutter={[16, 16]}>
             <AnimatePresence>
-              {products && products.data && products.data.length > 0 && products.data.map(product => (
+              {products_recommendation && products_recommendation.length > 0 && products_recommendation.map(product => (
                 <ColAntd lg={4} md={6} sm={8} xs={12} className="modif-col" key={product.products_id}>
                   <CardProductMemo data={product} />
                 </ColAntd>
@@ -546,6 +567,19 @@ const ProductDetail = ({ productData }) => {
       </Modal>
 
       <style jsx>{SlugStyle}</style>
+      <style jsx>{`
+        :global(.select-courier.ant-select-single:not(.ant-select-customize-input) .ant-select-selector){
+          height: 53px;
+        }
+        .courier-img{
+          height: 35px;
+          vertical-align: bottom;
+          margin-left: -5px;
+        }
+        :global(.h-17){
+          height: 17px !important;
+        }
+      `}</style>
     </>
   )
 }

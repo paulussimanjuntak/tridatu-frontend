@@ -1,3 +1,5 @@
+import formatNumber from "lib/formatNumber";
+
 export const productsData = [
   "Jaket GAP Grey",
   "Flannel Uniqlo Biru",
@@ -41,5 +43,20 @@ export const initialColumn = [
     editable: true,
     align: "center",
     width: 150,
+  },
+];
+
+export const columnsGrosir = [
+  {
+    title: "Beli",
+    dataIndex: "wholesale_min_qty",
+    key: "sell",
+    render: (item) => <span className="fs-12">≥ {item}</span>,
+  },
+  {
+    title: "Harga/pcs",
+    dataIndex: "wholesale_price",
+    key: "price",
+    render: (item) => <span className="fs-12">Rp.{formatNumber(item)}</span>,
   },
 ];
