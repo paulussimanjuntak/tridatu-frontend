@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { orderList, columns, dataNoVar, dataVar1, dataVar2 } from 'data/discount'
 
+import moment from 'moment'
 import axios, { signature_exp, resNotification } from "lib/axios";
 import * as actions from "store/actions";
 import ColB from 'react-bootstrap/Col'
@@ -81,11 +82,17 @@ const Discount = () => {
   useEffect(() => {
     if(products && products.data){
       products.data.map((obj, i) => {
-        obj["products_discount"] = i == 0 && 10 || i == 1 && 50 || i == 2 && 20 || false
-        obj["promo_active"] = i == 0 && true || i == 1 && true || i == 2 && true || false
-        obj["promo_status"] = i == 0 && "Akan Datang" || i == 1 && "Akan Datang" || i == 2 && "Sedang Berjalan" || "Tidak Aktif"
-        obj["promo_start"] = i == 0 && "27 Jan 2021 00:04" || i == 1 && "27 Jan 2021 00:04" || i == 2 && "25 Jan 2021 10:04" || "Belum Ada Diskon"
-        obj["promo_end"] = i == 0 && "30 Jan 2021 00:04" || i == 1 && "30 Jan 2021 00:04" || i == 2 && "30 Jan 2021 10:04" || false
+obj["variants_min_price"] = i <= 1 && 100000 || i >= 2 && i <= 3 && 150000 || 160000
+obj["variants_max_price"] = i < 1 && 100000 || i >= 1 && i <= 4 && 175000 || i == 5 && 160000 || 250000
+obj["variants_discount"] = i == 0 && 10 || i == 1 && 50 || i == 2 && 20 || i == 3 && 15 || false
+obj["products_discount_status"] = i <= 1 && "will_come" || i == 2 && "ongoing" || i == 3 && "have_ended" || "not_active"
+obj["products_discount_start"] = i <= 3 && "2021-02-02T17:10:00" || "Belum Ada Diskon"
+obj["products_discount_end"] = moment().add(i, "days")
+
+obj["promo_active"] = i <= 3 && true || i > 3  && false
+obj["promo_status"] = i < 2 && "will_come" || i == 2 && "ongoing" || i == 3 && "have_ended" || "not_active"
+obj["promo_start"] = i <= 3 && "27 Jan 2021 00:04" || "Belum Ada Diskon"
+obj["promo_end"] = i <= 3 && "30 Jan 2021 00:04" || false
         return obj
       })
       
@@ -168,6 +175,10 @@ const Discount = () => {
         }
         :global(.ant-picker-dropdown){
           z-index: 3010;
+        }
+        :global(.date-discount){
+          margin-bottom: 0;
+          line-height: 1;
         }
       `}</style>
     </>

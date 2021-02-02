@@ -37,8 +37,9 @@ export const columns = [
     ellipsis: true,
     render: (item) => (
       <ItemPricePromo
-        discount={item.products_discount}
-        price={item.variants_price}
+        discount={item.variants_discount}
+        minPrice={item.variants_min_price}
+        maxPrice={item.variants_max_price}
       />
     ),
   },
@@ -50,9 +51,9 @@ export const columns = [
     ellipsis: true,
     render: (item) => (
       <ItemPeriodPromo
-        active={item.promo_active}
-        start={item.promo_start}
-        end={item.promo_end}
+        statusPromo={item.products_discount_status}
+        start={item.products_discount_start}
+        end={item.products_discount_end}
       />
     ),
   },
@@ -62,7 +63,7 @@ export const columns = [
     key: "status",
     width: 200,
     ellipsis: true,
-    render: (item) => <ItemStatusPromo statusPromo={item.promo_status} />,
+    render: (item) => <ItemStatusPromo statusPromo={item.products_discount_status} />,
   },
   {
     title: "Aksi",

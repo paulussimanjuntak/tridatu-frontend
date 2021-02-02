@@ -1,25 +1,22 @@
-const ItemPeriodPromo = ({ active, start, end }) => {
-  return(
-    <>
-      {active ? (
-        <>
-          <small className="text-black-50">Mulai</small>
-          <p className="date-discount">{start}</p>
-          <small className="text-muted">Selesai</small>
-          <p className="date-discount">{end}</p>
-        </>
-      ):(
-        <p className="date-discount">{start}</p>
-      )}
+import moment from 'moment'
+import isIn from 'validator/lib/isIn'
 
-      <style jsx>{`
-        .date-discount{
-          margin-bottom: 0;
-          line-height: 1;
-        }
-      `}</style>
-    </>
-  )
+import { not_active } from './statusType'
+
+const ItemPeriodPromo = ({ statusPromo, start, end }) => {
+  if(isIn(not_active, [ statusPromo ])){
+    return <p className="date-discount">Belum Ada Diskon</p>
+  } 
+  else {
+    return (
+      <>
+        <small className="text-black-50">Mulai</small>
+        <p className="date-discount">{moment(start).format("DD MMM YYYY HH:mm")}</p>
+        <small className="text-muted">Selesai</small>
+        <p className="date-discount">{moment(end).format("DD MMM YYYY HH:mm")}</p>
+      </>
+    )
+  }
 }
 
 export default ItemPeriodPromo

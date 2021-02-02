@@ -1,11 +1,13 @@
 import { Badge } from 'antd'
+import { not_active, will_come, ongoing, have_ended } from './statusType'
 
 const ItemStatusPromo = ({ statusPromo }) => (
   <>
     <div className="noselect">
-      {statusPromo === "Tidak Aktif" && <Badge color="#6c757d" text={statusPromo} />}
-      {statusPromo === "Akan Datang" && <Badge color="yellow" text={statusPromo} />}
-      {statusPromo === "Sedang Berjalan" && <Badge className="badge-green-processing" status="processing" color="green" text={statusPromo} />}
+      {statusPromo === not_active && <Badge color="#6c757d" text="Tidak Aktif" />}
+      {statusPromo === will_come && <Badge color="yellow" text="Akan Datang" />}
+      {statusPromo === ongoing && <Badge className="badge-green-processing" status="processing" color="green" text="Sedang Berjalan" />}
+      {statusPromo === have_ended && <Badge color="orange" text="Telah Berakhir" />}
     </div>
     <style jsx>{`
       :global(.badge-green-processing > .ant-badge-status-processing::after){
