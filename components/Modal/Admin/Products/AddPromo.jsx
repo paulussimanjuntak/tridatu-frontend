@@ -92,7 +92,7 @@ const AddPromoModal = ({ visible, onClose, product }) => {
       }
     }
 
-    const start = moment().add(30, "minutes").format("DD MMM YYYY HH:mm")
+    const start = moment().add(15, "minutes").format("DD MMM YYYY HH:mm")
     const data = {
       ...periode,
       start: { value: start, isValid: true, message: null },
@@ -240,7 +240,7 @@ const AddPromoModal = ({ visible, onClose, product }) => {
                 value={[start.value !== "" && moment(start.value), end.value !== "" && moment(end.value)]}
                 onChange={dateChange}
                 disabledDate={disabledDate}
-                disabledTime={disabledRangeTime}
+                disabledTime={(current, type) => disabledRangeTime(current, type, start.value)}
                 onOk={onOkDateChange}
                 onBlur={() => formPeriodIsValid(periode, setPeriode)}
               /> 

@@ -4,22 +4,28 @@ import { AnimatePresence } from "framer-motion"
 
 import { columnsGrosir } from 'data/products'
 
+import Image from "next/image"
 import Button from "antd-button-color"
 import Notes from "components/Products/Notes";
 import formatNumber from 'lib/formatNumber'
 
 import SlugStyle from 'components/Products/slugStyle'
 
-const Variants = ({ product }) => {
-  const [quantity, setQuantity] = useState(1)
+const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => {
   const [showNote, setShowNote] = useState(false)
   const [variation, setVariation] = useState({})
-  const [selected, setSelected] = useState({price: 0, va1_item: "", va2_item: "", stock: 0, priceChange: false })
   const [va2Items, setVa2Items] = useState([])
   const [wholesaleList, setWholesaleList] = useState([])
   const [countVariation, setCountVariation] = useState(0)
+  const [originalImage, setOriginalImage] = useState("")
 
-  const { products_variant, products_wholesale } = product
+  const { products_slug, products_variant, products_wholesale, products_image_size_guide } = product
+
+  if(products_image_size_guide){
+    console.log(products_image_size_guide)
+  }
+
+  // console.log(JSON.stringify(product, null, 2))
 
   useEffect(() => {
     if(products_variant){
@@ -110,6 +116,22 @@ const Variants = ({ product }) => {
     }
   }
 
+  const getActiveImage = (variantImage) => {
+    const element = document.getElementById("id-product-images")
+    const imgContainer = element.childNodes[0].childNodes[0].childNodes[0].querySelector(".image-gallery-swipe")
+    const imgElement = imgContainer.childNodes[0].querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
+    setOriginalImage(imgElement.src)
+    const tmpImg = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${variantImage}`
+    imgElement.src = tmpImg
+  }
+
+  const getOriginalImage = () => {
+    const element = document.getElementById("id-product-images")
+    const imgContainer = element.childNodes[0].childNodes[0].childNodes[0].querySelector(".image-gallery-swipe")
+    const imgElement = imgContainer.childNodes[0].querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
+    imgElement.src = originalImage
+  }
+
   const wholesaleContent = (
     <Table 
       size="small"
@@ -152,9 +174,20 @@ const Variants = ({ product }) => {
                   data={item} 
                   value={item.va1_id}
                   disabled={item.va1_stock <= 0}
-                  className="variant-radio-button-wrapper noselect"
+                  onMouseEnter={() => getActiveImage(item.va1_image)}
+                  onMouseLeave={getOriginalImage}
+                  className={`variant-radio-button-wrapper noselect ${item.va1_image && "btn-variant"}`}
                 >
-                  {item.va1_option}
+                  <div className="container-img-variant">
+                    <Image width={38} 
+                      height={38} 
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${item.va1_image}`}
+                      className="img-variant-button"
+                    />
+                    <span className={`${item.va1_image && "ml-1"}`}>
+                      {item.va1_option}
+                    </span>
+                  </div>
                 </Radio.Button>
               ))}
             </Radio.Group>
@@ -178,9 +211,18 @@ const Variants = ({ product }) => {
                       data={item.va2_items} 
                       value={item.va1_option}
                       disabled={sumStock <= 0}
-                      className="variant-radio-button-wrapper noselect"
+                      className={`variant-radio-button-wrapper noselect ${item.va1_image && "btn-variant"}`}
                     >
-                      {item.va1_option}
+                      <div className="container-img-variant">
+                        <Image width={38} 
+                          height={38} 
+                          src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${item.va1_image}`}
+                          className="img-variant-button"
+                        />
+                        <span className={`${item.va1_image && "ml-1"}`}>
+                          {item.va1_option}
+                        </span>
+                      </div>
                     </Radio.Button>
                   )
                 })}
@@ -256,7 +298,8 @@ const Variants = ({ product }) => {
       <style jsx>{SlugStyle}</style>
       <style jsx>{`
         :global(.variant-radio-button-wrapper, .variant-radio-button-wrapper:first-child, .ant-radio-button-wrapper:last-child){
-          margin-right: 5px;
+          margin-right: 8px;
+          margin-bottom: 8px;
           border-radius: .25rem;
           border-left-width: 1px!important;
         }
@@ -284,6 +327,11 @@ const Variants = ({ product }) => {
           background: #d630310a;
           border-color: #d63031;
         }
+        :global(.variant-radio-button-wrapper.ant-radio-button-wrapper-disabled:hover){
+          color: rgba(0, 0, 0, 0.25);
+          box-shadow: unset;
+        }
+
         :global(.wholesale-info .ant-popover-inner){
           border-radius: .25rem;
         }
@@ -300,7 +348,23 @@ const Variants = ({ product }) => {
         :global(.table-striped-rows thead) {
           background-color: #f1f1f1;
         }
-        
+
+        :global(.btn-variant){
+          padding: 5px 5px;
+          height: 100%;
+        }
+        :global(.btn-variant > .ant-radio-button){
+          line-height: unset;
+        }
+        :global(.container-img-variant > div){
+          vertical-align: middle;
+        }
+        :global(.img-variant-button){
+          margin-top: -2px;
+          vertical-align: middle;
+          border-radius: .2rem;
+          border: 1px solid rgb(229, 231, 233) !important;
+        }
       `}</style>
     </>
   )

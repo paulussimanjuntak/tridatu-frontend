@@ -106,7 +106,7 @@ const deleteProductFail = (error) => {
 }
 
 
-const getProductSlugStart = () => {
+export const getProductSlugStart = () => {
   return { type: actionType.GET_PRODUCT_SLUG_START }
 }
 
@@ -117,7 +117,7 @@ export const getProductSlugSuccess = (product) => {
   }
 }
 
-const getProductSlugFail = (error) => {
+export const getProductSlugFail = (error) => {
   return {
     type: actionType.GET_PRODUCT_SLUG_FAIL,
     error: error

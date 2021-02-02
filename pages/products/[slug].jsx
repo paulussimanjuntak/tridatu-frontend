@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Space, Modal, Rate, Button, Select, Tabs, Progress, Breadcrumb, Input, AutoComplete } from "antd";
+import { Modal, Rate, Button, Select, Tabs, Progress, Breadcrumb, Input, AutoComplete } from "antd";
 import { Comment, Avatar, Col as ColAntd, Row as RowAntd, Skeleton, Alert } from 'antd';
 import { AnimatePresence, motion } from "framer-motion"
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { SearchOutlined, InfoCircleOutlined } from "@ant-design/icons";
 
 import Link from 'next/link'
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
@@ -26,14 +26,13 @@ import CardProduct from "components/Card/Product";
 
 import VariantProduct from "components/Products/Variants";
 import ShippingDisplayContainer from "components/Products/ShippingDisplay";
+import BottomNavigation from "components/Products/BottomNavigation"
 
 import * as actions from "store/actions";
-import axios, { jsonHeaderHandler, formHeaderHandler, resNotification, signature_exp, formErrorMessage } from 'lib/axios'
+import axios from 'lib/axios'
 
-import { shippingDummy } from 'data/products'
 import { renderLeftNav, renderRightNav, renderFullscreenButton } from 'components/Products/ImageGalleryButton'
 
-import PHOTOS from 'data/detailPhotoProduct'
 import SlugStyle from 'components/Products/slugStyle'
 
 const CardProductMemo = React.memo(CardProduct);
@@ -51,8 +50,30 @@ const initialShippingLocation = {
   shipping_subdistricts_id: null,
 }
 
-const ProductDetail = ({ productData }) => {
+const loveLoginBtn = () => document.getElementById("id-btn-login").click();
+
+const ProductDetail = () => {
   const dispatch = useDispatch()
+  const router = useRouter()
+
+  const user = useSelector(state => state.auth.user)
+  const productData = useSelector(state => state.products.productSlug)
+  const loadingCost = useSelector(state => state.shipping.loading)
+  const listLocation = useSelector(state => state.shipping.listLocation)
+  const shippingCosts = useSelector(state => state.shipping.shippingCosts)
+
+  useEffect(() => {
+    dispatch(actions.getSlugProduct({ slug: router.query.slug, recommendation: true }))
+
+    document.getElementById('id-footer').style.setProperty("padding-bottom", "4rem", "important")
+    return (() => {
+      document.getElementById('id-footer').style.removeProperty("padding-bottom")
+    })
+  }, [])
+
+  const { products_id, products_brand, products_category, products_condition, products_desc, products_image_product } = productData
+  const { products_image_size_guide, products_love, products_name, products_recommendation, products_slug } = productData
+  const { products_variant, products_visitor, products_weight, products_wholesale } = productData
 
   const [showSearch, setShowSearch] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
@@ -60,17 +81,21 @@ const ProductDetail = ({ productData }) => {
   const [product, setProduct] = useState({})
   const [courier, setCourier] = useState({})
   const [shippingLocation, setShippingLocation] = useState(initialShippingLocation)
-
-  const user = useSelector(state => state.auth.user)
-  const loadingCost = useSelector(state => state.shipping.loading)
-  const listLocation = useSelector(state => state.shipping.listLocation)
-  const shippingCosts = useSelector(state => state.shipping.shippingCosts)
+  const [love, setLove] = useState(products_love)
+  const [quantity, setQuantity] = useState(1)
+  const [selected, setSelected] = useState({price: 0, va1_item: "", va2_item: "", stock: 0, priceChange: false })
 
   const showModalCartHandler = () => { setShowModalCart(true) }
 
   useEffect(() => {
     setProduct(productData)
+    setLove(products_love)
   }, [productData])
+
+  useEffect(() => {
+    dispatch(actions.getSlugProduct({ slug: router.query.slug, recommendation: true }))
+  }, [love])
+
 
   useEffect(() => {
     if(shippingCosts){
@@ -90,13 +115,7 @@ const ProductDetail = ({ productData }) => {
     }
   }, [shippingCosts])
 
-  const { products_id, products_brand, products_category, products_condition, products_desc, products_image_product } = productData
-  const { products_image_size_guide, products_love, products_name, products_recommendation, products_slug } = productData
-  const { products_variant, products_visitor, products_weight, products_wholesale } = productData
-
   const searchHandlerClicked = () => setShowSearch(!showSearch)
-  const showSearchHandler = () => setShowSearch(true)
-  const closeSearchHandler = () => setShowSearch(false)
 
   const onSearchChangeHandler = e => {
     const value = e.target.value
@@ -109,13 +128,45 @@ const ProductDetail = ({ productData }) => {
     setShowSearch(false)
   }
 
+  const loveHandler = id => {
+    if(!user) {
+      loveLoginBtn()
+    }
+    if(user && !love) {
+      setLove(!love)
+      dispatch(actions.loveProduct(id))
+    }
+    if(user && love) {
+      setLove(!love)
+      dispatch(actions.unloveProduct(id))
+    }
+  }
 
+  const getImageList = () => {
+    let list = []
+    for(let [_, obj] of Object.entries(products_image_product)){
+      let imgUrl = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${obj}`
+      list.push({
+        original: imgUrl, 
+        thumbnail: imgUrl
+      })
+    }
+    return list
+  }
 
   return(
     <>
+      <BottomNavigation 
+        product={productData}
+        loveHandler={(id) => loveHandler(id)}
+        love={love}
+        selected={selected}
+        quantity={quantity}
+      />
+
       <Container className="pt-4 pb-2">
         <Row className="mb-3">
-          <Col className="col-12">
+          <Col className="col-lg-7 col-12">
             <Breadcrumb className="text-truncate">
               <Breadcrumb.Item href="/products">Products</Breadcrumb.Item>
               <Breadcrumb.Item>{products_category.categories_name}</Breadcrumb.Item>
@@ -127,9 +178,9 @@ const ProductDetail = ({ productData }) => {
         </Row>
         <Row>
           {/* POTHOS OF PRODUCTS */}
-          <Col lg={6} className="product-images m-b-13-m m-b-13-s">
+          <Col lg={6} className="product-images m-b-13-m m-b-13-s" id="id-product-images">
             <ImageGallery
-              items={PHOTOS} 
+              items={getImageList()} 
               showPlayButton={false}
               useBrowserFullscreen={false}
               renderLeftNav={renderLeftNav}
@@ -155,7 +206,13 @@ const ProductDetail = ({ productData }) => {
             </div>
             {/* TITLE PRODUCTS INFORMATION */}
 
-            <VariantProduct product={product} />
+            <VariantProduct 
+              product={productData} 
+              selected={selected}
+              setSelected={setSelected}
+              quantity={quantity}
+              setQuantity={setQuantity}
+            />
 
             {/* PRODUCTS INFORMATION */}
             <div className="media info-product">
@@ -185,9 +242,9 @@ const ProductDetail = ({ productData }) => {
               <div className="media-body info-product-body">
                 <div className="fs-14 text-secondary mb-2">
                   <p className="mb-0 font-weight-light">
-                    Ke{" "}
+                    Ke
                     <a 
-                      className="fw-500 text-dark"
+                      className="fw-500 text-dark m-l-3"
                       style={{ borderBottom: "1px dashed #343a40" }}
                       onClick={searchHandlerClicked}
                     >
@@ -195,7 +252,7 @@ const ProductDetail = ({ productData }) => {
                     </a>
                   </p>
                   <p className="mb-0 font-weight-light">
-                    Dari <span className="fw-500 text-dark">{shippingLocation.origin}</span>
+                    Dari<span className="fw-500 text-dark m-l-3">{shippingLocation.origin}</span>
                   </p>
                 </div>
 
@@ -299,19 +356,9 @@ const ProductDetail = ({ productData }) => {
             </div>
             {/* SHIPPING INFORMATION */}
 
-            {/* ACTIONS PRODUCTS INFORMATION */}
+            {/* ACTIONS PRODUCTS INFORMATION 
             <div className="info-product">
               <Space>
-                <Button 
-                  size="large"
-                  className="btn-tridatu w-100 p-l-8-s p-r-8-s fs-14-s"
-                  icon={<i className="far fa-cart-plus p-r-10 p-r-8-s" />} 
-                  onClick={showModalCartHandler}
-                >Tambah Ke Keranjang</Button>
-                <Button 
-                  size="large"
-                  icon={<i className="fal fa-heart" />} 
-                />
                 <Button 
                   size="large"
                   onClick={() => setShowShareModal(true)}
@@ -332,9 +379,9 @@ const ProductDetail = ({ productData }) => {
 
 
 
-        <Row className="mt-5">
+        <Row className="mt-3">
           <Col>
-            <Tabs defaultActiveKey="1">
+            <Tabs defaultActiveKey="1" style={{ borderTop: "1px solid #f0f0f0" }}>
               <Tabs.TabPane tab="Deskripsi" key="1">
                 <p className="ws-preline"> {products_desc} </p>
               </Tabs.TabPane>
@@ -343,20 +390,6 @@ const ProductDetail = ({ productData }) => {
                 <Row className="mt-4">
                   <Col className="col-auto align-self-center mr-3">
                     <div className="d-inline-flex">
-                      {/*
-                      <CircularProgressbar 
-                        className="wh-80 mr-3" 
-                        strokeWidth={5} 
-                        value={4.5} 
-                        text={"4.5/5"}
-                        minValue={0} 
-                        maxValue={5} 
-                        styles={buildStyles({
-                          pathColor: "#fbbc04",
-                          trailColor: "#f5f5f5",
-                        })}
-                      />
-                      */}
                       <div className="align-self-center text-center">
                         <h5 className="fs-55 display-1 mb-0">4.5<span className="fs-16 font-weight-light m-l-2">/5</span></h5>
                         <Rate
@@ -555,13 +588,13 @@ const ProductDetail = ({ productData }) => {
         <Card className="card-item-popup another-item">
           <section className="another-product mb-0">
             <h4 className="fs-16-s fs-18">Produk lainnya</h4>
-            <Row className="scrolling-wrapper flex-nowrap custom-gutters lg-screen">
-              {[...Array(6)].map((_, i) => (
-                <Col key={i} className="col-7 col-sm-5 col-md-3 col-lg-2">
-                  <CardProductMemo />
-                </Col>
-              ))}
-            </Row>
+            {/* <Row className="scrolling-wrapper flex-nowrap custom-gutters lg-screen"> */}
+            {/*   {[...Array(6)].map((_, i) => ( */}
+            {/*     <Col key={i} className="col-7 col-sm-5 col-md-3 col-lg-2"> */}
+            {/*       <CardProductMemo /> */}
+            {/*     </Col> */}
+            {/*   ))} */}
+            {/* </Row> */}
           </section>
         </Card>
       </Modal>
@@ -579,6 +612,10 @@ const ProductDetail = ({ productData }) => {
         :global(.h-17){
           height: 17px !important;
         }
+
+        :global(.product-images .image-gallery-thumbnails .image-gallery-thumbnails-container){
+          text-align: left;
+        }
       `}</style>
     </>
   )
@@ -586,31 +623,31 @@ const ProductDetail = ({ productData }) => {
 
 ProductDetail.getInitialProps = async ctx => {
   const { slug } = ctx.query
+  ctx.store.dispatch(actions.getProductSlugStart)
+
   try{
-    const res = await axios.get(`/products/${slug}?recommendation=true`, jsonHeaderHandler())
-    if(res.status == 404){
-      process.browser
-        ? Router.replace("/admin/products", "/admin/products") //Redirec from Client Side
-        : ctx.res.writeHead(302, { Location: "/admin/products" }); //Redirec from Server Side
-      !process.browser && ctx.res.end()
-    } else {
-      return {
-        productData: res.data
-      }
-    }
-  }
-  catch (err) {
     const res = await axios.get(`/products/${slug}?recommendation=true`)
-    if(res.status == 404){
+    ctx.store.dispatch(actions.getProductSlugSuccess(res.data))
+    if(res.hasOwnProperty("status") && res.status == 404){
       process.browser
         ? Router.replace("/products", "/products") //Redirec from Client Side
         : ctx.res.writeHead(302, { Location: "/products" }); //Redirec from Server Side
       !process.browser && ctx.res.end()
-    } else {
-      return {
-        productData: res.data
-      }
+      ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
     }
+    ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
+  }
+  catch (err) {
+    const res = await axios.get(`/products/${slug}?recommendation=true`)
+    ctx.store.dispatch(actions.getProductSlugSuccess(res.data))
+    if(res.hasOwnProperty("status") && res.status == 404){
+      process.browser
+        ? Router.replace("/products", "/products") //Redirec from Client Side
+        : ctx.res.writeHead(302, { Location: "/products" }); //Redirec from Server Side
+      !process.browser && ctx.res.end()
+      ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
+    }
+    ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
   }
 }
 

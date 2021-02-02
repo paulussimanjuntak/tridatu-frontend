@@ -69,13 +69,13 @@ const CardProduct = ({ data }) => {
                   <s>Rp.{formatNumber(variants_price*2)}</s>
                 </span>
               </p>
-              <div className="card-rating fs-12 mb-0">
+              <div className="card-rating fs-12 mb-0 text-muted">
                 <Rate
                   className="fs-12 mx-0"
                   allowHalf
                   disabled
                   defaultValue={4.5}
-                />
+                /> ({Math.floor((Math.random() * 100) + 1)})
               </div>
             </Card.Body>
           </a>

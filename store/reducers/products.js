@@ -5,7 +5,7 @@ const initialState = {
   products: [],
   searchName: [],
   loading: false,
-  productSlug: null,
+  productSlug: {},
   aliveArchiving: true,
   error: null,
 };
@@ -105,7 +105,7 @@ const getProductSlugStart = (state, _) => {
 export const getProductSlugSuccess = (state, action) => {
   return updateObject(state, {
     loading: false,
-    productSlug: action.product
+    productSlug: action.productSlug
   })
 }
 
@@ -115,7 +115,6 @@ const getProductSlugFail = (state, action) => {
     error: action.error
   })
 }
-
 
 const reducer = (state = initialState, action) => {
   switch(action.type){

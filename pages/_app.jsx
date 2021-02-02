@@ -537,6 +537,9 @@ const App = ({ Component, pageProps, store }) => {
         .fw-500 {
           font-weight: 500 !important;
         }
+        .fw-600 {
+          font-weight: 600 !important;
+        }
 
         .invalid-upload > .ant-upload-list-picture-card > .ant-upload.ant-upload-select-picture-card {
           border-color: #ff4d4f;
