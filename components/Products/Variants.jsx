@@ -22,7 +22,7 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
   const { products_slug, products_variant, products_wholesale, products_image_size_guide } = product
 
   if(products_image_size_guide){
-    console.log(products_image_size_guide)
+    // console.log(products_image_size_guide)
   }
 
   // console.log(JSON.stringify(product, null, 2))
@@ -118,18 +118,24 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
 
   const getActiveImage = (variantImage) => {
     const element = document.getElementById("id-product-images")
-    const imgContainer = element.childNodes[0].childNodes[0].childNodes[0].querySelector(".image-gallery-swipe")
-    const imgElement = imgContainer.childNodes[0].querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
-    setOriginalImage(imgElement.src)
-    const tmpImg = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${variantImage}`
-    imgElement.src = tmpImg
+    const containerSlider = element.childNodes[0].childNodes[0].childNodes[0]
+    const ImageContainer   = containerSlider.querySelector(".image-gallery-slides")
+    if(ImageContainer.querySelector(".center")){
+      const imgElement = ImageContainer.querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
+      setOriginalImage(imgElement.src)
+      const tmpImg = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${variantImage}`
+      imgElement.src = tmpImg
+    }
   }
 
   const getOriginalImage = () => {
     const element = document.getElementById("id-product-images")
-    const imgContainer = element.childNodes[0].childNodes[0].childNodes[0].querySelector(".image-gallery-swipe")
-    const imgElement = imgContainer.childNodes[0].querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
-    imgElement.src = originalImage
+    const containerSlider = element.childNodes[0].childNodes[0].childNodes[0]
+    const ImageContainer   = containerSlider.querySelector(".image-gallery-slides")
+    if(ImageContainer.querySelector(".center")){
+      const imgElement = ImageContainer.querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
+      imgElement.src = originalImage
+    }
   }
 
   const wholesaleContent = (
@@ -211,6 +217,8 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
                       data={item.va2_items} 
                       value={item.va1_option}
                       disabled={sumStock <= 0}
+                      onMouseEnter={() => getActiveImage(item.va1_image)}
+                      onMouseLeave={getOriginalImage}
                       className={`variant-radio-button-wrapper noselect ${item.va1_image && "btn-variant"}`}
                     >
                       <div className="container-img-variant">
