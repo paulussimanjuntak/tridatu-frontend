@@ -124,6 +124,9 @@ const Discount = ({ searchQuery }) => {
   useEffect(() => {
     let queryString = router.query
     if(page) queryString["page"] = page
+    if(queryString["page"] == ""){
+      delete queryString["page"]
+    }
 
     if(status.value[0] !== "" && status.value !== "" ) queryString["status"] = status.value
     else delete queryString["status"]
@@ -141,7 +144,9 @@ const Discount = ({ searchQuery }) => {
     if(!searchQuery) return
     const state = JSON.parse(JSON.stringify(filter))
     if(searchQuery.hasOwnProperty("page")) {
-      setPage(searchQuery.page)
+      if(searchQuery.page) {
+        setPage(searchQuery.page)
+      }
     }
     if(searchQuery.hasOwnProperty("q")){
       state.q.value = searchQuery.q
