@@ -91,16 +91,16 @@ const per_page = 18;
 const Products = ({ searchQuery }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  
-  const [activeTab, setActiveTab] = useState(ALL)
-  const [page, setPage] = useState(1)
-  const [live, setLive] = useState("")
-  const [search, setSearch] = useState("")
-  const [order_by, setOrderBy] = useState(orderList[0].value)
 
   const loading = useSelector(state => state.products.loading)
   const aliveArchiving = useSelector(state => state.products.aliveArchiving)
   const products = useSelector(state => state.products.products)
+  
+  const [activeTab, setActiveTab] = useState(ALL)
+  const [page, setPage] = useState(products.page)
+  const [live, setLive] = useState("")
+  const [search, setSearch] = useState("")
+  const [order_by, setOrderBy] = useState(orderList[0].value)
 
   const onTabClick = key => {
     setActiveTab(key)
@@ -153,6 +153,12 @@ const Products = ({ searchQuery }) => {
     let queryString = router.query
     dispatch(actions.getProducts({ ...queryString, per_page: per_page }))
   }, [aliveArchiving])
+
+  useEffect(() => {
+    if(products && products.data){
+      setPage(products.page)
+    }
+  }, [products])
 
   return(
     <>

@@ -1,9 +1,6 @@
 import { Badge } from 'antd'
+import { countDiscPrice } from 'lib/utility'
 import formatNumber from 'lib/formatNumber'
-
-const countDiscPrice = (disc, price) => {
-  return ((100 - disc) / 100) * price 
-}
 
 const ItemPricePromo = ({ discount, maxPrice, minPrice }) => {
   if(countDiscPrice(discount, minPrice) === countDiscPrice(discount, maxPrice) && discount) {

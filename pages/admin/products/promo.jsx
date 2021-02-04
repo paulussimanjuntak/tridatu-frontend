@@ -1,109 +1,156 @@
 import { useState, useEffect  } from 'react'
-import { Table, Input, Select } from 'antd'
+import { Table, Input, Select, Empty } from 'antd'
 import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from 'next/router';
 
-import { orderList, columns, dataNoVar, dataVar1, dataVar2 } from 'data/discount'
+import { orderList, columns } from 'data/discount'
 
-import moment from 'moment'
 import axios, { signature_exp, resNotification } from "lib/axios";
 import * as actions from "store/actions";
 import ColB from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Card from 'react-bootstrap/Card'
+import isEmpty from 'validator/lib/isEmpty';
+
+import formFilter from "formdata/formFilter";
 import Pagination from "components/Pagination";
 
 import EditableCell from 'components/Card/Admin/Product/Promo/Cell'
-import AddPromoModal from 'components/Modal/Admin/Products/AddPromo'
-import EditPromoModal from 'components/Modal/Admin/Products/EditPromo'
+import PromoModal from 'components/Modal/Admin/Products/SetupPromo'
 
 const components = { body: { cell: EditableCell } };
+const per_page = 3
 
-const Discount = () => {
+const EmptyProduct = () => (
+  <div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: ".2" }} className="w-100" >
+    <Empty className="my-5" description={<span className="text-secondary">Tidak ada produk</span>} />
+  </div>
+)
+
+const Discount = ({ searchQuery }) => {
+  const router = useRouter()
   const dispatch = useDispatch()
 
+  const discounts = useSelector(state => state.discounts.discounts)
+
   const [show, setShow] = useState(false)
-  const [showUpdate, setShowUpdate] = useState(false)
-  const [product, setProduct] = useState({})
+  const [productId, setProductId] = useState(null)
+  const [discount, setDiscount] = useState({})
+  const [discountStatus, setDiscountStatus] = useState("")
   const [dataSourceProducts, setDataSourceProducts] = useState([])
+  const [page, setPage] = useState(discounts.page)
+  const [filter, setFilter] = useState(formFilter)
 
-  const products = useSelector(state => state.products.products)
+  const { q, status } = filter
 
-  const setPromoHandler = slug => {
-    axios.get(`/products/${slug}`, { params: { recommendation: false }})
+  const getDiscountHandler = (product_id) => {
+    axios.get(`/discounts/get-discount/${product_id}`)
       .then(res => {
         const resDetail = res.data.detail
         if(res.status == 404) resNotification("error", "Error", resDetail)
         else {
-          setShow(true)
-          setProduct(res.data)
+          setDiscount(res.data)
+          setProductId(product_id)
+          if(res.data && product_id) setShow(true)
         }
       })
       .catch(err => {
         const errDetail = err.response.data.detail;
-        if(errDetail == signature_exp) setPromoHandler(slug)
+        if(errDetail == signature_exp) getDiscountHandler(product_id)
       })
   }
 
   const closeModalSetPromoHandler = () => {
+    let queryString = router.query
+    dispatch(actions.getDiscount({ ...queryString }))
     setShow(false)
-    setProduct({})
-  }
-
-  const updatePromoHandler = (index) => {
-    if(index == 0) setProduct(dataNoVar)
-    if(index == 1) setProduct(dataVar1)
-    if(index == 2) setProduct(dataVar2)
-    setShowUpdate(true)
-  }
-
-  const closeUpdatePromoHandler = () => {
-    setProduct({})
-    setShowUpdate(false)
+    setDiscount({})
+    setProductId(null)
+    setDiscountStatus("")
   }
 
   const columnsProductList = columns.map(col => {
     if(!col.action) return col
+    let queryString = router.query
     return {
       ...col,
       onCell: (record, index) => ({
         record,
         index: index,
         action: col.action,
-        onSet: (slug) => setPromoHandler(slug),
-        onUpdate: () => updatePromoHandler(index),
+        onGetDiscount: (product_id) => getDiscountHandler(product_id),
+        onSetDiscountStatus: (sts) => setDiscountStatus(sts),
+        onNonActiveDiscount: (product_id) => dispatch(actions.nonActiveDiscount(product_id, { ...queryString }))
       })
     }
   })
 
   useEffect(() => {
-    dispatch(actions.getProducts({ page: 1, per_page: 10, live: "true" }))
-  }, [])
+    if(discounts && discounts.data){
+      setPage(discounts.page)
+    }
+  }, [discounts])
 
   useEffect(() => {
-    if(products && products.data){
-      products.data.map((obj, i) => {
-obj["variants_min_price"] = i <= 1 && 100000 || i >= 2 && i <= 3 && 150000 || 160000
-obj["variants_max_price"] = i < 1 && 100000 || i >= 1 && i <= 4 && 175000 || i == 5 && 160000 || 250000
-obj["variants_discount"] = i == 0 && 10 || i == 1 && 50 || i == 2 && 20 || i == 3 && 15 || false
-obj["products_discount_status"] = i <= 1 && "will_come" || i == 2 && "ongoing" || i == 3 && "have_ended" || "not_active"
-obj["products_discount_start"] = i <= 3 && "2021-02-02T17:10:00" || "Belum Ada Diskon"
-obj["products_discount_end"] = moment().add(i, "days")
-
-obj["promo_active"] = i <= 3 && true || i > 3  && false
-obj["promo_status"] = i < 2 && "will_come" || i == 2 && "ongoing" || i == 3 && "have_ended" || "not_active"
-obj["promo_start"] = i <= 3 && "27 Jan 2021 00:04" || "Belum Ada Diskon"
-obj["promo_end"] = i <= 3 && "30 Jan 2021 00:04" || false
-        return obj
-      })
-      
+    if(discounts && discounts.data && discounts.data.length >= 0){
       let tmp = []
-      for(let val of products.data){
+      for(let val of discounts.data){
         tmp.push({ key: val.products_id, products: val })
       }
-
       setDataSourceProducts(tmp)
     }
-  }, [products])
+  }, [discounts])
+
+  const onFilterChange = (e, item) => {
+    const name = !item && e.target.name;
+    const value = !item && e.target.value;
+    setPage(1)
+    if(item){
+      const data = {
+        ...filter,
+        [item]: { ...filter[item], value: e, isValid: true, message: null }
+      }
+      setFilter(data)
+    }
+    else{
+      const data = {
+        ...filter,
+        [name]: { ...filter[name], value: value, isValid: true, message: null }
+      }
+      setFilter(data)
+    }
+  }
+
+  useEffect(() => {
+    let queryString = router.query
+    if(page) queryString["page"] = page
+
+    if(status.value[0] !== "" && status.value !== "" ) queryString["status"] = status.value
+    else delete queryString["status"]
+
+    if(!isEmpty(q.value)) queryString["q"] = q.value
+    else delete queryString["q"]
+
+    router.replace({
+      pathname: router.pathname,
+      query: queryString
+    })
+  }, [filter, page])
+
+  useEffect(() => {
+    if(!searchQuery) return
+    const state = JSON.parse(JSON.stringify(filter))
+    if(searchQuery.hasOwnProperty("page")) {
+      setPage(searchQuery.page)
+    }
+    if(searchQuery.hasOwnProperty("q")){
+      state.q.value = searchQuery.q
+    }
+    if(searchQuery.hasOwnProperty("status")) {
+      state.status.value = [searchQuery.status]
+    }
+    setFilter(state)
+  }, [])
 
   return(
     <>
@@ -117,8 +164,11 @@ obj["promo_end"] = i <= 3 && "30 Jan 2021 00:04" || false
               <Form.Group as={ColB} lg={8} md={6}>
                 <Input 
                   className="h-35"
+                  name="q"
                   placeholder="Cari berdasarkan nama" 
                   prefix={<i className="far fa-search" />}
+                  value={q.value}
+                  onChange={e => onFilterChange(e)}
                 />
               </Form.Group>
               <Form.Group as={ColB} lg={4} md={6}>
@@ -126,10 +176,12 @@ obj["promo_end"] = i <= 3 && "30 Jan 2021 00:04" || false
                   placeholder="Urutkan" 
                   style={{ width: "100%"}}
                   className="product-search-select"
-                  defaultValue="all"
+                  defaultValue=""
+                  value={status.value}
+                  onChange={e => onFilterChange(e, "status")}
                 >
                   {orderList.map((list, i) => (
-                    <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
+                    <Select.Option key={i} value={list.value}>{list.label}</Select.Option>
                   ))}
                 </Select>
               </Form.Group>
@@ -142,30 +194,28 @@ obj["promo_end"] = i <= 3 && "30 Jan 2021 00:04" || false
             components={components}
             columns={columnsProductList} 
             dataSource={dataSourceProducts}
+            locale={{ emptyText: <EmptyProduct /> }}
           />
+
           <Card.Body className="text-right">
             <Pagination 
-              total={30} 
-              // goTo={pageChange} 
-              // current={currentPage} 
+              current={page} 
               hideOnSinglePage 
-              pageSize={10}
+              pageSize={per_page}
+              total={discounts.total} 
+              goTo={val => setPage(val)} 
             />
           </Card.Body>
         </Card.Body>
       </Card>
 
 
-      <AddPromoModal 
+      <PromoModal 
         visible={show}
         onClose={closeModalSetPromoHandler}
-        product={product}
-      />
-
-      <EditPromoModal
-        visible={showUpdate}
-        onClose={closeUpdatePromoHandler}
-        product={product}
+        discount={discount}
+        productId={productId}
+        discountStatus={discountStatus}
       />
 
 
@@ -183,6 +233,12 @@ obj["promo_end"] = i <= 3 && "30 Jan 2021 00:04" || false
       `}</style>
     </>
   )
+}
+
+Discount.getInitialProps = async ctx => {
+  const searchQuery = ctx.query
+  await ctx.store.dispatch(actions.getDiscount({ ...searchQuery, per_page: per_page }))
+  return { searchQuery: searchQuery }
 }
 
 export default Discount

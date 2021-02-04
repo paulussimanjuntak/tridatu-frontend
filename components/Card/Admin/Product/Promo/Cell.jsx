@@ -1,7 +1,8 @@
 import Button from "antd-button-color"
+
 import { not_active, have_ended } from './statusType'
 
-const EditableCell = ({ record, index, children, action, onSet, onUpdate, ...restProps }) => {
+const EditableCell = ({ record, index, children, action, onGetDiscount, onSetDiscountStatus, onNonActiveDiscount, ...restProps }) => {
   let childNode = children;
 
   if(action){
@@ -17,12 +18,21 @@ const EditableCell = ({ record, index, children, action, onSet, onUpdate, ...res
       style = "dashed"
     }
 
+    const onClickHandler = () => {
+      if(record.products.products_discount_status === have_ended) {
+        onNonActiveDiscount(record.products.products_id)
+      } else {
+        onGetDiscount(record.products.products_id)
+        onSetDiscountStatus(record.products.products_discount_status)
+      }
+    }
+
     childNode = (
       <>
         <Button 
           type="primary"
           with={style}
-          onClick={record.products.promo_active ? () => onUpdate(index) : () => onSet(record.products.products_slug)}
+          onClick={onClickHandler}
         >
           {text}
         </Button>

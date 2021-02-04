@@ -8,6 +8,7 @@ const formFilter = {
   pre_order: { value: [] },
   condition: { value: [] },
   wholesale: { value: [] },
+  status: { value: [""] },
 
   category: { value: [] },
   rating: { value: [] },
