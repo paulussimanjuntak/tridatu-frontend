@@ -36,7 +36,7 @@ const nonActiveDiscountFail = (error) => {
 }
 
 
-export const getDiscount = ({ page = 1, per_page = 3, q, status }) => {
+export const getDiscount = ({ page = 1, per_page = 10, q, status }) => {
   let queryString = {}
   if(page) queryString["page"] = page
   if(per_page) queryString["per_page"] = per_page

@@ -19,7 +19,7 @@ import EditableCell from 'components/Card/Admin/Product/Promo/Cell'
 import PromoModal from 'components/Modal/Admin/Products/SetupPromo'
 
 const components = { body: { cell: EditableCell } };
-const per_page = 3
+const per_page = 10
 
 const EmptyProduct = () => (
   <div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: ".2" }} className="w-100" >
