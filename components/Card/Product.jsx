@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { motion } from 'framer-motion'
 import { Rate, Tag } from "antd";
+import { countDiscPrice } from 'lib/utility'
+import { ongoing } from 'components/Card/Admin/Product/Promo/statusType'
 
 import Link from "next/link";
 import Image from "next/image";
@@ -12,11 +14,16 @@ import * as actions from "store/actions";
 
 const loveLoginBtn = () => document.getElementById("id-btn-login").click();
 
+const NormalPrice = ({ children }) => <span className="fs-13 fw-500 text-dark">Rp.{children}</span>
+const DiscPrice = ({ children }) => <span className="ml-1"> <s>Rp.{children}</s> </span>
+
+
 const CardProduct = ({ data }) => {
   const dispatch = useDispatch()
   const user = useSelector(state => state.auth.user)
 
-  const { products_id, products_name, products_slug, products_love, products_wholesale, products_image_product, variants_price } = data;
+  const { products_id, products_name, products_slug, products_love, products_wholesale, products_image_product } = data;
+  const { variants_min_price, variants_max_price, variants_discount, products_discount_status } = data;
 
   const [love, setLove] = useState(products_love)
 
@@ -38,6 +45,29 @@ const CardProduct = ({ data }) => {
     setLove(products_love)
   }, [products_love])
 
+  const renderPrice = () => {
+    if(countDiscPrice(variants_discount, variants_min_price) === countDiscPrice(variants_discount, variants_max_price)){
+      if(variants_discount > 0 && products_discount_status === ongoing){
+        return (
+          <>
+            <NormalPrice>{formatNumber(countDiscPrice(variants_discount, variants_max_price))}</NormalPrice>
+            <DiscPrice>{formatNumber(variants_max_price)}</DiscPrice>
+          </>
+        )
+      } else {
+        return <NormalPrice>{formatNumber(variants_max_price)}</NormalPrice>
+      }
+    } 
+    else {
+      return (
+        <>
+          <NormalPrice>{formatNumber(variants_min_price)} - </NormalPrice>
+          <NormalPrice>{formatNumber(variants_max_price)}</NormalPrice>
+        </>
+      )
+    }
+  }
+
   return (
     <>
       <motion.div
@@ -54,7 +84,9 @@ const CardProduct = ({ data }) => {
           alt="Tridatu Bali"
           className="img-fit img-product noselect"
         />
-        {/* <span className="card-discount noselect">70%</span> */}
+        {products_discount_status == ongoing && variants_discount > 0 && (
+          <span className="card-discount noselect">{variants_discount}%</span>
+        )}
         <i className={`fa${love ? "s":"r"} fa-heart card-wishlist hover-pointer`} onClick={() => loveHandler(products_id)} />
         <Link href="/products/[slug]" as={`/products/${products_slug}`}>
           <a className="text-decoration-none text-secondary">
@@ -64,10 +96,7 @@ const CardProduct = ({ data }) => {
               </p>
               <Tag className="grosir-tag" visible={products_wholesale}>Grosir</Tag>
               <p className="text-red-dicount text-truncate fs-10 mb-0">
-                <span className="fs-13 fw-500 text-dark">Rp.{formatNumber(variants_price)}</span>
-                <span className="ml-1">
-                  <s>Rp.{formatNumber(variants_price*2)}</s>
-                </span>
+                {renderPrice()}
               </p>
               <div className="card-rating fs-12 mb-0 text-muted">
                 <Rate

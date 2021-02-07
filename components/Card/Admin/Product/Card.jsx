@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Card as CardAnt, Dropdown, Menu, Modal, Space } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EditOutlined, EllipsisOutlined } from '@ant-design/icons'
+import { countDiscPrice } from 'lib/utility'
+import { ongoing } from 'components/Card/Admin/Product/Promo/statusType'
 
 import Link from "next/link";
 import Image from "next/image";
@@ -10,8 +12,12 @@ import Button from "antd-button-color"
 
 import formatNumber from 'lib/formatNumber'
 
+const NormalPrice = ({ children }) => <span className="mb-0 fs-12 text-tridatu">Rp.{children}</span>
+const DiscPrice = ({ children }) => <span className="mb-0 fs-10 text-tridatu"> <s>Rp.{children}</s> </span>
+
 const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
-  const { products_id, products_name, products_slug, products_image_product, products_live, variants_price } = data;
+  const { products_id, products_name, products_slug, products_image_product, products_live } = data;
+  const { variants_min_price, variants_max_price, variants_discount, products_discount_status } = data;
 
   const [showModal, setShowModal] = useState(false)
 
@@ -19,6 +25,30 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
     deleteProduct(products_id)
     setShowModal(false)
   }
+
+  const renderPrice = () => {
+    if(countDiscPrice(variants_discount, variants_min_price) === countDiscPrice(variants_discount, variants_max_price)){
+      if(variants_discount > 0 && products_discount_status === ongoing){
+        return (
+          <div className="product-price text-truncate text-tridatu">
+            <NormalPrice>{formatNumber(countDiscPrice(variants_discount, variants_max_price))}</NormalPrice>
+            <DiscPrice>{formatNumber(variants_max_price)}</DiscPrice>
+          </div>
+        )
+      } else {
+        return <NormalPrice>{formatNumber(variants_max_price)}</NormalPrice>
+      }
+    }
+    else {
+      return (
+        <div className="product-price text-truncate text-tridatu">
+          <NormalPrice>{formatNumber(variants_min_price)} - </NormalPrice>
+          <NormalPrice>{formatNumber(variants_max_price)}</NormalPrice>
+        </div>
+      )
+    }
+  }
+
   return(
     <>
       <motion.div
@@ -31,7 +61,7 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
           className="product-card-admin"
           bodyStyle={{ padding: 0 }}
           actions={[
-            <Link href="products/[slug]" as={`products/${products_slug}`}>
+            <Link href="products/[slugs]" as={`products/${products_slug}`}>
               <a className="text-decoration-none">
                 <EditOutlined key="edit" />
               </a>
@@ -56,6 +86,9 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
         >
           <div className="position-relative">
             <div className="text-center">
+              {products_discount_status == ongoing && variants_discount > 0 && (
+                <span className="card-discount noselect">{variants_discount}%</span>
+              )}
               <Image 
                 width={270}
                 height={270}
@@ -92,14 +125,23 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
                 {products_name}
               </p>
             </div>
-            <div className="d-flex justify-content-between noselect">
-              <span className="mb-0 text-tridatu text-truncate">Rp.{formatNumber(variants_price)}</span>
-              <span className="mb-0 text-muted text-truncate">Stok <span className="text-dark">30</span></span>
+            <div className="d-flex justify-content-between noselect w-100 align-items-baseline">
+              <>{renderPrice()}</>
+              <span className="mb-0 fs-12 text-muted text-truncate">Stok <span className="text-dark">30</span></span>
             </div>
-            <div className="d-flex justify-content-between text-black-50 fs-12 noselect">
-              <span className="mb-0 text-truncate"><i className="fal fa-eye" />100</span>
-              <span className="mb-0 text-truncate mx-1"><i className="fal fa-heart" /> 30</span>
-              <span className="mb-0 text-truncate">Penjualan 1K</span>
+            <div className="product-meta">
+              <div className="mb-0 product-meta-item"><i className="fal fa-eye" />
+                <span className="text-truncate">1000</span>
+              </div>
+              <div className="mb-0 product-meta-item product-meta-like">
+                <span>
+                  <i className="fal fa-heart" /> <span className="text-truncate">30</span>
+                </span>
+              </div>
+              <div className="mb-0 product-meta-item product-meta-sales">
+                <span>Penjualan</span>
+                <span className="text-truncate">1K</span>
+              </div>
             </div>
           </Card.Body>
         </CardAnt>
@@ -157,6 +199,65 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
           border-color: #e5e5e5 !important;
           background-color: rgba(255,255,255,.1) !important;
         }
+
+        :global(.product-price){
+          -webkit-box-flex: 1;
+          -ms-flex: 1;
+          flex: 1;
+          min-width: 36%;
+        }
+
+        :global(.product-meta){
+          display: flex;
+          -webkit-box-align: center;
+          align-items: center;
+          -webkit-box-pack: justify;
+          -ms-flex-pack: justify;
+          justify-content: space-between;
+          -ms-flex-align: center;
+          width: 100%;
+          max-width: 100%;
+          line-height: 1.5;
+          font-size: 12px;
+          color: #bababa;
+        }
+
+        :global(.product-meta .product-meta-item){
+          -webkit-box-flex: 4;
+          flex: 4;
+          -webkit-box-pack: start;
+          align-items: center;
+          justify-content: flex-start;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+        }
+
+        .product-meta-item.product-meta-like{
+          justify-content: center;
+        }
+        .product-meta-item.product-meta-sales{
+          -webkit-box-flex: 7;
+          -ms-flex: 7;
+          flex: 7;
+          -webkit-box-pack: end;
+          justify-content: flex-end;
+        }
+
+        .card-discount{
+          position: absolute;
+          display: flex;
+          width: 40px;
+          height: 40px;
+          color: white;
+          background-color: #ff4d4f;
+          border-radius: 2px 60% 60% 60%;
+          font-size: 12px !important;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+        }
+
 
       `}</style>
     </>
