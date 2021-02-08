@@ -80,6 +80,7 @@ const Footer = () => {
                     <li>Panduan Belanja</li>
                     <li>Syarat &amp; Ketentuan</li>
                     <li>Kebijakan Privasi</li>
+                    <li>Deploy Success</li>
                   </ul>
                 </div>
 
