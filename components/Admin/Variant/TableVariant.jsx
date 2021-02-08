@@ -679,7 +679,7 @@ const TableVariant = ({
 
     if(initialFetch.isInit && vaOption.va2Option.length) return
     else setDataSource(variants)
-  },[vaOption, isDeleting, isSetAll, activeGrosir])
+  },[vaOption, isDeleting, isSetAll, /*activeGrosir*/])
 
   const onTableChange = (e, item, index) => {
     const newData = [...dataSource]

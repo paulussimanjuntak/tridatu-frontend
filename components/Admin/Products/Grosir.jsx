@@ -34,13 +34,6 @@ const Grosir = ({
   const addGrosirHandler = () => {
     const initGrosirData = { min_qty: {value: "", isValid: true, message: null}, price: {value: "", isValid: true, message: null} }
     setGrosir(grosir => [...grosir, initGrosirData])
-    /* for update slug
-    if(countGrosir > 0 && active){
-      setIsActiveGrosir({ ...isActiveGrosir, activeGrosir: true })
-    } else {
-      setIsActiveGrosir({ countGrosir: countGrosir + 1, activeGrosir: true })
-    }
-    */
     if(countGrosir < 5) setIsActiveGrosir({ countGrosir: countGrosir + 1, activeGrosir: true })
   }
 
