@@ -180,16 +180,18 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
                   data={item} 
                   value={item.va1_id}
                   disabled={item.va1_stock <= 0}
-                  onMouseEnter={() => getActiveImage(item.va1_image)}
-                  onMouseLeave={getOriginalImage}
+                  onMouseEnter={item.va1_image ? () => getActiveImage(item.va1_image) : () => {}}
+                  onMouseLeave={item.va1_image && getOriginalImage}
                   className={`variant-radio-button-wrapper noselect ${item.va1_image && "btn-variant"}`}
                 >
                   <div className="container-img-variant">
-                    <Image width={38} 
-                      height={38} 
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${item.va1_image}`}
-                      className="img-variant-button"
-                    />
+                    {item.va1_image && (
+                      <Image width={38} 
+                        height={38} 
+                        src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${item.va1_image}`}
+                        className="img-variant-button"
+                      />
+                    )}
                     <span className={`${item.va1_image && "ml-1"}`}>
                       {item.va1_option}
                     </span>
@@ -217,16 +219,18 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
                       data={item.va2_items} 
                       value={item.va1_option}
                       disabled={sumStock <= 0}
-                      onMouseEnter={() => getActiveImage(item.va1_image)}
-                      onMouseLeave={getOriginalImage}
+                      onMouseEnter={item.va1_image ? () => getActiveImage(item.va1_image) : () => {}}
+                      onMouseLeave={item.va1_image && getOriginalImage}
                       className={`variant-radio-button-wrapper noselect ${item.va1_image && "btn-variant"}`}
                     >
                       <div className="container-img-variant">
-                        <Image width={38} 
-                          height={38} 
-                          src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${item.va1_image}`}
-                          className="img-variant-button"
-                        />
+                        {item.va1_image && (
+                          <Image width={38} 
+                            height={38} 
+                            src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${item.va1_image}`}
+                            className="img-variant-button"
+                          />
+                        )}
                         <span className={`${item.va1_image && "ml-1"}`}>
                           {item.va1_option}
                         </span>
