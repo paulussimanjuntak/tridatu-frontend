@@ -142,7 +142,6 @@ const Grosir = ({
   useEffect(() => {
     // function for change price when set all is clicked and price column is empty
     if(active && activeGrosir){
-      console.log("kesini ya?")
       const copyDataSource = [...dataSource]
       if(copyDataSource[0] && copyDataSource[0].price && copyDataSource[0].price.value){
         setGrosirPrice({ price: copyDataSource[0].price })
@@ -157,13 +156,10 @@ const Grosir = ({
     const checkIsActiveDiscount = _.map(dataSource, obj => obj.discount_active.value.toString())
     if(_.uniqBy(isPriceSame).length > 1 && activeGrosir && isIn("true", checkIsActiveDiscount)){
       setIsActiveGrosir({ ...isActiveGrosir, activeGrosir: false })
-      console.log("masuk check sini")
     } 
     if(_.uniqBy(isPriceSame).length < 2 && countGrosir > 0){
       setIsActiveGrosir({ ...isActiveGrosir, activeGrosir: true})
-      console.log("masuk check sini 2")
     } 
-  // }, [dataSource]) // for auto update when price is different to same in modal
   }, [countGrosir, price, dataSource])
 
   useEffect(() => {
@@ -173,22 +169,18 @@ const Grosir = ({
       if(copyDataSource[0] && copyDataSource[0].key){
         copyDataSource.map(obj => {
           if(obj.discount_active.value){
-            console.log("true discount_active")
             obj.price = { value: obj.price.value, isValid: true, message: null }
           } else {
-            console.log("false discount_active")
             obj.price = { value: price.value ? price.value : copyDataSource[0].price.value, isValid: true, message: null }
           }
           return obj
         })
-        // setDataSource(copyDataSource) //check again
       }
     }
   }, [price, activeGrosir, active, dataSource])
 
   useEffect(() => {
     if(active && !activeGrosir){
-      console.log("masuk sini ketika tidak aktif")
       const copyDataSource = [...dataSource]
       if(copyDataSource[0].key){
         copyDataSource.map(obj => {
@@ -200,9 +192,6 @@ const Grosir = ({
           return obj
         })
         countVariation !== 1 && setDataSource(copyDataSource) 
-        // klo di comment variasi 2 paling bawah ke set value ke initial 
-        // klo ga dikomen pas lagi diskon ga keset valuenya && lagi active grosir && hanya di 1 variant 
-        // klo ga di komen pas add new produk dan aktif 1 variasi grosir tidak bisa aktif
       }
     }
   }, [price, activeGrosir])
@@ -261,13 +250,6 @@ const Grosir = ({
           <Form.Item label="Grosir">
             <Card.Body className="p-0 pb-1">
               <RenderGrosirButton />
-              {/* <Button */}
-              {/*   block with="dashed" type="primary" */} 
-              {/*   className="h-35" icon={<PlusCircleOutlined />} */}
-              {/*   onClick={activeGrosirHandler} */}
-              {/* > */}
-              {/*   Tambah Harga Grosir */}
-              {/* </Button> */}
             </Card.Body>
           </Form.Item>
         </Form>
@@ -302,7 +284,6 @@ const Grosir = ({
                         parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
                         value={price.value}
                         onChange={checkStatusDiscountVariant() ? () => {} : onPriceChangeHandler}
-                        // onChange={onPriceChangeHandler}
                       />
                     </div>
                   </div>
@@ -331,7 +312,6 @@ const Grosir = ({
                         parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
                         value={va1_price.value}
                         onChange={checkStatusDiscountNoVariant() ? () => {} : e => onNoVariantChangeHandler(e, "va1_price")}
-                        // onChange={e => onNoVariantChangeHandler(e, "va1_price")}
                       />
                     </div>
                   </div>
@@ -438,7 +418,6 @@ const Grosir = ({
           </Card.Body>
         </>
       )}
-
 
       <Modal
         centered

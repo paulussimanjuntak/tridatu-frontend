@@ -73,11 +73,6 @@ export const addColumVariantHandler = (variant, columns, setColumns) => {
   copyColumns.splice(variant-1, 0, data)
 }
 
-/*
- * TODO: 
- * two variant discount
- */
-
 const TableVariant = ({
   isActiveVariation, setIsActiveVariation, dataSource, setDataSource, columns, setColumns, vaOption, setVaOption, 
   imageVariants, setImageVariants, onRemoveVariant, initialFetch, setInitialFetch, activeGrosir, grosirPrice, setGrosirPrice, noVariant,
@@ -442,7 +437,6 @@ const TableVariant = ({
           variant_tmp.push({
             ...initialData,
             price: { 
-              // value: priceVal ? priceVal : copyDataSource[key1].price.value, 
               value: priceValue,
               isValid: priceVal ? true : copyDataSource[key1].price.isValid, 
               message: priceVal ? null : copyDataSource[key1].price.message
@@ -501,7 +495,6 @@ const TableVariant = ({
       for(let item of variant_tmp){
         variants.push(item)
       }
-      // setDataSource(variants) // make empty variant double
     }
 
     if(initialFetch.isInit){
@@ -564,7 +557,6 @@ const TableVariant = ({
             isValid: true, message: null
           },
           price: { 
-            // value: priceVal ? priceVal : dataPrice.value, 
             value: finalPrice,
             isValid: priceVal ? true : dataPrice.isValid, 
             message: priceVal ? null : dataPrice.message
@@ -618,22 +610,13 @@ const TableVariant = ({
       setIsDeleting(false)
     }
 
-    /*
-     * TODO:
-     * diskon on : set all : price change
-     *
-     */
-
     if(!isSetAll && !isDeleting && !initialFetch.isInit){
       const tmpVar = copyDataSource.map(data => data.key)
       const tmpDataSource = variants.map(data => data.key)
 
-      console.log("kesini dulu")
-
       for(var i = 0; i < variants.length; i++){
         for(let val of tmpVar){
           if(variants[i].key === val){
-            console.log("variants =>",copyDataSource[getIndex(val, copyDataSource, "key")]["price"].value)
             for(let prop of arrProp){
               variants[i][prop] = {
                 value: copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
@@ -646,9 +629,7 @@ const TableVariant = ({
               for(let [key1, val1] of Object.entries(variants)){
                 for(let [key2, val2] of Object.entries(copyDataSource)){
                   if(val2.va1_key == val1.va1_key && val2.va2_key == val1.va2_key){
-                    console.log("dataSource =>",copyDataSource[key2]["price"].value)
                     for(let prop of arrProp){
-
                       variants[key1][prop] = {
                         value: copyDataSource[key2][prop].value,
                         isValid: copyDataSource[key2][prop].isValid,
@@ -905,25 +886,6 @@ const TableVariant = ({
                       <Media.Body> 
                         {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
                         {va1Total > 1 ? renderDeteleVariant(i+1, idx) : null}
-                        {/*va1Total > 1 ? (
-                          <>
-                            {va1Option[idx].discount_active.value ? (
-                              <Tooltip 
-                                color="#fff"
-                                placement="left"
-                                title={
-                                  <span className="text-dark fs-12 noselect">
-                                    Pilihan tidak dapat dihapus jika promosi sudah dijadwalkan atau sedang berjalan.
-                                  </span>
-                                } 
-                              >
-                                <i className="fal fa-lock-alt ml-2 hover-pointer text-secondary" />
-                              </Tooltip>
-                            ):(
-                              <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
-                            )}
-                          </>
-                        ) : null*/}
                       </Media.Body> 
                     </Media>
                   </Form.Item>
@@ -968,24 +930,6 @@ const TableVariant = ({
           ))}
 
           {renderVariationButton()}
-          {/* countVariation == 0 && noVariant && noVariant.va1_discount_active && noVariant.va1_discount_active.value ? (
-            <></>
-          ) : (
-            <>
-              {countVariation < 2 && (
-                <Card.Body className="p-0 pb-1">
-                  <p className="fs-14 mb-3 w-100">Variasi {countVariation+1 == 2 && countVariation+1}</p>
-                  <ButtonColor
-                    block with="dashed" type="primary" 
-                    className="h-35" icon={<PlusCircleOutlined />}
-                    onClick={() => activeVariantHandler(countVariation+1)}
-                  >
-                    {countVariation < 1 ? "Aktifkan Variasi" : "Tambah"}
-                  </ButtonColor>
-                </Card.Body>
-              )}
-            </>
-          ) */}
         </Col>
       </Row>
 
