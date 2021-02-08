@@ -557,8 +557,6 @@ const TableVariant = ({
           finalStockValue = stockVal
         }
 
-        console.log(finalPrice)
-
         variants[i] = {
           ...variants[i],
           id: { 
@@ -635,6 +633,7 @@ const TableVariant = ({
       for(var i = 0; i < variants.length; i++){
         for(let val of tmpVar){
           if(variants[i].key === val){
+            console.log("variants =>",copyDataSource[getIndex(val, copyDataSource, "key")]["price"].value)
             for(let prop of arrProp){
               variants[i][prop] = {
                 value: copyDataSource[getIndex(val, copyDataSource, "key")][prop].value,
@@ -647,7 +646,9 @@ const TableVariant = ({
               for(let [key1, val1] of Object.entries(variants)){
                 for(let [key2, val2] of Object.entries(copyDataSource)){
                   if(val2.va1_key == val1.va1_key && val2.va2_key == val1.va2_key){
+                    console.log("dataSource =>",copyDataSource[key2]["price"].value)
                     for(let prop of arrProp){
+
                       variants[key1][prop] = {
                         value: copyDataSource[key2][prop].value,
                         isValid: copyDataSource[key2][prop].isValid,
