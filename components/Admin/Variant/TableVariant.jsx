@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Table, Input, Form, InputNumber, Row, Col } from 'antd';
+import { Table, Input, Form, InputNumber, Row, Col, Tooltip } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons'
 
 import Card from 'react-bootstrap/Card'
@@ -13,6 +13,7 @@ import getIndex from 'lib/getIndex'
 import EditableCell from 'components/Admin/Variant/Cell'
 import ErrorTooltip from "components/ErrorMessage/Tooltip";
 import { formVariantLayout, createNewArr } from 'data/productsAdmin'
+import { ongoing, will_come } from 'components/Card/Admin/Product/Promo/statusType'
 import { formImage } from 'formdata/formImage'
 
 const emptyMessage = "Variasi tidak boleh kosong"
@@ -27,11 +28,20 @@ const nameVariant1 = "Masukkan Pilihan Variasi, contoh: Merah, dll."
 const nameVariant2 = "Masukkan Pilihan Variasi, contoh: S, M, dll."
 const maxNameTitle = 15, maxNameVariant = 20, maxCode = 50;
 
-const arrProp = ["price", "stock", "code", "barcode"]
-export const initialValue = { value: "", isValid: true, message: null }
-export const additional = { price: initialValue, stock: initialValue, code: initialValue, barcode: initialValue } 
+const arrProp = ["price", "stock", "code", "barcode", "discount", "discount_active", "id"]
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
+
+export const initialValue = { value: "", isValid: true, message: null }
+export const additional = { 
+  id: { ...initialValue, value: 0 },
+  price: initialValue, 
+  stock: initialValue, 
+  code: initialValue, 
+  barcode: initialValue, 
+  discount: { ...initialValue, value: 0 },
+  discount_active: { ...initialValue, value: false },
+} 
 
 export const addColumVariantHandler = (variant, columns, setColumns) => {
   const copyColumns = [...columns]
@@ -63,9 +73,15 @@ export const addColumVariantHandler = (variant, columns, setColumns) => {
   copyColumns.splice(variant-1, 0, data)
 }
 
+/*
+ * TODO: 
+ * two variant discount
+ */
+
 const TableVariant = ({
   isActiveVariation, setIsActiveVariation, dataSource, setDataSource, columns, setColumns, vaOption, setVaOption, 
-  imageVariants, setImageVariants, onRemoveVariant, initialFetch, setInitialFetch, activeGrosir, grosirPrice, setGrosirPrice
+  imageVariants, setImageVariants, onRemoveVariant, initialFetch, setInitialFetch, activeGrosir, grosirPrice, setGrosirPrice, noVariant,
+  discountStatus
 }) => {
   const [count, setCount] = useState(0)
   const [infoVariant, setInfoVariant] = useState(additional)
@@ -364,6 +380,9 @@ const TableVariant = ({
             va2_key: +key2,
             va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
             va2_option: val2.va2_option.value ? val2.va2_option.value : `Pilihan ${+key2+1}`,
+            id: { value: val2.id.value, isValid: true, message: null },
+            discount: { value: 0, isValid: true, message: null },
+            discount_active: { value: false, isValid: true, message: null }
           }
           if(isDeleting || isSetAll){
             variant_tmp.push({
@@ -382,10 +401,12 @@ const TableVariant = ({
             }
           }
         }
-      }
+      } // for 2 variant
+
       else{
         const initialData = {
           key: val1.key,
+          id: { value: val1.id.value, isValid: true, message: null },
           va1_option: val1.va1_option.value ? val1.va1_option.value : `Pilihan ${+key1+1}`,
         }
         if(isSetAll && !isDeleting){
@@ -395,7 +416,6 @@ const TableVariant = ({
           const codeVal = code.value
           const barcodeVal = barcode.value
           const stockDSValue = copyDataSource[key1].stock.value
-
 
           let finalStockValue = 0
           if(stockVal === null){
@@ -414,10 +434,16 @@ const TableVariant = ({
             finalStockValue = stockVal
           }
 
+          let priceValue = priceVal ? priceVal : copyDataSource[key1].price.value
+          if(copyDataSource[key1].discount_active.value && isIn(discountStatus, [ongoing, will_come])){
+            priceValue = copyDataSource[key1].price.value
+          }
+
           variant_tmp.push({
             ...initialData,
             price: { 
-              value: priceVal ? priceVal : copyDataSource[key1].price.value, 
+              // value: priceVal ? priceVal : copyDataSource[key1].price.value, 
+              value: priceValue,
               isValid: priceVal ? true : copyDataSource[key1].price.isValid, 
               message: priceVal ? null : copyDataSource[key1].price.message
             },
@@ -436,6 +462,14 @@ const TableVariant = ({
               isValid: barcodeVal ? true : copyDataSource[key1].barcode.isValid, 
               message: barcodeVal ? null : copyDataSource[key1].barcode.message
             },
+            discount: { 
+              value: copyDataSource[key1].discount.value, 
+              isValid: true, message: null 
+            },
+            discount_active: { 
+              value: copyDataSource[key1].discount_active.value, 
+              isValid: true, message: null 
+            }
           })
           isSetAll && setIsSetAll(false)
         }
@@ -451,6 +485,8 @@ const TableVariant = ({
               stock: { value: val1.stock.value, isValid: true, message: null },
               code: { value: val1.code.value, isValid: true, message: null },
               barcode: { value: val1.barcode.value, isValid: true, message: null },
+              discount: { value: val1.discount.value, isValid: true, message: null },
+              discount_active: { value: val1.discount_active.value, isValid: true, message: null },
             })
           }
           if(initialFetch.isInit){ // for one variant only
@@ -465,6 +501,7 @@ const TableVariant = ({
       for(let item of variant_tmp){
         variants.push(item)
       }
+      // setDataSource(variants) // make empty variant double
     }
 
     if(initialFetch.isInit){
@@ -481,6 +518,7 @@ const TableVariant = ({
     }
 
     if(countVariation == 2 && isSetAll){
+      isSetAll && setIsSetAll(false)
       const tmpVar = copyDataSource.map(data => data.key)
       const { price, stock, code, barcode } = infoVariant
       const priceVal = price.value
@@ -489,10 +527,18 @@ const TableVariant = ({
       const barcodeVal = barcode.value
 
       for(var i = 0; i < variants.length; i++){
+        const dataId = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].id
         const dataPrice = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].price
         const dataStock = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].stock
         const dataCode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].code
         const dataBarcode = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].barcode
+        const dataDiscount = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].discount
+        const dataActiveDiscount = copyDataSource[getIndex(tmpVar[i], copyDataSource, "key")].discount_active
+
+        let finalPrice = priceVal ? priceVal : dataPrice.value
+        if(dataActiveDiscount.value && isIn(discountStatus, [ongoing, will_come])){
+          finalPrice = dataPrice.value
+        }
 
         let finalStockValue = 0
         if(stockVal === null){
@@ -511,10 +557,17 @@ const TableVariant = ({
           finalStockValue = stockVal
         }
 
+        console.log(finalPrice)
+
         variants[i] = {
           ...variants[i],
+          id: { 
+            value: dataId.value, 
+            isValid: true, message: null
+          },
           price: { 
-            value: priceVal ? priceVal : dataPrice.value, 
+            // value: priceVal ? priceVal : dataPrice.value, 
+            value: finalPrice,
             isValid: priceVal ? true : dataPrice.isValid, 
             message: priceVal ? null : dataPrice.message
           },
@@ -532,6 +585,16 @@ const TableVariant = ({
             value: barcodeVal ? barcodeVal : dataBarcode.value, 
             isValid: barcodeVal ? true : dataBarcode.isValid, 
             message: barcodeVal ? null : dataBarcode.message
+          },
+          discount: {
+            value: dataDiscount.value, 
+            isValid: dataDiscount.isValid, 
+            message: dataDiscount.message
+          },
+          discount_active: {
+            value: dataActiveDiscount.value, 
+            isValid: dataActiveDiscount.isValid, 
+            message: dataActiveDiscount.message
           }
         }
       }
@@ -557,9 +620,17 @@ const TableVariant = ({
       setIsDeleting(false)
     }
 
+    /*
+     * TODO:
+     * diskon on : set all : price change
+     *
+     */
+
     if(!isSetAll && !isDeleting && !initialFetch.isInit){
       const tmpVar = copyDataSource.map(data => data.key)
       const tmpDataSource = variants.map(data => data.key)
+
+      console.log("kesini dulu")
 
       for(var i = 0; i < variants.length; i++){
         for(let val of tmpVar){
@@ -663,7 +734,8 @@ const TableVariant = ({
         disabled: activeGrosir,
         onChange: e => onTableChange(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
         onBlur: e => onValidateTableVariantCheck(e, !isIn(col.inputType, ["code", "barcode"]) && col.inputType, index),
-        maxCode: maxCode
+        maxCode: maxCode,
+        discountStatus: discountStatus
       }),
     };
   });
@@ -685,6 +757,91 @@ const TableVariant = ({
     </Form.Item>
   )
 
+  const renderActionButton = idx => {
+    const checkActiveDiscount = vaOption[`va${idx}Option`].map(x => x.discount_active.value.toString())
+    if(isIn("true", checkActiveDiscount) && isIn(discountStatus, [ongoing, will_come])){
+      return (
+        <Tooltip 
+          color="#fff"
+          placement="left"
+          title={
+            <span className="text-dark fs-12 noselect">
+              Variasi tidak dapat dihapus jika promosi sudah dijadwalkan atau sedang berjalan.
+            </span>
+          }
+        >
+          <span className="hover-pointer text-secondary float-right">
+            <i className="fal fa-lock-alt fs-16" />
+          </span>
+        </Tooltip>
+      )
+    }
+    else{
+      return (
+        <span className="hover-pointer text-dark float-right" onClick={() => deleteGroupVariantsHandler(idx)}>
+          <i className="fal fa-times fs-16" />
+        </span>
+      )
+    }
+  }
+
+
+  const renderDeteleVariant = (variant, idx) => {
+    if(vaOption[`va${variant}Option`][idx].discount_active.value && isIn(discountStatus, [ongoing, will_come])){
+      return (
+        <Tooltip 
+          color="#fff"
+          placement="left"
+          title={
+            <span className="text-dark fs-12 noselect">
+              Pilihan tidak dapat dihapus jika promosi sudah dijadwalkan atau sedang berjalan.
+            </span>
+          } 
+        >
+          <i className="fal fa-lock-alt ml-2 hover-pointer text-secondary" />
+        </Tooltip>
+      )
+    } 
+    else {
+      return <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(variant, idx)} />
+    }
+  }
+
+  const renderVariationButton = () => {
+    const ButtonComponent = ({ disabled }) => (
+      <Card.Body className="p-0 pb-1">
+        <p className="fs-14 mb-3 w-100">Variasi {countVariation+1 == 2 && countVariation+1}</p>
+        <ButtonColor
+          disabled={disabled}
+          block with="dashed" type="primary" 
+          className="h-35" icon={<PlusCircleOutlined />}
+          onClick={disabled ? () => {} : () => activeVariantHandler(countVariation+1)}
+        >
+          {countVariation < 1 ? "Aktifkan Variasi" : "Tambah"}
+        </ButtonColor>
+      </Card.Body>
+    )
+
+    if(countVariation == 0 && noVariant && 
+       noVariant.va1_discount_active && noVariant.va1_discount_active.value && 
+       isIn(discountStatus, [ongoing, will_come])
+    ){
+      return <ButtonComponent disabled={true} />
+    }
+
+    if(countVariation > 0 && countVariation < 2){
+      const checkActiveDiscount = vaOption[`va${countVariation}Option`].map(x => x.discount_active.value.toString())
+      if(isIn("true", checkActiveDiscount) && isIn(discountStatus, [ongoing, will_come])){
+        return <ButtonComponent disabled={true} />
+      } else {
+        return <ButtonComponent disabled={false} />
+      }
+    } 
+    if(countVariation < 2){
+      return <ButtonComponent disabled={false} />
+    }
+  }
+
   return(
     <>
       <Row>
@@ -694,9 +851,7 @@ const TableVariant = ({
             <Card.Body className="p-3 bg-light mb-3 bor-rad-5px">
               <p className="fs-15 mb-3 w-100 fw-500">
                 Variasi {i+1}
-                <span className="hover-pointer text-dark float-right" onClick={() => deleteGroupVariantsHandler(i+1)}>
-                  <i className="fal fa-times fs-16" />
-                </span>
+                {renderActionButton(i+1)}
               </p>
               <Form layout="vertical" {...formVariantLayout} name="head_title">
                 <Form.Item 
@@ -748,9 +903,26 @@ const TableVariant = ({
                       <ErrorTooltip item={va1Option[idx].va1_option} />
                       <Media.Body> 
                         {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
-                        {va1Total > 1 ? (
-                        <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
-                        ) : null}
+                        {va1Total > 1 ? renderDeteleVariant(i+1, idx) : null}
+                        {/*va1Total > 1 ? (
+                          <>
+                            {va1Option[idx].discount_active.value ? (
+                              <Tooltip 
+                                color="#fff"
+                                placement="left"
+                                title={
+                                  <span className="text-dark fs-12 noselect">
+                                    Pilihan tidak dapat dihapus jika promosi sudah dijadwalkan atau sedang berjalan.
+                                  </span>
+                                } 
+                              >
+                                <i className="fal fa-lock-alt ml-2 hover-pointer text-secondary" />
+                              </Tooltip>
+                            ):(
+                              <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
+                            )}
+                          </>
+                        ) : null*/}
                       </Media.Body> 
                     </Media>
                   </Form.Item>
@@ -779,9 +951,7 @@ const TableVariant = ({
                       <ErrorTooltip item={va2Option[idx].va2_option} />
                       <Media.Body> 
                         {idx == 0 && <div style={{ width: 22 }} />} {idx == 1 && <div style={{ width: 22 }} />}
-                        {va2Total > 1 ? (
-                        <i className="fal fa-trash-alt ml-2 hover-pointer text-secondary" onClick={() => deleteVariantHandler(i+1, idx)} />
-                        ) : null}
+                        {va2Total > 1 ? renderDeteleVariant(i+1, idx) : null}
                       </Media.Body>
                     </Media>
                   </Form.Item>
@@ -796,18 +966,25 @@ const TableVariant = ({
             </React.Fragment>
           ))}
 
-          {countVariation < 2 && (
-            <Card.Body className="p-0 pb-1">
-              <p className="fs-14 mb-3 w-100">Variasi {countVariation+1 == 2 && countVariation+1}</p>
-              <ButtonColor
-                block with="dashed" type="primary" 
-                className="h-35" icon={<PlusCircleOutlined />}
-                onClick={() => activeVariantHandler(countVariation+1)}
-              >
-                {countVariation < 1 ? "Aktifkan Variasi" : "Tambah"}
-              </ButtonColor>
-            </Card.Body>
-          )}
+          {renderVariationButton()}
+          {/* countVariation == 0 && noVariant && noVariant.va1_discount_active && noVariant.va1_discount_active.value ? (
+            <></>
+          ) : (
+            <>
+              {countVariation < 2 && (
+                <Card.Body className="p-0 pb-1">
+                  <p className="fs-14 mb-3 w-100">Variasi {countVariation+1 == 2 && countVariation+1}</p>
+                  <ButtonColor
+                    block with="dashed" type="primary" 
+                    className="h-35" icon={<PlusCircleOutlined />}
+                    onClick={() => activeVariantHandler(countVariation+1)}
+                  >
+                    {countVariation < 1 ? "Aktifkan Variasi" : "Tambah"}
+                  </ButtonColor>
+                </Card.Body>
+              )}
+            </>
+          ) */}
         </Col>
       </Row>
 

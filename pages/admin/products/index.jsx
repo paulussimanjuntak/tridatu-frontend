@@ -48,7 +48,7 @@ const EmptyProduct = ({ loading, products }) => (
 const ProductComponent = ({ products, dispatch, router }) => (
   <AnimatePresence>
     {products && products.data && products.data.length > 0 && products.data.map(product => (
-      <Col xl={4} lg={6} md={6} sm={8} xs={12} key={product.products_id}>
+      <Col xl={4} lg={6} md={8} sm={12} xs={24} key={product.products_id}>
         <CardProductMemo 
           data={product} 
           aliveArchive={(id) => dispatch(actions.aliveArchiveProduct(id))}

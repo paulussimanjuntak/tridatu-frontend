@@ -335,6 +335,8 @@ const PromoModal = ({ visible, onClose, discount, productId, discountStatus }) =
         }
       }
 
+      console.log(JSON.stringify(productVariant, null, 2))
+
       axios.post("/variants/create-ticket", productVariant, jsonHeaderHandler())
         .then(res => {
           onSubmitPromo(res.data.ticket)

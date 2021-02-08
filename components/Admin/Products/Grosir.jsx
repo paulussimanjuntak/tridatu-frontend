@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 import { PlusCircleOutlined } from '@ant-design/icons'
 
+import _ from 'lodash'
 import isIn from 'validator/lib/isIn'
 import Card from 'react-bootstrap/Card'
 import Button from "antd-button-color"
@@ -13,6 +14,7 @@ import ErrorTooltip from "components/ErrorMessage/Tooltip";
 import { formItemLayout } from 'data/productsAdmin'
 import { formImage, formImageIsValid } from 'formdata/formImage'
 import { imagePreview, uploadButton } from 'lib/imageUploader'
+import { ongoing, will_come } from 'components/Card/Admin/Product/Promo/statusType'
 import { imageValidationProduct, multipleImageValidation } from 'lib/imageProductUploader'
 
 import { priceMessage, priceSmallerMessage, price50SmallerMessage, priceSmallerBefore } from 'formdata/formGrosir.js'
@@ -20,19 +22,26 @@ import { validateFormGrosirPrice, validateFormGrosirQty } from 'formdata/formGro
 
 const Grosir = ({ 
   isActiveVariation, isActiveGrosir, setIsActiveGrosir, grosirPrice, setGrosirPrice, dataSource, setDataSource, 
-  noVariant, onNoVariantChangeHandler, grosir, setGrosir
+  noVariant, onNoVariantChangeHandler, grosir, setGrosir, discountStatus
 }) => {
   const [showModal, setShowModal] = useState(false)
 
   const { price } = grosirPrice
-  const { va1_price } = noVariant
-  const { active } = isActiveVariation
+  const { va1_price, va1_discount_active: activeDiscount } = noVariant
+  const { active, countVariation } = isActiveVariation
   const { activeGrosir, countGrosir } = isActiveGrosir
 
   const addGrosirHandler = () => {
     const initGrosirData = { min_qty: {value: "", isValid: true, message: null}, price: {value: "", isValid: true, message: null} }
     setGrosir(grosir => [...grosir, initGrosirData])
-    setIsActiveGrosir({ activeGrosir: true, countGrosir: countGrosir + 1 })
+    /* for update slug
+    if(countGrosir > 0 && active){
+      setIsActiveGrosir({ ...isActiveGrosir, activeGrosir: true })
+    } else {
+      setIsActiveGrosir({ countGrosir: countGrosir + 1, activeGrosir: true })
+    }
+    */
+    if(countGrosir < 5) setIsActiveGrosir({ countGrosir: countGrosir + 1, activeGrosir: true })
   }
 
   const activeGrosirHandler = () => {
@@ -133,41 +142,77 @@ const Grosir = ({
   }
 
   const confirmModalHandler = () => {
-    setShowModal(false)
     addGrosirHandler()
+    setShowModal(false)
   }
 
   useEffect(() => {
+    // function for change price when set all is clicked and price column is empty
     if(active && activeGrosir){
+      console.log("kesini ya?")
       const copyDataSource = [...dataSource]
-      if(copyDataSource[0].key){
-        copyDataSource.map(obj => {
-          obj.price = { value: price.value ? price.value : copyDataSource[0].price.value, isValid: true, message: null }
-          return obj
-        })
-        setDataSource(copyDataSource)
+      if(copyDataSource[0] && copyDataSource[0].price && copyDataSource[0].price.value){
+        setGrosirPrice({ price: copyDataSource[0].price })
       }
     }
+  }, [activeGrosir, dataSource])
+
+  useEffect(() => {
+    // this function is for checking the price of variant when the variant has some discount and
+    // when the price is same and grosir will active and so on
+    const isPriceSame = _.map(dataSource, obj => obj.price.value)
+    const checkIsActiveDiscount = _.map(dataSource, obj => obj.discount_active.value.toString())
+    if(_.uniqBy(isPriceSame).length > 1 && activeGrosir && isIn("true", checkIsActiveDiscount)){
+      setIsActiveGrosir({ ...isActiveGrosir, activeGrosir: false })
+      console.log("masuk check sini")
+    } 
+    if(_.uniqBy(isPriceSame).length < 2 && countGrosir > 0){
+      setIsActiveGrosir({ ...isActiveGrosir, activeGrosir: true})
+      console.log("masuk check sini 2")
+    } 
+  // }, [dataSource]) // for auto update when price is different to same in modal
+  }, [countGrosir, price, dataSource])
+
+  useEffect(() => {
+    // function for changing all price in data source from input grosir price
+    if(active && activeGrosir){
+      const copyDataSource = [...dataSource]
+      if(copyDataSource[0] && copyDataSource[0].key){
+        copyDataSource.map(obj => {
+          if(obj.discount_active.value){
+            console.log("true discount_active")
+            obj.price = { value: obj.price.value, isValid: true, message: null }
+          } else {
+            console.log("false discount_active")
+            obj.price = { value: price.value ? price.value : copyDataSource[0].price.value, isValid: true, message: null }
+          }
+          return obj
+        })
+        // setDataSource(copyDataSource) //check again
+      }
+    }
+  }, [price, activeGrosir, active, dataSource])
+
+  useEffect(() => {
     if(active && !activeGrosir){
+      console.log("masuk sini ketika tidak aktif")
       const copyDataSource = [...dataSource]
       if(copyDataSource[0].key){
         copyDataSource.map(obj => {
-          obj.price = { value: copyDataSource[0].price.value, isValid: true, message: null }
+          if(obj.discount_active.value){
+            obj.price = { value: obj.price.value, isValid: true, message: null }
+          } else {
+            obj.price = { value: price.value ? price.value : copyDataSource[0].price.value, isValid: true, message: null }
+          }
           return obj
         })
-        setDataSource(copyDataSource)
+        countVariation !== 1 && setDataSource(copyDataSource) 
+        // klo di comment variasi 2 paling bawah ke set value ke initial 
+        // klo ga dikomen pas lagi diskon ga keset valuenya && lagi active grosir && hanya di 1 variant 
+        // klo ga di komen pas add new produk dan aktif 1 variasi grosir tidak bisa aktif
       }
     }
   }, [price, activeGrosir])
-
-  useEffect(() => {
-    if(active && activeGrosir){
-      const copyDataSource = [...dataSource]
-      if(copyDataSource[0].price.value){
-        setGrosirPrice({ price: copyDataSource[0].price})
-      }
-    }
-  }, [activeGrosir])
 
   useEffect(() => {
     if(activeGrosir){
@@ -183,25 +228,59 @@ const Grosir = ({
     return (isIn("false", checkMinQty.concat(checkPrice)) || isIn("", checkMinQtyVal.concat(checkPriceVal)))
   }
 
+  const RenderGrosirButton = () => {
+    const ButtonGrosirComponent = ({ disabled }) => (
+      <Button
+        disabled={disabled}
+        block with="dashed" type="primary" 
+        className="h-35" icon={<PlusCircleOutlined />}
+        onClick={disabled ? () => {} : activeGrosirHandler}
+      >
+        Tambah Harga Grosir
+      </Button>
+    )
+
+    const checkDifferencePrice = _.uniqBy(dataSource, obj => obj.price.value)
+    const checkIsActiveDiscount = _.map(dataSource, obj => obj.discount_active.value.toString())
+
+    if(checkDifferencePrice && checkDifferencePrice.length > 1 && isIn("true", checkIsActiveDiscount)){
+      return <ButtonGrosirComponent disabled={true} />
+    }
+    else {
+      return <ButtonGrosirComponent disabled={false} />
+    }
+  }
+
+  const checkIsActiveDiscountVariant = _.map(dataSource, obj => obj.discount_active.value.toString())
+
+  const checkStatusDiscountVariant = () => {
+    return isIn("true", checkIsActiveDiscountVariant) && isIn(discountStatus, [ongoing, will_come])
+  }
+
+  const checkStatusDiscountNoVariant = () => {
+    return activeDiscount.value && isIn(discountStatus, [ongoing, will_come])
+  }
+
   return(
     <>
       {!activeGrosir ? (
         <Form layout="vertical" {...formItemLayout} className="mt-4">
           <Form.Item label="Grosir">
             <Card.Body className="p-0 pb-1">
-              <Button
-                block with="dashed" type="primary" 
-                className="h-35" icon={<PlusCircleOutlined />}
-                onClick={activeGrosirHandler}
-              >
-                Tambah Harga Grosir
-              </Button>
+              <RenderGrosirButton />
+              {/* <Button */}
+              {/*   block with="dashed" type="primary" */} 
+              {/*   className="h-35" icon={<PlusCircleOutlined />} */}
+              {/*   onClick={activeGrosirHandler} */}
+              {/* > */}
+              {/*   Tambah Harga Grosir */}
+              {/* </Button> */}
             </Card.Body>
           </Form.Item>
         </Form>
       ) : (
         <>
-          <p className="fs-14 mb-2 m-t-24 w-100">Grosir</p>
+          <p className="m-t-24 fs-14 mb-2 w-100">Grosir</p>
 
           <Card.Body className="p-3 bg-light mb-3 bor-rad-5px">
             {active && (
@@ -223,36 +302,52 @@ const Grosir = ({
                       <span className="ant-input-group-addon noselect">Rp</span>
                       <InputNumber
                         min={1}
+                        disabled={checkStatusDiscountVariant()}
+                        readOnly={checkStatusDiscountVariant()}
                         className="w-100 bor-left-rad-0 h-33-custom-input"
                         formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
                         parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
-                        onChange={onPriceChangeHandler}
                         value={price.value}
+                        onChange={checkStatusDiscountVariant() ? () => {} : onPriceChangeHandler}
+                        // onChange={onPriceChangeHandler}
                       />
                     </div>
                   </div>
                   <ErrorTooltip item={price} />
+                  {price.isValid && checkStatusDiscountVariant() && (
+                    <small className="form-text text-left text-muted">
+                      Harga tidak dapat dimodifikasi ketika promosi sedang berlangsung.
+                    </small>
+                  )}
                 </Form.Item>
               ) : (
                 <Form.Item 
                   required
                   label="Harga Utama"
-                  validateStatus={!va1_price.isValid && va1_price.message && "error"}
+                  validateStatus={!checkStatusDiscountNoVariant() && !va1_price.isValid && va1_price.message && "error"}
                 >
                   <div className="ant-input-group-wrapper">
                     <div className="ant-input-wrapper ant-input-group">
                       <span className="ant-input-group-addon noselect">Rp</span>
                       <InputNumber
                         min={1}
+                        disabled={checkStatusDiscountNoVariant()}
+                        readOnly={checkStatusDiscountNoVariant()}
                         className="w-100 bor-left-rad-0 h-33-custom-input"
                         formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
                         parser={value => value.replace(/\Rp\s?|(\.*)/g, '')}
                         value={va1_price.value}
-                        onChange={e => onNoVariantChangeHandler(e, "va1_price")}
+                        onChange={checkStatusDiscountNoVariant() ? () => {} : e => onNoVariantChangeHandler(e, "va1_price")}
+                        // onChange={e => onNoVariantChangeHandler(e, "va1_price")}
                       />
                     </div>
                   </div>
                   <ErrorTooltip item={va1_price} />
+                  {va1_price.isValid && checkStatusDiscountNoVariant() && (
+                    <small className="form-text text-left text-muted">
+                      Harga tidak dapat dimodifikasi ketika promosi sedang berlangsung.
+                    </small>
+                  )}
                 </Form.Item>
               )}
             </Form>

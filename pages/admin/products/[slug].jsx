@@ -30,6 +30,7 @@ import TableVariant from 'components/Admin/Variant/TableVariant'
 import AddStyleAdmin from 'components/Admin/addStyle'
 
 import { initialColumn } from 'data/productsAdmin'
+import { not_active } from 'components/Card/Admin/Product/Promo/statusType'
 
 import { formInformationProduct, formNoVariant } from 'formdata/formProduct'
 import { formNoVariantIsValid, formVa1OptionSingleVariantIsValid, formTableIsValid, formVariantTitleIsValid } from 'formdata/formProduct'
@@ -71,6 +72,7 @@ const UpdateProduct = ({ productData }) => {
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [allCategoriesList, setAllCategoriesList] = useState([])
 
+  const [discountStatus, setDiscountStatus] = useState(not_active)
   const [columns, setColumns] = useState(initialColumn)
   const [dataSource, setDataSource] = useState([])
   const [vaOption, setVaOption] = useState(initialVaOption)
@@ -95,7 +97,7 @@ const UpdateProduct = ({ productData }) => {
 
   /* Destructuring Object Product */
   const { name, desc, item_sub_category_id, brand_id, condition, weight, preorder, video } = informationProduct;
-  const { va1_price, va1_stock, va1_code, va1_barcode } = noVariant
+  const { va1_id, va1_price, va1_stock, va1_code, va1_barcode, va1_discount, va1_discount_active } = noVariant
   /* Destructuring Object Product */
 
 
@@ -103,13 +105,12 @@ const UpdateProduct = ({ productData }) => {
   /*SET DATA FROM SERVER*/
   useEffect(() => {
     if(productData){
-      console.log(JSON.stringify(productData, null, 2))
 
       dispatch(actions.getAllCategories())
       dispatch(actions.getBrand())
       const image_product = []
       const { products_brand, products_category, products_image_size_guide, products_slug, products_image_product } = productData
-      const { products_preorder, products_variant, products_wholesale } = productData
+      const { products_preorder, products_variant, products_wholesale, products_discount_status } = productData
       setInitialFetch({isInit: true, dataVariant: products_variant})
 
       const stateProductInformation = JSON.parse(JSON.stringify(informationProduct))
@@ -119,6 +120,9 @@ const UpdateProduct = ({ productData }) => {
         if(stateProductInformation[newKey]){
           stateProductInformation[newKey].value = productData[key]
         }
+      }
+      if(products_discount_status){
+        setDiscountStatus(products_discount_status)
       }
       if(products_preorder){
         setIsPreorder(true)
@@ -158,6 +162,7 @@ const UpdateProduct = ({ productData }) => {
 
       /* SET VARIANT FROM SERVER */
       if(products_variant){
+        console.log(JSON.stringify(products_variant, null, 2))
         const { va1_name, va2_name, va1_items } = products_variant
 
         /* NO VARIANT DATA */
@@ -185,9 +190,12 @@ const UpdateProduct = ({ productData }) => {
           const image_variant = []
           for(let [key, item] of Object.entries(va1_items)){
             va1Data.push({
+              ...additional,
               key: `va1_option_${makeid(10)}`, 
+              id: { value: item.va1_id, isValid: true, message: null },
               va1_option: { value: item.va1_option, isValid: true, message: null }, 
-              ...additional
+              discount: { value: item.va1_discount, isValid: true, message: null },
+              discount_active: { value: item.va1_discount_active, isValid: true, message: null },
             })
             if(item.va1_image){
               image_variant.push({
@@ -198,10 +206,13 @@ const UpdateProduct = ({ productData }) => {
               image_variant.push({})
             }
             newData.push({
+              id: { ...initialValue, value: item.va1_id },
               price: { ...initialValue, value: item.va1_price },
               stock: { ...initialValue, value: item.va1_stock },
               code: { ...initialValue, value: item.va1_code || "" },
               barcode: { ...initialValue, value: item.va1_barcode || "" },
+              discount: { ...initialValue, value: item.va1_discount },
+              discount_active: { ...initialValue, value: item.va1_discount_active },
             })
           }
           const data = {
@@ -244,31 +255,27 @@ const UpdateProduct = ({ productData }) => {
           let variant = []
           let va1Option = []
           let va2Option = []
-          for(let val2 of va1_items[0].va2_items){
-            va2Option.push({
-              key: `va2_option_${makeid(10)}`, 
-              va2_option: { value: val2.va2_option, isValid: true, message: null }, 
-              ...additional
-            })
-          }
+          let discountActiveArray = []
+          let variantOption = []
+
           for(let [key1, val1] of Object.entries(va1_items)){
             let variant_tmp = []
-            va1Option.push({
-              key: `va1_option_${makeid(10)}`, 
-              va1_option: { value: val1.va1_option, isValid: true, message: null }, 
-              ...additional
-            })
             for(let [key2, val2] of Object.entries(val1.va2_items)){
+              discountActiveArray.push(val2.va2_discount_active.toString())
+              variantOption.push({[val2.va2_option]: val1.va1_option })
               const initialData = {
                 key: makeid(10), 
                 va1_key: +key1,
                 va2_key: +key2,
                 va1_option: val1.va1_option,
                 va2_option: val2.va2_option,
+                id: { value: val2.va2_id, isValid: true, message: null },
                 price: { value: val2.va2_price, isValid: true, message: null },
                 stock: { value: val2.va2_stock, isValid: true, message: null },
                 code: { value: val2.va2_code || "", isValid: true, message: null },
                 barcode: { value: val2.va2_barcode || "", isValid: true, message: null },
+                discount: { value: val2.va2_discount, isValid: true, message: null },
+                discount_active: { value: val2.va2_discount_active, isValid: true, message: null },
               }
               variant_tmp.push(initialData)
             }
@@ -276,7 +283,35 @@ const UpdateProduct = ({ productData }) => {
               variant.push(item)
             }
           }
+          // console.log(variantOption)
 
+          for(let [key1, val1] of Object.entries(va1_items)){
+            let activeDiscountArrayInArray = _.chunk(discountActiveArray, va1_items[0].va2_items.length)
+            va1Option.push({
+              ...additional,
+              key: `va1_option_${makeid(10)}`, 
+              va1_option: { value: val1.va1_option, isValid: true, message: null }, 
+              discount_active: { value: isIn("true", activeDiscountArrayInArray[key1]) ? true : false, isValid: true, message: null }
+            })
+          }
+
+          for(let val2 of va1_items[0].va2_items){
+            let discountActive = false
+            let uniqVa2 = _.groupBy(variant, obj => obj.va2_option)
+            let checkActiveDiscount = _.map(uniqVa2[val2.va2_option], obj => obj.discount_active.value)
+            // console.log(checkActiveDiscount)
+
+            if(isIn("true", checkActiveDiscount)) discountActive = true
+            va2Option.push({
+              ...additional,
+              key: `va2_option_${makeid(10)}`, 
+              va2_option: { value: val2.va2_option, isValid: true, message: null }, 
+              discount: { value: val2.va2_discount, isValid: true, message: null },
+              discount_active: { value: discountActive, isValid: true, message: null },
+            })
+            va2Option = _.uniqBy(va2Option, obj => obj.va2_option.value)
+          }
+          
           const image_variant = []
           for(let [key, item] of Object.entries(va1_items)){
             if(item.va1_image){
@@ -306,7 +341,6 @@ const UpdateProduct = ({ productData }) => {
           setColumns(column => [col1, col2, ...column])
           setIsActiveVariation({ active: true, countVariation: 2 })
           setDataSource(variant)
-
         }
       }
       /* SET VARIANT FROM SERVER */
@@ -529,6 +563,7 @@ const UpdateProduct = ({ productData }) => {
     setGrosirPrice(formGrosirPrice)
     setGrosir([])
 
+    setDiscountStatus(not_active)
     setInformationProduct(formInformationProduct)
     setNoVariant(formNoVariant)
 
@@ -703,6 +738,9 @@ const UpdateProduct = ({ productData }) => {
 
   const onSubmitHandler = e => {
     e.preventDefault()
+    const newProductData = { ...productData }
+    const productVariant = { ...productData.products_variant }
+    const { va2_name, va1_items } = productVariant
     const urlVariant = "/variants/create-ticket"
 
     if(!isActiveVariation.active && 
@@ -710,16 +748,29 @@ const UpdateProduct = ({ productData }) => {
        formNoVariantIsValid(noVariant, setNoVariant) &&
        formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
     ){
+      // for(let obj of va1_items){
+      //   obj.va1_price = va1_price.value
+      //   obj.va1_stock = va1_stock.value
+      //   obj.va1_code = va1_code.value || null
+      //   obj.va1_barcode = va1_barcode.value || null
+      // }
+
       const data = {
+        va1_product_id: newProductData.products_id,
         va1_items: [{
+          va1_id: va1_id.value,
           va1_price: va1_price.value,
           va1_stock: va1_stock.value,
           va1_code: va1_code.value || null,
-          va1_barcode: va1_barcode.value || null
+          va1_barcode: va1_barcode.value || null,
+          va1_discount: va1_discount.value,
+          va1_discount_active: va1_discount_active.value
         }]
       }
+          
 
       console.log(JSON.stringify(data, null, 2))
+      return
       axios.post(urlVariant, data, jsonHeaderHandler())
         .then(res => {
           if(activeGrosir){
@@ -729,8 +780,8 @@ const UpdateProduct = ({ productData }) => {
           }
         })
         .catch(err => {
-          console.log(err)
           const errDetail = err.response.data.detail;
+          console.log(errDetail)
           if(errDetail == signature_exp){
             axios.post(urlVariant, data, jsonHeaderHandler())
               .then(res => {
@@ -786,11 +837,14 @@ const UpdateProduct = ({ productData }) => {
         const imgUrl = imgSplit[imgSplit.length - 1]
 
         const item = {
+          va1_id: va1Option[i].id.value,
           va1_option: va1Option[i].va1_option.value,
           va1_price: +dataSource[i].price.value,
           va1_stock: +dataSource[i].stock.value,
           va1_code: dataSource[i].code.value || null,
           va1_barcode: dataSource[i].barcode.value || null,
+          va1_discount: dataSource[i].discount.value,
+          va1_discount_active: dataSource[i].discount_active.value,
           va1_image: imageVariantsObj.hasOwnProperty("url") ? imgUrl : null
         }
         items.push(item)
@@ -803,11 +857,14 @@ const UpdateProduct = ({ productData }) => {
          formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
       ){
         const data = {
+          va1_product_id: newProductData.products_id,
           va1_name: columns[0].title == "Nama" ?  "" : columns[0].title,
           va1_items: items
         }
 
         console.log(JSON.stringify(data, null, 2))
+        return
+
         axios.post(urlVariant, data, jsonHeaderHandler())
           .then(res => {
             if(activeGrosir){
@@ -902,11 +959,14 @@ const UpdateProduct = ({ productData }) => {
         for(let val of dataSource){
           if(val.va1_option === va1[i]){
             const va2_data = {
+              va2_id: val.id ? val.id.value : 0,
               va2_option: val.va2_option.split(" ")[0] === "Pilihan" ? "" : val.va2_option,
               va2_price: +val.price.value,
               va2_stock: +val.stock.value,
               va2_code: val.code.value || null,
-              va2_barcode: val.barcode.value || null
+              va2_barcode: val.barcode.value || null,
+              va2_discount: val.discount.value,
+              va2_discount_active: val.discount_active.value,
             }
             va1_items.va2_items.push(va2_data)
           }
@@ -921,12 +981,14 @@ const UpdateProduct = ({ productData }) => {
          formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
       ){
         const data = {
+          va1_product_id: newProductData.products_id,
           va1_name: columns[0].title == "Nama" ?  "" : columns[0].title,
           va2_name: columns[1].title == "Nama" ?  "" : columns[1].title,
           va1_items: variants
         }
 
         console.log(JSON.stringify(data, null, 2))
+        return
 
         axios.post(urlVariant, data, jsonHeaderHandler())
           .then(res => {
@@ -1048,6 +1110,7 @@ const UpdateProduct = ({ productData }) => {
               noVariant={noVariant}
               onNoVariantChangeHandler={onNoVariantChangeHandler}
               isActiveGrosir={isActiveGrosir}
+              discountStatus={discountStatus}
             />
           )}
 
@@ -1068,6 +1131,8 @@ const UpdateProduct = ({ productData }) => {
             activeGrosir={activeGrosir}
             grosirPrice={grosirPrice}
             setGrosirPrice={setGrosirPrice}
+            noVariant={noVariant}
+            discountStatus={discountStatus}
           />
 
           <TableGrosir
@@ -1082,6 +1147,7 @@ const UpdateProduct = ({ productData }) => {
             onNoVariantChangeHandler={onNoVariantChangeHandler}
             grosir={grosir}
             setGrosir={setGrosir}
+            discountStatus={discountStatus}
           />
 
         </Card.Body>

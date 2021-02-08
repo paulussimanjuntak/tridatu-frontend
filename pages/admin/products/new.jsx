@@ -28,6 +28,7 @@ import AddStyleAdmin from 'components/Admin/addStyle'
 
 import { initialColumn } from 'data/productsAdmin'
 
+import { not_active } from 'components/Card/Admin/Product/Promo/statusType'
 import { formInformationProduct, formNoVariant } from 'formdata/formProduct'
 import { formNoVariantIsValid, formVa1OptionSingleVariantIsValid, formTableIsValid, formVariantTitleIsValid } from 'formdata/formProduct'
 import { formVa2OptionDoubleVariantIsValid, formTitleIsValid } from 'formdata/formProduct'
@@ -811,6 +812,7 @@ const NewProduct = () => {
             activeGrosir={activeGrosir}
             grosirPrice={grosirPrice}
             setGrosirPrice={setGrosirPrice}
+            discountStatus={not_active}
           />
 
           <TableGrosir
