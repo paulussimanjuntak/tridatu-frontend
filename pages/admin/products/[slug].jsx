@@ -695,6 +695,8 @@ const UpdateProduct = ({ productData }) => {
         variant: ticket_variant,
         items: grosirList
       }
+
+      console.log(JSON.stringify(data, null, 2))
       axios.post(urlGrosir, data, jsonHeaderHandler())
         .then(res => {
           onSubmitProduct(ticket_variant, res.data.ticket)
@@ -748,12 +750,6 @@ const UpdateProduct = ({ productData }) => {
        formNoVariantIsValid(noVariant, setNoVariant) &&
        formImageIsValid(imageList, setImageList, "Foto produk tidak boleh kosong")
     ){
-      // for(let obj of va1_items){
-      //   obj.va1_price = va1_price.value
-      //   obj.va1_stock = va1_stock.value
-      //   obj.va1_code = va1_code.value || null
-      //   obj.va1_barcode = va1_barcode.value || null
-      // }
 
       const data = {
         va1_product_id: newProductData.products_id,
@@ -770,7 +766,6 @@ const UpdateProduct = ({ productData }) => {
           
 
       console.log(JSON.stringify(data, null, 2))
-      return
       axios.post(urlVariant, data, jsonHeaderHandler())
         .then(res => {
           if(activeGrosir){
@@ -863,8 +858,6 @@ const UpdateProduct = ({ productData }) => {
         }
 
         console.log(JSON.stringify(data, null, 2))
-        return
-
         axios.post(urlVariant, data, jsonHeaderHandler())
           .then(res => {
             if(activeGrosir){
@@ -875,6 +868,7 @@ const UpdateProduct = ({ productData }) => {
           })
           .catch(err => {
             const errDetail = err.response.data.detail;
+            console.log(errDetail)
             if(errDetail == signature_exp){
               axios.post(urlVariant, data, jsonHeaderHandler())
                 .then(res => {
@@ -988,8 +982,6 @@ const UpdateProduct = ({ productData }) => {
         }
 
         console.log(JSON.stringify(data, null, 2))
-        return
-
         axios.post(urlVariant, data, jsonHeaderHandler())
           .then(res => {
             if(activeGrosir){

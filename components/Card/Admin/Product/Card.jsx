@@ -30,7 +30,7 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
     if(countDiscPrice(variants_discount, variants_min_price) === countDiscPrice(variants_discount, variants_max_price)){
       if(variants_discount > 0 && products_discount_status === ongoing){
         return (
-          <div className="product-price text-truncate text-tridatu">
+          <div className="product-price text-truncate text-tridatu lh-1">
             <NormalPrice>{formatNumber(countDiscPrice(variants_discount, variants_max_price))}</NormalPrice>
             <DiscPrice>{formatNumber(variants_max_price)}</DiscPrice>
           </div>
@@ -41,7 +41,7 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
     }
     else {
       return (
-        <div className="product-price text-truncate text-tridatu">
+        <div className="product-price text-truncate text-tridatu lh-1">
           <NormalPrice>{formatNumber(variants_min_price)} - </NormalPrice>
           <NormalPrice>{formatNumber(variants_max_price)}</NormalPrice>
         </div>
@@ -256,6 +256,10 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
           align-items: center;
           justify-content: center;
           z-index: 2;
+        }
+
+        :global(.lh-1){
+          line-height: 1;
         }
 
 
