@@ -6,6 +6,7 @@ import { Layout, Menu, Dropdown, Avatar, Badge, Grid, Drawer } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 
 import Image from "next/image";
+import isIn from 'validator/lib/isIn'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Media from 'react-bootstrap/Media';
@@ -99,11 +100,12 @@ const isEmptyObject = obj => {
 const getActiveMenu = (routes, router) => {
   let rsSplit = routes.split('/')
   let rrSplit = router.split('/')
+
   let lastPathrr = rrSplit[rrSplit.length - 1]
   let lastPathrs = rsSplit[rrSplit.length - 1]
-  
+
   if(lastPathrr.startsWith('[')){
-    if(lastPathrs && lastPathrs.startsWith('new')){
+    if(lastPathrs && isIn(lastPathrs, ['new', 'promo'])){
       rsSplit.shift()
     }
   }
