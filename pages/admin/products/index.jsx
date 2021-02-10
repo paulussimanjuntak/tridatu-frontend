@@ -59,34 +59,6 @@ const ProductComponent = ({ products, dispatch, router }) => (
   </AnimatePresence>
 )
 
-const SearchComponent = ({ search, setSearch, order_by, setOrderBy }) => (
-  <Form>
-    <Form.Row>
-      <Form.Group as={ColB} lg={8} md={6}>
-        <Input 
-          placeholder="Cari berdasarkan nama" 
-          prefix={<i className="far fa-search" />}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
-      </Form.Group>
-      <Form.Group as={ColB} lg={4} md={6}>
-        <Select 
-          placeholder="Urutkan" 
-          style={{ width: "100%"}}
-          className="product-search-select"
-          value={order_by}
-          onChange={e => setOrderBy(e)}
-        >
-          {orderList.map((list, i) => (
-            <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
-          ))}
-        </Select>
-      </Form.Group>
-    </Form.Row>
-  </Form>
-)
-
 const per_page = 18;
 const Products = ({ searchQuery }) => {
   const dispatch = useDispatch();
@@ -160,10 +132,12 @@ const Products = ({ searchQuery }) => {
     }
   }, [products])
 
+  const showPagination = products !== null && products && products.data && products.data.length > 0 && (products.next_num !== null || products.prev_num !== null);
+
   return(
     <>
       <Card className="border-0 shadow-sm card-add-product">
-        <Card.Body className="p-3 border-bottom">
+        <Card.Body className="p-3">
           <Tabs className="order-tabs" activeKey={activeTab} onTabClick={onTabClick}>
             <Tabs.TabPane tab="Semua" key={ALL}>
               
@@ -198,7 +172,7 @@ const Products = ({ searchQuery }) => {
                 <EmptyProduct loading={loading} products={products} />
               </Row>
 
-              {products !== null && products && products.data && products.data.length > 0 && (
+              {showPagination && (
                 <Card.Body className="text-center">
                   <Pagination 
                     total={products.total} 
@@ -244,7 +218,7 @@ const Products = ({ searchQuery }) => {
                 <EmptyProduct loading={loading} products={products} />
               </Row>
 
-              {products !== null && products && products.data && products.data.length > 0 && (
+              {showPagination && (
                 <Card.Body className="text-center">
                   <Pagination 
                     total={products.total} 
@@ -290,7 +264,7 @@ const Products = ({ searchQuery }) => {
                 <EmptyProduct loading={loading} products={products} />
               </Row>
 
-              {products !== null && products && products.data && products.data.length > 0 && (
+              {showPagination && (
                 <Card.Body className="text-center">
                   <Pagination 
                     total={products.total} 
