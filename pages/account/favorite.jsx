@@ -24,6 +24,7 @@ const sortList = [
   { value: "low_price", label: "Harga Terendah" },
 ] 
 
+const per_page = 10;
 const Favorite = () => {
   const dispatch = useDispatch()
 
@@ -44,8 +45,8 @@ const Favorite = () => {
     if(order_by.value !== "") queryString["order_by"] = order_by.value
     else delete queryString["order_by"]
 
-    dispatch(actions.getWishlist(queryString))
-  }, [activeFilter])
+    dispatch(actions.getWishlist({ ...queryString, per_page: per_page }))
+  }, [activeFilter, page])
 
   useEffect(() => {
     if(products) setPage(products.page)
@@ -69,7 +70,11 @@ const Favorite = () => {
       }
       setActiveFilter(data)
     }
+
+    setPage(1)
   }
+
+  const showPagination = products !== null && products && products.data && products.data.length > 0 && (products.next_num !== null || products.prev_num !== null);
 
   return(
     <>
@@ -110,21 +115,29 @@ const Favorite = () => {
             </Form.Row>
           </Form>
 
-          <Row gutter={[10, 10]}>
-            <AnimatePresence>
+          <AnimatePresence exitBeforeEnter>
+            <Row gutter={[10, 10]}>
               {products && products.data && products.data.length > 0 && products.data.map(product => (
                 <Col lg={5} md={6} sm={8} xs={12} key={product.products_id} className="modif-col">
                   <CardProductMemo data={product} />
                 </Col>
               ))}
-            </AnimatePresence>
-          </Row>
+            </Row>
+          </AnimatePresence>
 
-          <RowB className="mt-4">
-            <ColB className="align-self-center text-center">
-              <Pagination />
-            </ColB>
-          </RowB>
+          {showPagination && (
+            <RowB className="mt-4">
+              <ColB className="align-self-center text-center">
+                <Pagination 
+                  total={products.total} 
+                  goTo={val => setPage(val)} 
+                  current={page} 
+                  hideOnSinglePage 
+                  pageSize={per_page}
+                />
+              </ColB>
+            </RowB>
+          )}
         </Card.Body>
       </Card>
 
