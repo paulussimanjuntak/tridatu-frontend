@@ -59,6 +59,9 @@ const PaginationContainer = ({ total = 1, pageSize = 10, goTo = () => {}, curren
         :global(.va-1px){
           vertical-align: 1px;
         }
+        :global(.ant-pagination-disabled, .ant-pagination-disabled:hover, .ant-pagination-disabled:focus){
+          color: #d9d9d9;
+        }
       `}</style>
     </>
   );
