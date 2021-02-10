@@ -35,6 +35,7 @@ const Grosir = ({
     const initGrosirData = { min_qty: {value: "", isValid: true, message: null}, price: {value: "", isValid: true, message: null} }
     setGrosir(grosir => [...grosir, initGrosirData])
     if(countGrosir < 5) setIsActiveGrosir({ countGrosir: countGrosir + 1, activeGrosir: true })
+    else setIsActiveGrosir({ ...isActiveGrosir, activeGrosir: true })
   }
 
   const activeGrosirHandler = () => {
@@ -48,7 +49,6 @@ const Grosir = ({
       setIsActiveGrosir({ activeGrosir: false, countGrosir: countGrosir - 1 })
       setGrosirPrice({ price: { value: "", isValid: true, message: null } })
       setGrosir([])
-
     } else {
       setIsActiveGrosir({ activeGrosir: true, countGrosir: countGrosir - 1 })
     }
@@ -91,7 +91,6 @@ const Grosir = ({
           newGrosir[idx][item].isValid = false
           newGrosir[idx][item].message = "Min Qty harus lebih besar dari sebelumnya"
         }
-
       } // idx > 0
     }
 

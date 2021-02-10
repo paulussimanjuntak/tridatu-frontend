@@ -139,7 +139,7 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
                 </span>
               </div>
               <div className="mb-0 product-meta-item product-meta-sales">
-                <span>Penjualan</span>
+                <span>Terjual</span>
                 <span className="text-truncate">1K</span>
               </div>
             </div>
@@ -237,9 +237,9 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
           justify-content: center;
         }
         .product-meta-item.product-meta-sales{
-          -webkit-box-flex: 7;
-          -ms-flex: 7;
-          flex: 7;
+          -webkit-box-flex: 6;
+          -ms-flex: 6;
+          flex: 6;
           -webkit-box-pack: end;
           justify-content: flex-end;
         }
