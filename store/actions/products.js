@@ -208,7 +208,7 @@ export const loveProduct = id => {
       .then(res => {
         message.success({ 
           content: res.data.detail, 
-          style: { marginTop: '8vh' },
+          style: { marginTop: '10vh' },
         });
         dispatch(loveProductSuccess())
       })
@@ -225,7 +225,7 @@ export const unloveProduct = id => {
       .then(res => {
         message.success({ 
           content: res.data.detail, 
-          style: { marginTop: '8vh' },
+          style: { marginTop: '10vh' },
         });
         dispatch(unloveProductSuccess())
       })
@@ -250,6 +250,9 @@ export const searchName = q => {
 
             obj['value'] = obj['value']
             obj['label'] = <span className="text-muted fw-500">{prefix}<span className="text-black">{match}</span>{suffix}</span>
+          } else {
+            obj['value'] = obj['value']
+            obj['label'] = <span className="text-muted fw-500">{obj['value']}</span>
           }
           return obj 
         })

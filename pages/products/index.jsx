@@ -257,7 +257,8 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
     console.log(searchQuery)
     const state = JSON.parse(JSON.stringify(activeFilter))
     if(searchQuery.hasOwnProperty("page")) {
-      setPage(searchQuery.page)
+      if(+searchQuery.page !== page) setPage(searchQuery.page)
+      else setPage(page)
     }
     if(searchQuery.hasOwnProperty("order_by")) {
       state.order_by.value = [searchQuery.order_by]

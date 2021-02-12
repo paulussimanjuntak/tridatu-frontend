@@ -144,7 +144,7 @@ const Home = () => {
               ))}
               {loadingProduct && (
                 <>
-                  {[...Array(16)].map((_,i) => (
+                  {[...Array(per_page)].map((_,i) => (
                     <Col lg={6} md={8} sm={12} xs={12} key={i}>
                       <CardProductLoading />
                     </Col>
@@ -266,11 +266,8 @@ const Home = () => {
 Home.getInitialProps = async ctx => {
   const outlet = await axios.get("/outlets/all-outlets")
   const brand = await axios.get("/brands/all-brands")
-  const product = await axios.get(`/products/all-products`, { params: params })
   ctx.store.dispatch(actions.getOutletSuccess(outlet.data)); 
   ctx.store.dispatch(actions.getBrandSuccess(brand.data)); 
-  ctx.store.dispatch(actions.getProductStart()); 
-  ctx.store.dispatch(actions.getProductSuccess(product.data)); 
 }
 
 export default Home;

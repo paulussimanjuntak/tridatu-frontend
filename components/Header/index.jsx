@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Input, Badge, Menu, Dropdown, Avatar, Tabs, AutoComplete, Empty } from "antd";
+import { AnimatePresence, motion } from 'framer-motion'
 import { SearchOutlined } from "@ant-design/icons";
 
 import Link from "next/link";
@@ -14,6 +15,7 @@ import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import isEmpty from 'validator/lib/isEmpty';
+import renameCategory from "lib/renameCategory"
 
 import Login from "../Header/Auth/Login";
 import ExtraAuth from "../Header/Auth/ExtraAuth";
@@ -116,16 +118,19 @@ const formExtraAuth = { show: false, type: "" }
 const Header = () => {
   const router = useRouter()
   const dispatch = useDispatch()
+
+  const user = useSelector(state => state.auth.user)
+  const searchNameValue = useSelector(state => state.products.searchName)
+  const allCategories = useSelector(state => state.categories.allCategories)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [showLogin, setShowLogin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
   const [showExtraAuth, setShowExtraAuth] = useState(formExtraAuth)
-
-  const user = useSelector(state => state.auth.user)
-  const searchNameValue = useSelector(state => state.products.searchName)
-  const allCategories = useSelector(state => state.categories.allCategories)
+  const [categoryList, setCategoryList] = useState(renameCategory(allCategories))
+  const [showOverlay, setShowOverlay] = useState(false)
 
   // LOGIN, RESET & REGISTER HANDLER
   const showLoginHandler = () => {
@@ -187,12 +192,13 @@ const Header = () => {
 
   // Search navbar
   const onSearchChange = e => {
-    const queryString = router.query
+    const queryString = {}
     const value = e.target.value;
     dispatch(actions.searchName(value))
     setSearchQuery(value)
 
     queryString["q"] = value
+    queryString["page"] = 1
     if(isEmpty(value)){
       delete queryString["q"]
       router.push({
@@ -200,9 +206,10 @@ const Header = () => {
         query: queryString
       })
     }
+    setShowOverlay(true)
   }
   const onSelectSuggestionHandler = e => {
-    const queryString = router.query
+    const queryString = {}
     queryString["q"] = e
     if(isEmpty(searchQuery)) delete queryString["q"]
 
@@ -210,10 +217,12 @@ const Header = () => {
       pathname: "/products",
       query: queryString
     })
+    setShowOverlay(false)
   }
   const onPressEnter = e => {
     e.preventDefault()
-    const queryString = router.query
+    const queryString = {}
+    queryString["page"] = 1
     queryString["q"] = searchQuery
     if(isEmpty(searchQuery)) delete queryString["q"]
 
@@ -221,6 +230,7 @@ const Header = () => {
       pathname: "/products",
       query: queryString
     })
+    setShowOverlay(false)
   }
   // Search navbar
 
@@ -237,6 +247,10 @@ const Header = () => {
   useEffect(() => {
     dispatch(actions.getAllCategories())
   },[])
+
+  useEffect(() => {
+    setCategoryList(renameCategory(allCategories))
+  }, [allCategories])
 
   const categoryMenu = (
     <Menu
@@ -256,17 +270,20 @@ const Header = () => {
             defaultActiveKey="1" 
             className="category-item-navbar-tabs-left noselect"
           >
-            {allCategories.map(category => (
-              <Tabs.TabPane tab={category.categories_name} key={category.categories_id}>
+            {categoryList.map(category => (
+              <Tabs.TabPane tab={category.title} key={category.key}>
                 <div className="westeros-c-column-container">
-                  {category.sub_categories.map(sub => (
-                    <div className="westeros-c-column-container_item text-truncate" key={sub.sub_categories_id}>
-                      <b className="fs-14">{sub.sub_categories_name}</b>
-                      {sub.item_sub_categories.map(item => (
-                        <p className="m-b-3 text-truncate item-sub-category" key={item.item_sub_categories_id}>
-                          <Link href="/products" as="/products">
-                            <a className="text-reset"> {item.item_sub_categories_name} </a>
-                          </Link>
+                  {category.children.map(sub => (
+                    <div className="westeros-c-column-container_item text-truncate" key={sub.key}>
+                      <b className="fs-14">{sub.title}</b>
+                      {sub.children.map(item => (
+                        <p className="m-b-3 text-truncate item-sub-category" key={item.key}>
+                          <a 
+                            className="text-reset" 
+                            href={`/products?page=1&ck=${item.key}&cn=${item.title}&item_sub_cat=${item.key}`}
+                          > 
+                            {item.title} 
+                          </a>
                         </p>
                       ))}
                     </div>
@@ -366,6 +383,9 @@ const Header = () => {
                     options={searchNameValue}
                     value={searchQuery}
                     onSelect={onSelectSuggestionHandler}
+                    onFocus={() => setShowOverlay(true)}
+                    onBlur={() => setShowOverlay(false)}
+                    onDropdownVisibleChange={val => setShowOverlay(val)}
                   >
                     <Input
                       placeholder="Search"
@@ -463,6 +483,18 @@ const Header = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
+
+      <AnimatePresence>
+        {showOverlay && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: ".2" }}
+            className="overlay-search"
+          />
+        )}
+      </AnimatePresence>
 
       <style jsx>{`
         :global(.list-suggestion){
@@ -640,6 +672,15 @@ const Header = () => {
         }
         :global(.item-sub-category:hover){
           color: rgba(0,0,0,.95);
+        }
+
+        :global(.overlay-search){
+          width: 100vw;
+          height: 100vh;
+          z-index: 1000;
+          position: fixed;
+          backdrop-filter: blur(4px);
+          background-color: hsla(0,0%,7%,.36);
         }
       `}</style>
     </>
