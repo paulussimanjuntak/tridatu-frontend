@@ -1,9 +1,10 @@
 import { withAuth } from 'lib/withAuth'
 import { useState, useEffect } from 'react'
-import { Input, Select, Row, Col } from 'antd'
+import { Input, Select, Row, Col, Empty } from 'antd'
 import { useSelector, useDispatch } from "react-redux";
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
+import dynamic from 'next/dynamic'
 import ColB from 'react-bootstrap/Col'
 import RowB from 'react-bootstrap/Row'
 import Card from 'react-bootstrap/Card'
@@ -11,10 +12,12 @@ import Form from 'react-bootstrap/Form'
 import isEmpty from 'validator/lib/isEmpty';
 
 import * as actions from "store/actions";
-import CardProduct from "components/Card/Product";
 import Pagination from "components/Pagination";
 import formFilter from "formdata/formFilter";
+import CardProductLoading from "components/Card/ProductLoading";
 
+const CardProductLoadingMemo = React.memo(CardProductLoading);
+const CardProduct = dynamic(() => import("components/Card/Product"), { ssr: false, loading: () => <CardProductLoadingMemo />  })
 const CardProductMemo = React.memo(CardProduct);
 
 const sortList = [
@@ -31,7 +34,9 @@ const Favorite = () => {
   const [page, setPage] = useState(1)
   const [activeFilter, setActiveFilter] = useState(formFilter);
 
+  const user = useSelector(state => state.auth.user)
   const products = useSelector(state => state.auth.wishlist)
+  const loadingProduct = useSelector(state => state.auth.loading)
 
   const { q, order_by } = activeFilter
 
@@ -70,7 +75,6 @@ const Favorite = () => {
       }
       setActiveFilter(data)
     }
-
     setPage(1)
   }
 
@@ -122,6 +126,26 @@ const Favorite = () => {
                   <CardProductMemo data={product} />
                 </Col>
               ))}
+              {loadingProduct && (!user || user) && (
+                <>
+                  {[...Array(16)].map((_,i) => (
+                    <Col lg={5} md={6} sm={8} xs={12} key={i}>
+                      <CardProductLoading />
+                    </Col>
+                  ))}
+                </>
+              )}
+              {!loadingProduct && products && products.data && products.data.length == 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: ".2" }}
+                  className="w-100 my-5"
+                >
+                  <Empty className="my-5" description={<span className="text-secondary">Produk tidak tersedia</span>} />
+                </motion.div>
+              )}
             </Row>
           </AnimatePresence>
 
