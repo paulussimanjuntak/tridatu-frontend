@@ -192,20 +192,9 @@ const Header = () => {
 
   // Search navbar
   const onSearchChange = e => {
-    const queryString = {}
     const value = e.target.value;
     dispatch(actions.searchName(value))
     setSearchQuery(value)
-
-    queryString["q"] = value
-    queryString["page"] = 1
-    if(isEmpty(value)){
-      delete queryString["q"]
-      router.push({
-        pathname: router.pathname,
-        query: queryString
-      })
-    }
     setShowOverlay(true)
   }
   const onSelectSuggestionHandler = e => {
@@ -677,7 +666,7 @@ const Header = () => {
         :global(.overlay-search){
           width: 100vw;
           height: 100vh;
-          z-index: 1000;
+          z-index: 1040;
           position: fixed;
           backdrop-filter: blur(4px);
           background-color: hsla(0,0%,7%,.36);

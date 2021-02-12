@@ -236,6 +236,7 @@ export const unloveProduct = id => {
 }
 
 export const searchName = q => {
+  q = q.toLowerCase()
   return dispatch => {
     dispatch(searchNameStart())
     axios.get(`/products/search-by-name?q=${q}&limit=10`)

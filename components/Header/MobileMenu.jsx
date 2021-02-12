@@ -67,20 +67,9 @@ const MobileMenu  = ({ visible, close, register, login, logout, searchQuery, set
   }
 
   const onSearchChange = e => {
-    const queryString = {}
     const value = e.target.value;
     dispatch(actions.searchName(value))
     setSearchQuery(value)
-
-    queryString["q"] = value
-    queryString["page"] = 1
-    if(isEmpty(value)){
-      delete queryString["q"]
-      router.push({
-        pathname: router.pathname,
-        query: queryString
-      })
-    }
   }
 
   const onPressEnter = e => {
