@@ -5,11 +5,11 @@ import isBoolean from 'validator/lib/isBoolean';
 
 message.config({ maxCount: 1 });
 
-const getProductStart = () => {
+export const getProductStart = () => {
   return { type: actionType.GET_ALLPRODUCTS_START }
 }
 
-const getProductSuccess = (products) => {
+export const getProductSuccess = (products) => {
   return { 
     type: actionType.GET_ALLPRODUCTS_SUCCESS,
     products: products
@@ -128,6 +128,7 @@ export const getProductSlugFail = (error) => {
 export const getProducts = ({ 
   page = 1, per_page = 10, q, live, order_by, p_min, p_max, item_sub_cat, brand, pre_order, condition, wholesale
 }) => {
+
   let queryString = {}
   if(page) queryString["page"] = page
   if(per_page) queryString["per_page"] = per_page
@@ -147,7 +148,8 @@ export const getProducts = ({
   if(p_max) queryString["p_max"] = p_max
   else delete queryString["p_max"]
 
-  // item_sub_cat
+  if(item_sub_cat) queryString["item_sub_cat"] = item_sub_cat
+  else delete queryString["item_sub_cat"]
 
   if(brand) queryString["brand"] = brand
   else delete queryString["brand"]

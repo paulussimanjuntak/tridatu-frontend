@@ -4,7 +4,7 @@ export { getOutlet, getOutletSuccess } from './outlet';
 export { getBrand, getBrandSuccess } from './brand';
 export { getCategories, getCategoriesSuccess, getSubCategories, getItemSubCategories, getAllCategories } from './categories';
 export { getAdminCollapsed, getAdminIsMobile } from './layout'
-export { getProducts, aliveArchiveProduct, loveProduct, unloveProduct, deleteProduct, searchName } from './products'
-export { getSlugProduct, getProductSlugStart, getProductSlugSuccess, getProductSlugFail } from './products'
+export { getProducts, getProductStart, getProductSuccess, aliveArchiveProduct, loveProduct, unloveProduct } from './products'
+export { getSlugProduct, getProductSlugStart, getProductSlugSuccess, getProductSlugFail, deleteProduct, searchName } from './products'
 export { searchCityDistrict, getShippingCost } from './shipping'
 export { getDiscount, nonActiveDiscount } from './discount'

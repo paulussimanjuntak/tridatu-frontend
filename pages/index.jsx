@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion'
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from 'next/dynamic'
 import RowB from "react-bootstrap/Row";
 import ColB from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
@@ -12,15 +13,18 @@ import Container from "react-bootstrap/Container";
 import Slider from "react-slick";
 
 import axios from "lib/axios";
-import CardProduct from "components/Card/Product";
 import CardBrand from "components/Card/Brand";
 import CardBanner from "components/Card/Banner";
+import CardProductLoading from "components/Card/ProductLoading";
 
 import * as actions from "store/actions";
 
-const CardProductMemo = React.memo(CardProduct);
 const CardBrandMemo = React.memo(CardBrand);
 const CardBannerMemo = React.memo(CardBanner);
+const CardProductLoadingMemo = React.memo(CardProductLoading);
+
+const CardProduct = dynamic(() => import("components/Card/Product"), { ssr: false, loading: () => <CardProductLoadingMemo />  })
+const CardProductMemo = React.memo(CardProduct);
 
 import { brandSettings, bannerSettings, infoStoreSettings, infoStoreSettingsMobile } from "lib/slickSetting";
 
@@ -29,6 +33,8 @@ let banners = ['/static/images/promo/Thumbnail-600x328.jpg', '/static/images/ban
 const infoStores = [...Array(4)].map(() => '/static/images/info-store/placeholder.png')
 const emptyBrands = [...Array(5)].map(() => '/static/images/brand/placeholder.png')
 
+const per_page = 10
+const params = { page: 1, per_page: per_page, live: "true", order_by: "visitor" }
 const Home = () => {
   const dispatch = useDispatch()
   const outlets = useSelector(state => state.outlet.outlet)
@@ -36,9 +42,10 @@ const Home = () => {
 
   const user = useSelector(state => state.auth.user)
   const products = useSelector(state => state.products.products)
+  const loadingProduct = useSelector(state => state.products.loading)
 
   useEffect(() => {
-    dispatch(actions.getProducts({ page: 1, per_page: 10, live: "true", order_by: "visitor" }))
+    dispatch(actions.getProducts({ ...params }))
   }, [user])
 
   return (
@@ -128,15 +135,24 @@ const Home = () => {
 
         <section>
           <h4 className="fs-20-s mb-4">Paling Banyak Dilihat</h4>
-          <Row gutter={[16, 16]}>
-            <AnimatePresence>
+          <AnimatePresence>
+            <Row gutter={[16, 16]}>
               {products && products.data && products.data.length > 0 && products.data.map(product => (
                 <Col lg={5} md={6} sm={8} xs={12} className="modif-col" key={product.products_id}>
                   <CardProductMemo data={product} />
                 </Col>
               ))}
-            </AnimatePresence>
-          </Row>
+              {loadingProduct && (
+                <>
+                  {[...Array(16)].map((_,i) => (
+                    <Col lg={6} md={8} sm={12} xs={12} key={i}>
+                      <CardProductLoading />
+                    </Col>
+                  ))}
+                </>
+              )}
+            </Row>
+          </AnimatePresence>
 
           <div className="text-center mb-5 mt-3">
             <Link href="/products" as="/products">
@@ -250,8 +266,11 @@ const Home = () => {
 Home.getInitialProps = async ctx => {
   const outlet = await axios.get("/outlets/all-outlets")
   const brand = await axios.get("/brands/all-brands")
+  const product = await axios.get(`/products/all-products`, { params: params })
   ctx.store.dispatch(actions.getOutletSuccess(outlet.data)); 
   ctx.store.dispatch(actions.getBrandSuccess(brand.data)); 
+  ctx.store.dispatch(actions.getProductStart()); 
+  ctx.store.dispatch(actions.getProductSuccess(product.data)); 
 }
 
 export default Home;

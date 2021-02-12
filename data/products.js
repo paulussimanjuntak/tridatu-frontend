@@ -6,6 +6,12 @@ export const productsData = [
   "Kemeja Converse Panjang",
 ];
 
+export const sortListProduct = [
+  { value: "", label: "Paling Sesuai" }, 
+  { value: "high_price", label: "Harga Tertinggi" }, 
+  { value: "low_price", label: "Harga Terendah" }
+] 
+
 export const formItemLayout = {
   wrapperCol: {
     xs: { span: 24 },
