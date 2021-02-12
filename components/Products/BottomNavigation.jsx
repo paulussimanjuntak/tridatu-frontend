@@ -54,12 +54,14 @@ const BottomNavigation = ({ product, love, loveHandler, quantity, selected }) =>
               />
               <Button 
                 danger
+                disabled
                 size="large"
                 className="fs-14 fw-600"
               >
                 Beli Sekarang
               </Button>
               <Button 
+                disabled
                 size="large"
                 className="btn-tridatu fs-14 fw-600"
                 icon={<i className="far fa-plus p-r-8 p-r-2-s" />} 

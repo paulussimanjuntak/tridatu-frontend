@@ -122,9 +122,11 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
     const ImageContainer   = containerSlider.querySelector(".image-gallery-slides")
     if(ImageContainer.querySelector(".center")){
       const imgElement = ImageContainer.querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
-      setOriginalImage(imgElement.src)
-      const tmpImg = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${variantImage}`
-      imgElement.src = tmpImg
+      if(imgElement){
+        setOriginalImage(imgElement.src)
+        const tmpImg = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${variantImage}`
+        imgElement.src = tmpImg
+      }
     }
   }
 
@@ -134,7 +136,9 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
     const ImageContainer   = containerSlider.querySelector(".image-gallery-slides")
     if(ImageContainer.querySelector(".center")){
       const imgElement = ImageContainer.querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
-      imgElement.src = originalImage
+      if(imgElement){
+        imgElement.src = originalImage
+      }
     }
   }
 

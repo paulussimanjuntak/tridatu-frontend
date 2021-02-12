@@ -17,6 +17,7 @@ import Container from 'react-bootstrap/Container'
 
 import ImageGallery from 'react-image-gallery'
 
+import getYoutubeThumbnail from "lib/getYoutubeThumbnail"
 import formatNumber from "lib/formatNumber";
 import Pagination from "components/Pagination";
 import UlasanContainer from 'components/Card/Ulasan'
@@ -52,6 +53,22 @@ const initialShippingLocation = {
 
 const loveLoginBtn = () => document.getElementById("id-btn-login").click();
 
+const _renderVideo = (item) => {
+  return (
+    <div className="embed-responsive embed-responsive-1by1">
+      <iframe className="embed-responsive-item" src={item} />
+    </div>
+  );
+}
+
+const _renderImage = (item) => {
+  return (
+    <div className="embed-responsive embed-responsive-1by1">
+      <img src={item} className="embed-responsive-item gallery-img-size-guide" />
+    </div>
+  )
+}
+
 const ProductDetail = () => {
   const dispatch = useDispatch()
   const router = useRouter()
@@ -64,20 +81,22 @@ const ProductDetail = () => {
 
   useEffect(() => {
     dispatch(actions.getSlugProduct({ slug: router.query.slug, recommendation: true }))
-
     document.getElementById('id-footer').style.setProperty("padding-bottom", "4rem", "important")
     return (() => {
       document.getElementById('id-footer').style.removeProperty("padding-bottom")
     })
   }, [])
 
+  console.log(JSON.stringify(productData, null, 2))
+
   const { products_id, products_brand, products_category, products_condition, products_desc, products_image_product } = productData
   const { products_image_size_guide, products_love, products_name, products_recommendation, products_slug } = productData
-  const { products_variant, products_visitor, products_weight, products_wholesale } = productData
+  const { products_variant, products_visitor, products_weight, products_wholesale, products_video } = productData
 
   const [showSearch, setShowSearch] = useState(false)
-  const [showShareModal, setShowShareModal] = useState(false)
   const [showModalCart, setShowModalCart] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [showImageModal, setShowImageModal] = useState(false)
   const [product, setProduct] = useState({})
   const [courier, setCourier] = useState({})
   const [shippingLocation, setShippingLocation] = useState(initialShippingLocation)
@@ -86,6 +105,13 @@ const ProductDetail = () => {
   const [selected, setSelected] = useState({price: 0, va1_item: "", va2_item: "", stock: 0, priceChange: false })
 
   const showModalCartHandler = () => { setShowModalCart(true) }
+
+  const showImageModalHandler = e => {
+    console.log(e)
+    e.preventDefault()
+    e.stopPropagation()
+    setShowImageModal(true)
+  }
 
   useEffect(() => {
     setProduct(productData)
@@ -144,6 +170,7 @@ const ProductDetail = () => {
 
   const getImageList = () => {
     let list = []
+    let imgVariants = [], imgSizeGuide = [], videoProduct = []
     for(let [_, obj] of Object.entries(products_image_product)){
       let imgUrl = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${obj}`
       list.push({
@@ -151,7 +178,35 @@ const ProductDetail = () => {
         thumbnail: imgUrl
       })
     }
-    return list
+    if(products_variant && products_variant.va1_name){
+      const { va1_items } = products_variant
+      for(let obj of va1_items){
+        if(obj.va1_image){
+          let imgUrl = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${obj.va1_image}`
+          imgVariants.push({
+            original: imgUrl, 
+            thumbnail: imgUrl,
+          })
+        }
+      }
+    }
+    if(products_image_size_guide){
+      let imgUrl = `${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${products_image_size_guide}`
+      imgSizeGuide.push({
+        original: imgUrl, 
+        thumbnail: imgUrl,
+        renderItem: () => _renderImage(imgUrl),
+      })
+    }
+    if(products_video){
+      const video = {
+        thumbnail: getYoutubeThumbnail(products_video, "max"),
+        embedUrl: products_video,
+        renderItem: () => _renderVideo(products_video)
+      }
+      videoProduct.push(video)
+    }
+    return list.concat(imgVariants, imgSizeGuide, videoProduct)
   }
 
   return(
@@ -183,9 +238,13 @@ const ProductDetail = () => {
               items={getImageList()} 
               showPlayButton={false}
               useBrowserFullscreen={false}
+              useTranslate3D={false}
+              preventDefaultTouchmoveEvent
+              showFullscreenButton={false}
               renderLeftNav={renderLeftNav}
               renderRightNav={renderRightNav}
               renderFullscreenButton={renderFullscreenButton}
+              onClick={showImageModalHandler}
             />
           </Col>
           {/* POTHOS OF PRODUCTS */}
@@ -549,6 +608,30 @@ const ProductDetail = () => {
       <Modal
         centered
         footer={null}
+        visible={showImageModal}
+        onCancel={() => setShowImageModal(false)}
+        title={products_name}
+        closeIcon={ <i className="fas fa-times" /> }
+        width="900px"
+        maskStyle={{ backgroundColor: "rgba(0, 0, 0, 0.85)" }}
+      >
+        <ImageGallery
+          items={getImageList()} 
+          showPlayButton={false}
+          useBrowserFullscreen={false}
+          useTranslate3D={false}
+          preventDefaultTouchmoveEvent
+          showFullscreenButton={false}
+          renderLeftNav={renderLeftNav}
+          renderRightNav={renderRightNav}
+          renderFullscreenButton={renderFullscreenButton}
+          thumbnailPosition="right"
+        />
+      </Modal>
+
+      <Modal
+        centered
+        footer={null}
         visible={showShareModal}
         onCancel={() => setShowShareModal(false)}
         title="Bagikan"
@@ -615,6 +698,15 @@ const ProductDetail = () => {
 
         :global(.product-images .image-gallery-thumbnails .image-gallery-thumbnails-container){
           text-align: left;
+        }
+
+        :global(.gallery-img-size-guide){
+          object-fit: contain;
+          width: 100%;
+        }
+
+        :global(.image-gallery.fullscreen-modal){
+          z-index: 3000;
         }
       `}</style>
     </>
