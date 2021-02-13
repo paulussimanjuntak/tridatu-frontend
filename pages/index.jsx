@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { Col, Row } from "antd";
+import { Col, Row, Empty } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import Link from "next/link";
 import dynamic from 'next/dynamic'
@@ -164,14 +164,27 @@ const Home = () => {
                   ))}
                 </>
               )}
+              {!loadingProduct && products && products.data && products.data.length == 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: ".2" }}
+                  className="w-100"
+                >
+                  <Empty className="my-5" description={<span className="text-secondary">Produk tidak tersedia</span>} />
+                </motion.div>
+              )}
             </Row>
           </AnimatePresence>
 
-          <div className="text-center mb-5 mt-3">
-            <Link href="/products" as="/products">
-              <Button className="btn-dark-tridatu-outline mx-auto">Lihat Semua Produk</Button>
-            </Link>
-          </div>
+          {products && products.data && products.data.length > 0 && (
+            <div className="text-center mb-5 mt-3">
+              <Link href="/products" as="/products">
+                <Button className="btn-dark-tridatu-outline mx-auto">Lihat Semua Produk</Button>
+              </Link>
+            </div>
+          )}
         </section>
 
       </Container>
