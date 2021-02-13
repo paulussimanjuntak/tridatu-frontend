@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { AnimatePresence } from 'framer-motion'
 
 import Link from "next/link";
-import Image from "next/image";
 import dynamic from 'next/dynamic'
 import RowB from "react-bootstrap/Row";
 import ColB from "react-bootstrap/Col";
@@ -13,18 +12,26 @@ import Container from "react-bootstrap/Container";
 import Slider from "react-slick";
 
 import axios from "lib/axios";
-import CardBrand from "components/Card/Brand";
-import CardBanner from "components/Card/Banner";
-import CardProductLoading from "components/Card/ProductLoading";
-
 import * as actions from "store/actions";
 
-const CardBrandMemo = React.memo(CardBrand);
-const CardBannerMemo = React.memo(CardBanner);
+import CardBrandLoading from "components/Card/BrandLoading";
+import CardBannerLoading from "components/Card/BannerLoading";
+import OutletImageLoading from "components/Card/OutletLoading";
+import CardProductLoading from "components/Card/ProductLoading";
+
+const CardBrandLoadingMemo = React.memo(CardBrandLoading);
+const CardBannerLoadingMemo = React.memo(CardBannerLoading);
+const OutletImageLoadingMemo = React.memo(OutletImageLoading);
 const CardProductLoadingMemo = React.memo(CardProductLoading);
 
 const CardProduct = dynamic(() => import("components/Card/Product"), { ssr: false, loading: () => <CardProductLoadingMemo />  })
 const CardProductMemo = React.memo(CardProduct);
+const CardBrand = dynamic(() => import("components/Card/Brand"), { ssr: false, loading: () => <CardBrandLoadingMemo />  })
+const CardBrandMemo = React.memo(CardBrand);
+const CardBanner = dynamic(() => import("components/Card/Banner"), { ssr: false, loading: () => <CardBannerLoadingMemo />  })
+const CardBannerMemo = React.memo(CardBanner);
+const OutletImage = dynamic(() => import("components/Card/Outlet"), { ssr: false, loading: () => <OutletImageLoadingMemo />  })
+const OutletImageMemo = React.memo(OutletImage);
 
 import { brandSettings, bannerSettings, infoStoreSettings, infoStoreSettingsMobile } from "lib/slickSetting";
 
@@ -55,35 +62,39 @@ const Home = () => {
           <ColB lg={10} md={12}>
             <section className="banner-section">
               <h4 className="fs-20-s">Promo</h4>
-              <Slider {...bannerSettings}>
-                {banners.map((data, i) => (
-                  <ColB key={i} className="px-0">
-                    <CardBannerMemo image={data} />
-                  </ColB>
-                ))}
-              </Slider>
+              <AnimatePresence>
+                <Slider {...bannerSettings}>
+                  {banners.map((data, i) => (
+                    <ColB key={i} className="px-0">
+                      <CardBannerMemo image={data} />
+                    </ColB>
+                  ))}
+                </Slider>
+              </AnimatePresence>
             </section>
 
             {/*INFORMASI BRAND*/}
             <section className="brand-section">
               <h4 className="fs-20-s mb-4">Brand</h4>
-              {brands && brands.length > 0 ? (
-                <Slider {...brandSettings} infinite={brands.length > 5}>
-                  {brands.map(data => (
-                    <ColB key={data.id} className="px-0">
-                      <CardBrandMemo image={`${process.env.NEXT_PUBLIC_API_URL}/static/brands/${data.image}`} name={data.name} />
-                    </ColB>
-                  ))}
-                </Slider>
-              ) : (
-                <Slider {...brandSettings} infinite={true}>
-                  {emptyBrands.map((data, i) => (
-                    <ColB key={i} className="px-0">
-                      <CardBrandMemo image={data} name="Brand" />
-                    </ColB>
-                  ))}
-                </Slider>
-              )}
+              <AnimatePresence>
+                {brands && brands.length > 0 ? (
+                  <Slider {...brandSettings} infinite={brands.length > 5} autoplay={false}>
+                    {brands.map(data => (
+                      <ColB key={data.id} className="px-0">
+                        <CardBrandMemo image={`${process.env.NEXT_PUBLIC_API_URL}/static/brands/${data.image}`} name={data.name} />
+                      </ColB>
+                    ))}
+                  </Slider>
+                ) : (
+                  <Slider {...brandSettings} infinite={true}>
+                    {emptyBrands.map((data, i) => (
+                      <ColB key={i} className="px-0">
+                        <CardBrandMemo image={data} name="Brand" />
+                      </ColB>
+                    ))}
+                  </Slider>
+                )}
+              </AnimatePresence>
             </section>
             {/*INFORMASI BRAND*/}
           </ColB>
@@ -92,23 +103,25 @@ const Home = () => {
           <ColB lg={2} md={12} sm={12} className="d-none d-lg-block">
             <section className="info-store">
               <h4 className="fs-20-s info-store-title mb-3">Informasi Outlet</h4>
-              {outlets && outlets.length > 0 ? (
-                <Slider {...infoStoreSettings} infinite={outlets.length > 4}>
-                  {outlets.map(data => (
-                    <div className="mb-1" key={data.id}>
-                      <Image width={145} height={145} src={`${process.env.NEXT_PUBLIC_API_URL}/static/outlets/${data.image}`} className="info-store-img" alt="Tridatu Bali ID" />
-                    </div>
-                  ))}
-                </Slider>
-              ) : (
-                <Slider {...infoStoreSettings} infinite={true}>
-                  {infoStores.map((data, i) => (
-                    <div className="mb-1" key={i}>
-                      <Image width={145} height={145} src={data} className="info-store-img" alt="Tridatu Bali ID" />
-                    </div>
-                  ))}
-                </Slider>
-              )}
+              <AnimatePresence>
+                {outlets && outlets.length > 0 ? (
+                  <Slider {...infoStoreSettings} infinite={outlets.length > 4}>
+                    {outlets.map(data => (
+                      <div className="mb-1" key={data.id}>
+                        <OutletImageMemo image={`${process.env.NEXT_PUBLIC_API_URL}/static/outlets/${data.image}`} size={145} />
+                      </div>
+                    ))}
+                  </Slider>
+                ) : (
+                  <Slider {...infoStoreSettings} infinite={true}>
+                    {infoStores.map((data, i) => (
+                      <div className="mb-1" key={i}>
+                        <OutletImageMemo image={data} size={145} />
+                      </div>
+                    ))}
+                  </Slider>
+                )}
+              </AnimatePresence>
             </section>
           </ColB>
           {/*INFORMASI OUTLET*/}
@@ -120,13 +133,13 @@ const Home = () => {
           {outlets && outlets.length > 0 ? (
             <Slider {...infoStoreSettingsMobile} infinite={outlets.length > 4}>
               {outlets.map(data => (
-                <Image width={151} height={151} src={`${process.env.NEXT_PUBLIC_API_URL}/static/outlets/${data.image}`} className="info-store-img" alt="Tridatu Bali ID" key={data.id} />
+                <OutletImageMemo image={`${process.env.NEXT_PUBLIC_API_URL}/static/outlets/${data.image}`} size={151} key={data.id} />
               ))}
             </Slider>
           ) : (
             <Slider {...infoStoreSettingsMobile} infinite={true}>
               {infoStores.map((data, i) => (
-                <Image width={151} height={151} src={data} className="info-store-img" alt="Tridatu Bali ID" key={i} />
+                <OutletImageMemo image={data} size={151} key={i} />
               ))}
             </Slider>
           )}

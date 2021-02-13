@@ -463,69 +463,29 @@ const ProductDetail = () => {
                   </Col>
                   <Col lg={4} md={6}>
                     <div className="ulasan-rating">
-                      <Rate disabled
-                        className="ulasan-rating-rate"
-                        count={1} value={1}
-                      />
+                      <Rate disabled className="ulasan-rating-rate" count={1} value={1} />
                       <span className="ulasan-rating-text">5</span>
-                      <Progress 
-                        className="ulasan-star-rating" 
-                        percent={80} 
-                        strokeWidth="5px" 
-                        format={percent => `${percent}`}
-                      />
+                      <Progress className="ulasan-star-rating" percent={80} strokeWidth="5px" format={percent => `${percent}`} />
                     </div>
                     <div className="ulasan-rating">
-                      <Rate disabled
-                        className="ulasan-rating-rate"
-                        count={1} value={1}
-                      />
+                      <Rate disabled className="ulasan-rating-rate" count={1} value={1} />
                       <span className="ulasan-rating-text">4</span>
-                      <Progress 
-                        className="ulasan-star-rating" 
-                        percent={100} 
-                        strokeWidth="5px" 
-                        format={percent => `${percent}`}
-                      />
+                      <Progress className="ulasan-star-rating" percent={100} strokeWidth="5px" format={percent => `${percent}`} />
                     </div>
                     <div className="ulasan-rating">
-                      <Rate disabled
-                        className="ulasan-rating-rate"
-                        count={1} value={1}
-                      />
+                      <Rate disabled className="ulasan-rating-rate" count={1} value={1} />
                       <span className="ulasan-rating-text">3</span>
-                      <Progress 
-                        className="ulasan-star-rating" 
-                        percent={90} 
-                        strokeWidth="5px" 
-                        format={percent => `${percent}`}
-                      />
+                      <Progress className="ulasan-star-rating" percent={90} strokeWidth="5px" format={percent => `${percent}`} />
                     </div>
                     <div className="ulasan-rating">
-                      <Rate disabled
-                        className="ulasan-rating-rate"
-                        count={1} value={1}
-                      />
+                      <Rate disabled className="ulasan-rating-rate" count={1} value={1} />
                       <span className="ulasan-rating-text">2</span>
-                      <Progress 
-                        className="ulasan-star-rating" 
-                        percent={30} 
-                        strokeWidth="5px" 
-                        format={percent => `${percent}`}
-                      />
+                      <Progress className="ulasan-star-rating" percent={30} strokeWidth="5px" format={percent => `${percent}`} />
                     </div>
                     <div className="ulasan-rating">
-                      <Rate disabled
-                        className="ulasan-rating-rate"
-                        count={1} value={1}
-                      />
+                      <Rate disabled className="ulasan-rating-rate" count={1} value={1} />
                       <span className="ulasan-rating-text">1</span>
-                      <Progress 
-                        className="ulasan-star-rating" 
-                        percent={10} 
-                        strokeWidth="5px" 
-                        format={percent => `${percent}`}
-                      />
+                      <Progress className="ulasan-star-rating" percent={10} strokeWidth="5px" format={percent => `${percent}`} />
                     </div>
                   </Col>
                 </Row>
