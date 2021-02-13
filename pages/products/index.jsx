@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from "react-redux";
 import { AnimatePresence, motion } from 'framer-motion'
-import { Select, Col, Row, Empty, Tag } from 'antd';
+import { Select, Col, Row, Empty, Tag, Affix } from 'antd';
 
 import axios from 'lib/axios'
 import dynamic from 'next/dynamic'
+import Button from "antd-button-color";
 import RowB from "react-bootstrap/Row";
 import ColB from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -382,7 +383,8 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
 
   return(
     <>
-      <Container className="pt-4 pb-2">
+      {/*ONLY SHOW ON DESKTOP || > 991px*/}
+      <Container className="pt-4 pb-2 d-none d-lg-block">
         <RowB>
           <ColB className="align-self-center">
             <span className="text-secondary fs-14-s">
@@ -408,7 +410,27 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
           </ColB>
         </RowB>
       </Container>
-      <hr />
+      <hr className="d-none d-lg-block" />
+      {/*ONLY SHOW ON DESKTOP || > 991px*/}
+
+      <div className="filter-mobile d-lg-none">
+        <Affix offsetTop={67}>
+          <Card className="filter-mobile-card-container shadow-sm idx-1030">
+            <Container>
+              <Card.Body className="p-2">
+                <Row gutter={[5, 0]} wrap={false} align="middle">
+                  <Col flex="none" className="pr-2">
+                    <Button size="small" className="mobile-filter-button">Filter</Button>
+                  </Col>
+                  <Col flex="auto" className="active-filter-mobile">
+                    {[...Array(20)].map((_, i) => <Button size="small" className="mobile-filter-button" key={i}>{i**i}</Button>)}
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Container>
+          </Card>
+        </Affix>
+      </div>
 
       <Container className="pb-5 pt-3">
         <RowB>
@@ -420,9 +442,9 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
             onBrandChange={onBrandChange}
             onPreOrderChange={onPreOrderChange}
             onCategoryChange={onCategoryChange}
+            onDiscountChange={onDiscountChange}
             onConditionChange={onConditionChange}
             onWholesaleChange={onWholesaleChange}
-            onDiscountChange={onDiscountChange}
             onReadyStockChange={onReadyStockChange}
           />
 
@@ -488,6 +510,31 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
       </Container>
 
       <style jsx>{ProductsStyle}</style>
+      <style jsx>{`
+        :global(.idx-1030){
+          z-index: 1030;
+        }
+        :global(.filter-mobile .ant-affix){
+          z-index: 1030;
+        }
+        :global(.filter-mobile-card-container){
+          border: 0;
+          border-top: 1px solid #ececec!important;
+        }
+        :global(.active-filter-mobile){
+          display: flex;
+          overflow: scroll;
+        }
+
+        :global(.mobile-filter-button){
+          vertical-align: bottom;
+          font-size: 12px;
+          margin-right: 5px;
+        }
+        :global(.mobile-filter-button:last-of-type){
+          margin-right: 0px;
+        }
+      `}</style>
     </>
   )
 }
