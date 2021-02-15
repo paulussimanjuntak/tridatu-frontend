@@ -36,7 +36,11 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
           </div>
         )
       } else {
-        return <NormalPrice>{formatNumber(variants_max_price)}</NormalPrice>
+        return (
+          <div className="product-price text-truncate text-tridatu lh-1">
+            <NormalPrice>{formatNumber(variants_max_price)}</NormalPrice>
+          </div>
+        )
       }
     }
     else {
@@ -94,7 +98,6 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
                 height={270}
                 src={`${process.env.NEXT_PUBLIC_API_URL}/static/products/${products_slug}/${products_image_product}`}
                 alt="Tridatu Bali"
-                onClick={() => setShowModal(true)}
               />
             </div>
             <AnimatePresence>
@@ -262,6 +265,9 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct }) => {
           line-height: 1;
         }
 
+        :global(w-65){
+          width: 65% !important;
+        }
 
       `}</style>
     </>

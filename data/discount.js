@@ -40,8 +40,8 @@ export const columns = [
     render: (item) => (
       <ItemPricePromo
         discount={item.variants_discount}
-        minPrice={item.variants_min_price}
-        maxPrice={item.variants_max_price}
+        minPrice={+item.variants_min_price}
+        maxPrice={+item.variants_max_price}
       />
     ),
   },
@@ -87,7 +87,7 @@ export const columnsProductNoVariant = [
     align: "center",
     width: 200,
     render: (item) => (
-      <p className="mb-0"> Rp.{formatNumber(item.normal_price)} </p>
+      <p className="mb-0"> Rp.{formatNumber(+item.normal_price)} </p>
     ),
   },
   {
@@ -114,7 +114,7 @@ export const columnsProductNoVariant = [
     key: "stock",
     width: 150,
     align: "center",
-    render: (item) => <p className="mb-0">{item.stock}</p>,
+    render: (item) => <p className="mb-0">{+item.stock}</p>,
   },
   {
     title: "Aktif/Nonaktif",
@@ -145,7 +145,7 @@ export const columnsProductVariant = [
     align: "center",
     width: 120,
     render: (item) => (
-      <p className="mb-0"> Rp.{formatNumber(item.normal_price)} </p>
+      <p className="mb-0"> Rp.{formatNumber(+item.normal_price)} </p>
     ),
   },
   {
@@ -172,7 +172,7 @@ export const columnsProductVariant = [
     key: "stock",
     width: 130,
     align: "center",
-    render: (item) => <p className="mb-0">{item.stock}</p>,
+    render: (item) => <p className="mb-0">{+item.stock}</p>,
   },
   {
     title: "Aktif/Nonaktif",

@@ -30,7 +30,7 @@ const orderList = [
 ]
 
 const EmptyProduct = ({ loading, products }) => (
-  <AnimatePresence>
+  <>
     {!loading && (products == null || products && products.total == 0) && (
       <motion.div
         initial={{ opacity: 0 }}
@@ -42,11 +42,11 @@ const EmptyProduct = ({ loading, products }) => (
         <Empty className="my-5" description={<span className="text-secondary">Tidak ada produk</span>} />
       </motion.div>
     )}
-  </AnimatePresence>
+  </>
 )
 
 const ProductComponent = ({ products, dispatch, router }) => (
-  <AnimatePresence>
+  <>
     {products && products.data && products.data.length > 0 && products.data.map(product => (
       <Col xl={4} lg={6} md={8} sm={12} xs={24} key={product.products_id}>
         <CardProductMemo 
@@ -56,7 +56,7 @@ const ProductComponent = ({ products, dispatch, router }) => (
         />
       </Col>
     ))}
-  </AnimatePresence>
+  </>
 )
 
 const per_page = 18;
@@ -111,7 +111,7 @@ const Products = ({ searchQuery }) => {
   useEffect(() => {
     if(!searchQuery) return
     if(searchQuery.hasOwnProperty("page")) {
-      setPage(searchQuery.page)
+      setPage(+searchQuery.page)
     }
     if(searchQuery.hasOwnProperty("live")) {
       setLive(searchQuery.live)
@@ -127,10 +127,23 @@ const Products = ({ searchQuery }) => {
   }, [aliveArchiving])
 
   useEffect(() => {
-    if(products && products.data){
+    if(products && products.data && !router.query.hasOwnProperty("page")){
       setPage(products.page)
     }
+    if(products && router.query.hasOwnProperty("page")){
+      setPage(+router.query.page)
+    }
   }, [products])
+
+  const onSearchChange = e => {
+    setSearch(e.target.value)
+    setPage(1)
+  }
+
+  const onOrderChange = val => {
+    setOrderBy(val)
+    setPage(1)
+  }
 
   const showPagination = products !== null && products && products.data && products.data.length > 0 && (products.next_num !== null || products.prev_num !== null);
 
@@ -148,7 +161,7 @@ const Products = ({ searchQuery }) => {
                       placeholder="Cari berdasarkan nama" 
                       prefix={<i className="far fa-search" />}
                       value={search}
-                      onChange={e => setSearch(e.target.value)}
+                      onChange={onSearchChange}
                     />
                   </Form.Group>
                   <Form.Group as={ColB} lg={4} md={6}>
@@ -157,7 +170,7 @@ const Products = ({ searchQuery }) => {
                       style={{ width: "100%"}}
                       className="product-search-select"
                       value={order_by}
-                      onChange={e => setOrderBy(e)}
+                      onChange={onOrderChange}
                     >
                       {orderList.map((list, i) => (
                         <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
@@ -213,10 +226,12 @@ const Products = ({ searchQuery }) => {
                 </Form.Row>
               </Form>
 
-              <Row gutter={[10, 10]}>
-                <ProductComponent products={products} dispatch={dispatch} router={router} />
-                <EmptyProduct loading={loading} products={products} />
-              </Row>
+              <AnimatePresence>
+                <Row gutter={[10, 10]}>
+                  <ProductComponent products={products} dispatch={dispatch} router={router} />
+                  <EmptyProduct loading={loading} products={products} />
+                </Row>
+              </AnimatePresence>
 
               {showPagination && (
                 <Card.Body className="text-center">

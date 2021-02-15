@@ -100,7 +100,6 @@ const UpdateProduct = ({ productData }) => {
   const { va1_id, va1_price, va1_stock, va1_code, va1_barcode, va1_discount, va1_discount_active } = noVariant
   /* Destructuring Object Product */
 
-
   /*SET DATA FROM SERVER*/
   /*SET DATA FROM SERVER*/
   useEffect(() => {
@@ -173,6 +172,9 @@ const UpdateProduct = ({ productData }) => {
               if(stateNoVariant[key]){
                 stateNoVariant[key].value = va1_item[key]
               }
+              if(key === "va1_price"){
+                stateNoVariant[key].value = +va1_item[key]
+              }
             }
           }
           setNoVariant(stateNoVariant)
@@ -207,8 +209,8 @@ const UpdateProduct = ({ productData }) => {
             }
             newData.push({
               id: { ...initialValue, value: item.va1_id },
-              price: { ...initialValue, value: item.va1_price },
-              stock: { ...initialValue, value: item.va1_stock },
+              price: { ...initialValue, value: +item.va1_price },
+              stock: { ...initialValue, value: +item.va1_stock },
               code: { ...initialValue, value: item.va1_code || "" },
               barcode: { ...initialValue, value: item.va1_barcode || "" },
               discount: { ...initialValue, value: item.va1_discount },
@@ -224,6 +226,7 @@ const UpdateProduct = ({ productData }) => {
             ...imageVariants,
             file: {value: image_variant, isValid: true, message: null}
           }
+          console.log(JSON.stringify(newData, null, 2))
           setImageVariants(dataImageVariant)
           setVaOption(data)
           setDataSource(newData)
@@ -270,8 +273,8 @@ const UpdateProduct = ({ productData }) => {
                 va1_option: val1.va1_option,
                 va2_option: val2.va2_option,
                 id: { value: val2.va2_id, isValid: true, message: null },
-                price: { value: val2.va2_price, isValid: true, message: null },
-                stock: { value: val2.va2_stock, isValid: true, message: null },
+                price: { value: +val2.va2_price, isValid: true, message: null },
+                stock: { value: +val2.va2_stock, isValid: true, message: null },
                 code: { value: val2.va2_code || "", isValid: true, message: null },
                 barcode: { value: val2.va2_barcode || "", isValid: true, message: null },
                 discount: { value: val2.va2_discount, isValid: true, message: null },
@@ -341,6 +344,7 @@ const UpdateProduct = ({ productData }) => {
           setColumns(column => [col1, col2, ...column])
           setIsActiveVariation({ active: true, countVariation: 2 })
           setDataSource(variant)
+          console.log(JSON.stringify(variant, null, 2))
         }
       }
       /* SET VARIANT FROM SERVER */
@@ -353,7 +357,7 @@ const UpdateProduct = ({ productData }) => {
           dataGrosir.push({ 
             id: val.wholesale_id, 
             min_qty: { value: val.wholesale_min_qty, isValid: true, message: null },
-            price: { value: val.wholesale_price, isValid: true, message: null },
+            price: { value: +val.wholesale_price, isValid: true, message: null },
           })
         }
         setGrosir(dataGrosir)
@@ -633,6 +637,7 @@ const UpdateProduct = ({ productData }) => {
         const errName = "The name has already been taken."
         if(errDetail == signature_exp){
           resNotification("success", "Success", "Successfully add a new product.")
+          Router.push("/admin/products")
         } else if (typeof errDetail === "string" && errDetail === errName) {
           const state = JSON.parse(JSON.stringify(informationProduct));
           state.name.value = state.name.value;
@@ -684,7 +689,7 @@ const UpdateProduct = ({ productData }) => {
     const grosirList = grosir.map(data => {
       const container = {}
       container["min_qty"] = data.min_qty.value;
-      container["price"] = data.price.value;
+      container["price"] = data.price.value.toString();
       return container
     })
 
@@ -726,7 +731,14 @@ const UpdateProduct = ({ productData }) => {
                   const msgSplit = data.msg.split(":")
                   newGrosir[idx][key].isValid = false
                   newGrosir[idx][key].message = msgSplit[0].split(" ")[0] + " " + (parseInt(msgSplit[0].split(" ")[1])+1) +":" + msgSplit[1]
-                } else {
+                } 
+                else if(isIn(data.loc[data.loc.length - 1], ["price", "min_qty"])){
+                  const key = data.loc[data.loc.length - 1];
+                  const idx = data.loc[data.loc.length - 2];
+                  newGrosir[idx][key].isValid = false
+                  newGrosir[idx][key].message = data.msg
+                }
+                else {
                   formErrorMessage(checkMessage)
                 }
               }
@@ -754,9 +766,9 @@ const UpdateProduct = ({ productData }) => {
       const data = {
         va1_product_id: newProductData.products_id,
         va1_items: [{
-          va1_id: va1_id.value,
-          va1_price: va1_price.value,
-          va1_stock: va1_stock.value,
+          va1_id: va1_id.value.toString(),
+          va1_price: va1_price.value.toString(),
+          va1_stock: va1_stock.value.toString(),
           va1_code: va1_code.value || null,
           va1_barcode: va1_barcode.value || null,
           va1_discount: va1_discount.value,
@@ -832,10 +844,10 @@ const UpdateProduct = ({ productData }) => {
         const imgUrl = imgSplit[imgSplit.length - 1]
 
         const item = {
-          va1_id: va1Option[i].id.value,
+          va1_id: va1Option[i].id.value.toString(),
           va1_option: va1Option[i].va1_option.value,
-          va1_price: +dataSource[i].price.value,
-          va1_stock: +dataSource[i].stock.value,
+          va1_price: dataSource[i].price.value.toString(),
+          va1_stock: dataSource[i].stock.value.toString(),
           va1_code: dataSource[i].code.value || null,
           va1_barcode: dataSource[i].barcode.value || null,
           va1_discount: dataSource[i].discount.value,
@@ -953,10 +965,10 @@ const UpdateProduct = ({ productData }) => {
         for(let val of dataSource){
           if(val.va1_option === va1[i]){
             const va2_data = {
-              va2_id: val.id ? val.id.value : 0,
+              va2_id: val.id ? val.id.value.toString() : "0",
               va2_option: val.va2_option.split(" ")[0] === "Pilihan" ? "" : val.va2_option,
-              va2_price: +val.price.value,
-              va2_stock: +val.stock.value,
+              va2_price: val.price.value.toString(),
+              va2_stock: val.stock.value.toString(),
               va2_code: val.code.value || null,
               va2_barcode: val.barcode.value || null,
               va2_discount: val.discount.value,

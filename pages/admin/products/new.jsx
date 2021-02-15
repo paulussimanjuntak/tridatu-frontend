@@ -406,7 +406,7 @@ const NewProduct = () => {
     const grosirList = grosir.map(data => {
       const container = {}
       container["min_qty"] = data.min_qty.value;
-      container["price"] = data.price.value;
+      container["price"] = data.price.value.toString();
       return container
     })
 
@@ -446,7 +446,14 @@ const NewProduct = () => {
                   const msgSplit = data.msg.split(":")
                   newGrosir[idx][key].isValid = false
                   newGrosir[idx][key].message = msgSplit[0].split(" ")[0] + " " + (parseInt(msgSplit[0].split(" ")[1])+1) +":" + msgSplit[1]
-                } else {
+                } 
+                else if(isIn(data.loc[data.loc.length - 1], ["price", "min_qty"])){
+                  const key = data.loc[data.loc.length - 1];
+                  const idx = data.loc[data.loc.length - 2];
+                  newGrosir[idx][key].isValid = false
+                  newGrosir[idx][key].message = data.msg
+                }
+                else {
                   formErrorMessage(checkMessage)
                 }
               }
@@ -469,8 +476,8 @@ const NewProduct = () => {
     ){
       const data = {
         va1_items: [{
-          va1_price: va1_price.value,
-          va1_stock: va1_stock.value,
+          va1_price: va1_price.value.toString(),
+          va1_stock: va1_stock.value.toString(),
           va1_code: va1_code.value || null,
           va1_barcode: va1_barcode.value || null
         }]
@@ -538,8 +545,8 @@ const NewProduct = () => {
       for(let i = 0; i < va1Total; i++){
         const item = {
           va1_option: va1Option[i].va1_option.value,
-          va1_price: +dataSource[i].price.value,
-          va1_stock: +dataSource[i].stock.value,
+          va1_price: dataSource[i].price.value.toString(),
+          va1_stock: dataSource[i].stock.value.toString(),
           va1_code: dataSource[i].code.value || null,
           va1_barcode: dataSource[i].barcode.value || null
         }
@@ -649,8 +656,8 @@ const NewProduct = () => {
           if(val.va1_option === check){
             const va2_data = {
               va2_option: val.va2_option.split(" ")[0] === "Pilihan" ? "" : val.va2_option,
-              va2_price: +val.price.value,
-              va2_stock: +val.stock.value,
+              va2_price: val.price.value.toString(),
+              va2_stock: val.stock.value.toString(),
               va2_code: val.code.value || null,
               va2_barcode: val.barcode.value || null
             }
