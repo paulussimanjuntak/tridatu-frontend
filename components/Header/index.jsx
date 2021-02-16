@@ -231,6 +231,7 @@ const Header = () => {
     if(router.query.q){
       setSearchQuery(router.query.q)
     }
+    if(router.pathname !== "/products") setSearchQuery("")
   },[router.query.q])
 
   useEffect(() => {

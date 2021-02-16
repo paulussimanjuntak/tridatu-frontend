@@ -260,7 +260,6 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
 
   useEffect(() => {
     if(!searchQuery) return
-    console.log(searchQuery)
     const state = JSON.parse(JSON.stringify(activeFilter))
     if(searchQuery.hasOwnProperty("page")) {
       if(+searchQuery.page !== page) setPage(searchQuery.page)
@@ -319,8 +318,11 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
     setActiveFilter(state)
   }, [])
 
-  const showPagination = products !== null && products && products.data && products.data.length > 0 && (products.next_num !== null || products.prev_num !== null);
+  useEffect(() => {
+    onRemoveAllFilter()
+  }, [router.query.q])
 
+  const showPagination = products !== null && products && products.data && products.data.length > 0 && (products.next_num !== null || products.prev_num !== null);
 
   const onRemoveAllFilter = () => {
     setActiveFilter(formFilter)
