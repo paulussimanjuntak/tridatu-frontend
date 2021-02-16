@@ -126,7 +126,7 @@ export const getProductSlugFail = (error) => {
 
 
 export const getProducts = ({ 
-  page = 1, per_page = 10, q, live, order_by, p_min, p_max, item_sub_cat, brand, pre_order, condition, wholesale
+  page = 1, per_page = 10, q, live, order_by = "visitor", p_min, p_max, item_sub_cat, brand, pre_order, condition, wholesale, is_discount
 }) => {
 
   let queryString = {}
@@ -139,8 +139,7 @@ export const getProducts = ({
   if(live && isBoolean(live.toString())) queryString["live"] = live
   else delete queryString["live"]
 
-  if(order_by !== "") queryString["order_by"] = order_by
-  else delete queryString["order_by"]
+  if(order_by) queryString["order_by"] = order_by
 
   if(p_min) queryString["p_min"] = p_min
   else delete queryString["p_min"]
@@ -162,6 +161,9 @@ export const getProducts = ({
 
   if(wholesale && isBoolean(wholesale.toString())) queryString["wholesale"] = wholesale
   else delete queryString["wholesale"]
+
+  if(is_discount) queryString["is_discount"] = is_discount
+  else delete queryString["is_discount"]
 
   return dispatch => {
     dispatch(getProductStart())

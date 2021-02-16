@@ -8,6 +8,7 @@ export const productsData = [
 
 export const sortListProduct = [
   { value: "", label: "Paling Sesuai" }, 
+  { value: "newest", label: "Terbaru" }, 
   { value: "high_price", label: "Harga Tertinggi" }, 
   { value: "low_price", label: "Harga Terendah" }
 ] 

@@ -11,12 +11,11 @@ const renderTitle = (title) => <b className="text-dark">{title}</b>
 const SidebarContainer = ({ 
   treeData, filterState, categoryKeys,
   onChange, onCategoryChange, onConditionChange, onWholesaleChange, onBrandChange, 
-  onPreOrderChange, onDiscountChange, onReadyStockChange
+  onPreOrderChange, onDiscountChange
 }) => {
 
   const brands = useSelector(state => state.brand.brand)
-  const { rating, brand, p_min, p_max, pre_order, discount, condition, wholesale, ready_stock } = filterState;
-
+  const { rating, brand, p_min, p_max, pre_order, is_discount, condition, wholesale } = filterState;
 
   return(
     <>
@@ -106,7 +105,7 @@ const SidebarContainer = ({
 
             <Menu.SubMenu key="penawaran" className="scrollable-submenu title-filter" title={renderTitle('Penawaran')}>
               <div className="p-l-20 p-r-20">
-                <Checkbox.Group className="w-100" onChange={onDiscountChange} value={discount.value}>
+                <Checkbox.Group className="w-100" onChange={onDiscountChange} value={is_discount.value}>
                   <Checkbox 
                     value="true"
                     label="Diskon" 
@@ -158,13 +157,11 @@ const SidebarContainer = ({
                   >
                     <span className="text-secondary">Pre Order</span>
                   </Checkbox>
-                </Checkbox.Group>
-                <Checkbox.Group className="w-100" onChange={onReadyStockChange} value={ready_stock.value}>
                   <Checkbox 
-                    value="true"
+                    value="false"
                     label="Ready Stock" 
                     className="rating-checkbox" 
-                    onChange={(e) => onReadyStockChange(e, "label")}
+                    onChange={(e) => onPreOrderChange(e, "label")}
                   >
                     <span className="text-secondary">Ready Stock</span>
                   </Checkbox>

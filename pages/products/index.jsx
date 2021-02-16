@@ -36,7 +36,7 @@ const CardProduct = dynamic(() => import("components/Card/Product"), { ssr: fals
 const CardProductMemo = React.memo(CardProduct);
 
 const TagFilter = ({ onRemove, label }) => (
-  <Tag closable 
+  <Tag closable
     onClose={onRemove}
     className="filter-tag"
     closeIcon={<i className="fas fa-times ml-1" />}
@@ -61,9 +61,11 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
   const [brandList, setBrandList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [preorderList, setPreorderList] = useState([]);
+  const [discountList, setDiscountList] = useState([]);
+  const [minPriceList, setMinPriceList] = useState([]);
+  const [maxPriceList, setMaxPriceList] = useState([]);
   const [conditionList, setConditionList] = useState([]);
   const [wholesaleList, setWholesaleList] = useState([]);
-  const [readyStockList, setReadyStockList] = useState([]);
 
   const [categoryKeys, setCategoryKeys] = useState([searchQuery.ck]);
 
@@ -71,7 +73,7 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
   const [treeData, setTreeData] = useState(finalCategories);
 
   const { order_by, category, item_sub_cat, rating, brand } = activeFilter;
-  const { p_min, p_max, pre_order, ready_stock, discount, condition, wholesale } = activeFilter;
+  const { p_min, p_max, pre_order, is_discount, condition, wholesale } = activeFilter;
 
   const onFilterChange = (e, item) => {
     if(item){
@@ -122,11 +124,11 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
 
   const onDiscountChange = (e, label) => {
     if(label){
-      if(e.target.checked) setPreorderList([e.target.label])
-      else setPreorderList([])
+      if(e.target.checked) setDiscountList([e.target.label])
+      else setDiscountList([])
     } else {
-      const data = { ...activeFilter, discount: { ...discount, value: [e.slice(-1)[0]] } }
-      const emptydata = { ...activeFilter, discount: { ...discount, value: [] } }
+      const data = { ...activeFilter, is_discount: { ...is_discount, value: [e.slice(-1)[0]] } }
+      const emptydata = { ...activeFilter, is_discount: { ...is_discount, value: [] } }
       if(e.slice(-1)[0] !== undefined) setActiveFilter(data)
       else setActiveFilter(emptydata)
     }
@@ -146,19 +148,6 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
     setPage(1)
   }
 
-  const onReadyStockChange = (e, label) => {
-    if(label){
-      if(e.target.checked) setReadyStockList([e.target.label])
-      else setReadyStockList([])
-    } else {
-      const data = { ...activeFilter, ready_stock: { ...ready_stock, value: [e.slice(-1)[0]] } }
-      const emptydata = { ...activeFilter, ready_stock: { ...ready_stock, value: [] } }
-      if(e.slice(-1)[0] !== undefined) setActiveFilter(data)
-      else setActiveFilter(emptydata)
-    }
-    setPage(1)
-  }
-
   const onCategoryChange = (_, info) => {
     let label = "", key = "", id = []
     for(let val of info.selectedNodes){
@@ -168,10 +157,10 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
             for(let val3 of val2.children){
               id.push(val3.key)
             }
-          } 
+          }
           else id.push(val2.key)
         }
-      } 
+      }
       else id.push(val.key)
     }
     if(info.node){
@@ -196,8 +185,11 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
   }
 
   useEffect(() => {
-    if(products && products.data){
+    if(products && products.data && !router.query.hasOwnProperty("page")){
       setPage(products.page)
+    }
+    if(products && router.query.hasOwnProperty("page")){
+      setPage(+router.query.page)
     }
   }, [products])
 
@@ -217,11 +209,21 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
     else delete queryString["order_by"]
     if(order_by.value === "" || order_by.value[0] === "") delete queryString["order_by"]
 
-    if(p_min.value) queryString["p_min"] = p_min.value
-    else delete queryString["p_min"]
+    if(p_min.value) {
+      queryString["p_min"] = p_min.value
+      setMinPriceList(["Harga Minimum"])
+    } else {
+      delete queryString["p_min"]
+      setMinPriceList([])
+    }
 
-    if(p_max.value) queryString["p_max"] = p_max.value
-    else delete queryString["p_max"]
+    if(p_max.value) {
+      queryString["p_max"] = p_max.value
+      setMaxPriceList(["Harga Maximum"])
+    } else {
+      delete queryString["p_max"]
+      setMaxPriceList([])
+    }
 
     if(brand.value.length) queryString["brand"] = brand.value.join(",")
     else delete queryString["brand"]
@@ -234,6 +236,9 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
 
     if(isBoolean(wholesale.value.toString())) queryString["wholesale"] = wholesale.value
     else delete queryString["wholesale"]
+
+    if(isBoolean(is_discount.value.toString())) queryString["is_discount"] = is_discount.value
+    else delete queryString["is_discount"]
 
     //for category auto active when refreshed
     if(categoryKeys.length > 0 && categoryList.length > 0) {
@@ -266,9 +271,11 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
     }
     if(searchQuery.hasOwnProperty("p_min")){
       state.p_min.value = searchQuery.p_min
+      setMinPriceList(["Harga Minimum"])
     }
     if(searchQuery.hasOwnProperty("p_max")){
       state.p_max.value = searchQuery.p_max
+      setMaxPriceList(["Harga Maximum"])
     }
     if(searchQuery.hasOwnProperty("brand")){
       const brands = searchQuery.brand.split(",").map(x => parseInt(x))
@@ -284,7 +291,7 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
     if(searchQuery.hasOwnProperty("pre_order")){
       state.pre_order.value = [searchQuery.pre_order]
       if(searchQuery.pre_order == "true") setPreorderList(["Pre Order"])
-      else setPreorderList([])
+      else setPreorderList(["Ready Stock"])
     }
     if(searchQuery.hasOwnProperty("condition")){
       state.condition.value = [searchQuery.condition]
@@ -295,6 +302,11 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
       state.wholesale.value = [searchQuery.wholesale]
       if(searchQuery.wholesale == "true") setWholesaleList(["Harga Grosir"])
       else setWholesaleList([])
+    }
+    if(searchQuery.hasOwnProperty("is_discount")){
+      state.is_discount.value = [searchQuery.is_discount]
+      if(searchQuery.is_discount == "true") setDiscountList(["Diskon"])
+      else setDiscountList([])
     }
     //for category auto active when refreshed
     if(searchQuery.hasOwnProperty("ck") && searchQuery.hasOwnProperty("cn")){
@@ -312,17 +324,20 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
 
   const onRemoveAllFilter = () => {
     setActiveFilter(formFilter)
+    setBrandList([])
     setCategoryList([])
     setCategoryKeys([])
-    setBrandList([])
     setPreorderList([])
+    setMinPriceList([])
+    setMaxPriceList([])
+    setDiscountList([])
     setConditionList([])
     setWholesaleList([])
-    setReadyStockList([])
   }
 
   const renderActiveFilter = () => {
-    let category = [], brand = [], preorder = [], condition = [], wholesalefilter = [], readystockfilter = []
+    let category = [], brand = [], preorder = [], condition = [], wholesalefilter = [], discountFilter = [], 
+        minPriceFilter = [], maxPriceFilter = []
 
     const onRemoveCategory = () => {
       setCategoryList([])
@@ -369,16 +384,34 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
       wholesalefilter.push(<TagFilter key={val} label={val} onRemove={onRemoveWholesale} />)
     }
 
-    const onRemoveReadystock = () => {
-      setReadyStockList([])
-      const emptydata = { ...activeFilter, ready_stock: { ...ready_stock, value: [] } }
+    const onRemoveDiscount = () => {
+      setDiscountList([])
+      const emptydata = { ...activeFilter, is_discount: { ...is_discount, value: [] } }
       setActiveFilter(emptydata)
     }
-    for(let val of readyStockList){
-      readystockfilter.push(<TagFilter key={val} label={val} onRemove={onRemoveReadystock} />)
+    for(let val of discountList){
+      discountFilter.push(<TagFilter key={val} label={val} onRemove={onRemoveDiscount} />)
     }
 
-    return category.concat(brand, preorder, condition, wholesalefilter, readystockfilter)
+    const onRemoveMinPrice = () => {
+      setMinPriceList([])
+      const emptydata = { ...activeFilter, p_min: { ...p_min, value: "" } }
+      setActiveFilter(emptydata)
+    }
+    for(let val of minPriceList){
+      minPriceFilter.push(<TagFilter key={val} label={val} onRemove={onRemoveMinPrice} />)
+    }
+
+    const onRemoveMaxPrice = () => {
+      setMaxPriceList([])
+      const emptydata = { ...activeFilter, p_max: { ...p_max, value: "" } }
+      setActiveFilter(emptydata)
+    }
+    for(let val of maxPriceList){
+      maxPriceFilter.push(<TagFilter key={val} label={val} onRemove={onRemoveMaxPrice} />)
+    }
+
+    return category.concat(minPriceFilter, maxPriceFilter, condition, wholesalefilter, discountFilter, brand, preorder)
   }
 
   return(
@@ -442,10 +475,9 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
             onBrandChange={onBrandChange}
             onPreOrderChange={onPreOrderChange}
             onCategoryChange={onCategoryChange}
-            onDiscountChange={onDiscountChange}
             onConditionChange={onConditionChange}
             onWholesaleChange={onWholesaleChange}
-            onReadyStockChange={onReadyStockChange}
+            onDiscountChange={onDiscountChange}
           />
 
           <ColB>
@@ -493,12 +525,12 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
               <ColB className="align-self-center text-center">
                 {showPagination && (
                   <Card.Body className="text-center">
-                    <Pagination 
-                      current={page} 
-                      hideOnSinglePage 
+                    <Pagination
+                      current={page}
+                      hideOnSinglePage
                       pageSize={per_page}
-                      total={products.total} 
-                      goTo={val => setPage(val)} 
+                      total={products.total}
+                      goTo={val => setPage(val)}
                     />
                   </Card.Body>
                 )}
@@ -510,31 +542,6 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
       </Container>
 
       <style jsx>{ProductsStyle}</style>
-      <style jsx>{`
-        :global(.idx-1030){
-          z-index: 1030;
-        }
-        :global(.filter-mobile .ant-affix){
-          z-index: 1030;
-        }
-        :global(.filter-mobile-card-container){
-          border: 0;
-          border-top: 1px solid #ececec!important;
-        }
-        :global(.active-filter-mobile){
-          display: flex;
-          overflow: scroll;
-        }
-
-        :global(.mobile-filter-button){
-          vertical-align: bottom;
-          font-size: 12px;
-          margin-right: 5px;
-        }
-        :global(.mobile-filter-button:last-of-type){
-          margin-right: 0px;
-        }
-      `}</style>
     </>
   )
 }

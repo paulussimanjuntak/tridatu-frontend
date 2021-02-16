@@ -9,7 +9,7 @@ const formFilter = {
   condition: { value: [] },
   wholesale: { value: [] },
   status: { value: [""] },
-  discount: { value: [] },
+  is_discount: { value: [] },
   category: { value: [] },
   rating: { value: [] },
   ready_stock: { value: [] }
