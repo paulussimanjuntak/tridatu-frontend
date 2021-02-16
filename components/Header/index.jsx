@@ -198,8 +198,10 @@ const Header = () => {
     setShowOverlay(true)
   }
   const onSelectSuggestionHandler = e => {
-    const queryString = {}
+    // const queryString = {}
+    const queryString = router.query
     queryString["q"] = e
+    delete queryString["slug"]
     if(isEmpty(searchQuery)) delete queryString["q"]
 
     router.push({
@@ -210,9 +212,11 @@ const Header = () => {
   }
   const onPressEnter = e => {
     e.preventDefault()
-    const queryString = {}
+    // const queryString = {}
+    const queryString = router.query
     queryString["page"] = 1
     queryString["q"] = searchQuery
+    delete queryString["slug"]
     if(isEmpty(searchQuery)) delete queryString["q"]
 
     router.push({
@@ -231,8 +235,11 @@ const Header = () => {
     if(router.query.q){
       setSearchQuery(router.query.q)
     }
-    if(router.pathname !== "/products") setSearchQuery("")
   },[router.query.q])
+
+  useEffect(() => {
+    if(router.pathname !== "/products") setSearchQuery("")
+  }, [router])
 
   useEffect(() => {
     dispatch(actions.getAllCategories())

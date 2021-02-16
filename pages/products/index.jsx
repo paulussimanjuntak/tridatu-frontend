@@ -318,10 +318,6 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
     setActiveFilter(state)
   }, [])
 
-  useEffect(() => {
-    onRemoveAllFilter()
-  }, [router.query.q])
-
   const showPagination = products !== null && products && products.data && products.data.length > 0 && (products.next_num !== null || products.prev_num !== null);
 
   const onRemoveAllFilter = () => {
@@ -516,7 +512,15 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
                     transition={{ duration: ".2" }}
                     className="w-100 mt-5"
                   >
-                    <Empty className="my-5" description={<span className="text-secondary">Produk tidak tersedia</span>} />
+                    <Empty className="my-5" 
+                      description={
+                        <>
+                          <span className="text-secondary mb-0 mt-2">Produk tidak tersedia</span>
+                          <br />
+                          {renderActiveFilter().length > 0 && <span className="text-secondary">Coba kurangi filter pencarian anda</span>}
+                        </>
+                      } 
+                    />
                   </motion.div>
                 )}
               </Row>
