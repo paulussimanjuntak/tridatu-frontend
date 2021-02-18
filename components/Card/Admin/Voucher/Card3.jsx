@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useRouter } from 'next/router';
-import { Card as CardAnt, Typography, Space, Button, Popconfirm } from 'antd';
+import { Card as CardAnt, Typography, Space, Button, Popconfirm, Collapse } from 'antd';
 import { QuestionCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import Link from 'next/link';
@@ -36,8 +36,8 @@ const AdminCardVoucher = ({ image, idx }) => {
         ]}
       >
         <Image 
-          width={600}
-          height={328}
+          width={800}
+          height={400}
           src={image}
           alt="Tridatu Bali"
           className="img-fit radius-top-img-card"
@@ -46,7 +46,7 @@ const AdminCardVoucher = ({ image, idx }) => {
           <Card.Text className="text-dark truncate-2 fs-14-s">
             <Link href="/promo/belanja-diskon-serbu" as="/promo/belanja-diskon-serbu">
               <a className="text-reset">
-                Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit Belanja Gadget dan Electronic Ter-update Diskon Rp 200ribu dengan Kartu Kredit
+                Promo untuk Prdratih
               </a>
             </Link>
           </Card.Text>
@@ -56,27 +56,54 @@ const AdminCardVoucher = ({ image, idx }) => {
               <div className="promotion-box__value">10 Sep - 29 Okt 2020</div>
             </div>
           </div>
-          <div className="promotion-code">
-            <div className="promotion-code-detail">
-              {idx == 0 && (
-                <div className="promotion-box-label">Tanpa Kode Promo</div>
-              )}
-              {idx > 0 && idx < 3 && (
-                <>
-                  <div className="promotion-box-label">Kode Promo</div>
-                  <div className="promotion-box__value d-flex align-items-center">
-                    <Paragraph className="copy-code mb-0">
-                    </Paragraph>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+
+          <Collapse expandIconPosition="right">
+            <Collapse.Panel  header="1 Kode Promo" key="1">
+              <div className="promotion-code">
+                <b>Diskon hingga Rp50.000</b>
+                <p className="fs-12 text-muted mb-0">Tanpa minimum transaksi</p>
+                <div className="promotion-box__value d-flex align-items-center">
+                  <Paragraph className="copy-code mb-0">
+                    MISECCAM2K
+                  </Paragraph>
+                </div>
+                <ul className="ant-card-actions voucher-ant-card-actions mb-0">
+                  <li className="w-50 my-0">
+                    <span className="text-center">
+                      <EditOutlined key="edit" />
+                    </span>
+                  </li>
+                  <li className="w-50 my-0">
+                    <span className="text-center">
+                      <DeleteOutlined key="delete" />
+                    </span>
+                  </li>
+                </ul>
+                {/* <div className="d-flex border-top text-center pt-2 mt-2 justify-content-center"> */}
+                {/*   <EditOutlined key="edit" /> */}
+                {/*   <span className="text-secondary mx-2 border-right" /> */}
+                {/*   <DeleteOutlined key="delete" /> */}
+                {/* </div> */}
+              </div>
+            </Collapse.Panel>
+          </Collapse>
+
         </Card.Body>
 
       </CardAnt>
 
       <style jsx>{`
+      :global(.voucher-code .ant-card-actions > li){
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      :global(.voucher-ant-card-actions){
+        border-bottom: 1px solid #f0f0f0;
+        margin-top: .2rem;
+        margin-bottom: 1rem;
+      }
+
         :global(.copy-code){
           color: #d63031;
         }

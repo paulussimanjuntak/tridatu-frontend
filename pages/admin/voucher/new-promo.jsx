@@ -55,6 +55,7 @@ const NewPromo = () => {
   const [imageList, setImageList] = useState(formImage)
   const [showProduct, setShowProduct] = useState(false)
   const [typeVoucher, setTypeVoucher] = useState("all")
+  const [showPromo, setShowPromo] = useState(true)
   const [dataVoucher, setDataVoucher] = useState([])
   const [dataFreeShipping, setDataFreeShipping] = useState([])
 
@@ -139,9 +140,9 @@ const NewPromo = () => {
         </Card.Body>
         <Card.Body className="p-3">
           <Form layout="vertical">
-            <Form.Item label="Nama Voucher" required>
+            <Form.Item label="Nama Promo" required>
               <Input 
-                placeholder="Nama Voucher" 
+                placeholder="Nama Promo" 
                 suffix={<CountChar>0/30</CountChar>} 
               />
               <small className="form-text text-left text-muted">
@@ -149,7 +150,7 @@ const NewPromo = () => {
               </small>
             </Form.Item>
             
-            <Form.Item label="Periode Klaim Voucher" required>
+            <Form.Item label="Periode Klaim Promo" required>
               <DatePicker.RangePicker 
                 showTime 
                 inputReadOnly
@@ -158,25 +159,72 @@ const NewPromo = () => {
               <span className="ml-2">WITA</span>
             </Form.Item>
 
-            <Form.Item label="Deskripsi Voucher" required>
-              <Input.TextArea 
-                name="desc"
-                autoSize={{ minRows: 8, maxRows: 10 }} 
-                placeholder="Deskripsi Voucher" 
-              />
-            </Form.Item>
-            
-            <Form.Item label="Syarat dan Ketentuan" required>
-              <Editor 
-                initialValue=""
-                setContent={() => {}} 
-                height="200"
-              />
+            <Form.Item label="Pengaturan Tampilan Promo" required className="mb-0">
+              <Radio.Group value={showPromo} onChange={e => setShowPromo(e.target.value)}>
+                <Radio value={true} className="noselect d-block h-30">
+                  Tampilkan di semua halaman 
+                  <Popover content={PageInfoPopover}>
+                    <i className="fal fa-question-circle ml-1" />
+                  </Popover>
+                </Radio>
+                <Radio value={false} className="noselect d-block h-30">
+                  Tidak Ditampilkan
+                  <Popover content={
+                    <small className="form-text text-left text-muted mt-0 text-wrap text-center">
+                      Promo tidak akan ditampilkan namun kamu dapat <br/>menambahkan kode voucher dan membagikannya kepada pembeli.
+                    </small>
+                    }
+                  >
+                    <i className="fal fa-question-circle ml-1" />
+                  </Popover>
+                </Radio>
+              </Radio.Group>
             </Form.Item>
 
           </Form>
         </Card.Body>
       </Card>
+
+      {showPromo && (
+        <Card className="border-0 shadow-sm card-add-product">
+          <Card.Body className="p-3 border-bottom">
+            <h5 className="mb-0 fs-16-s">Pengaturan Informasi</h5>
+          </Card.Body>
+          <Card.Body className="p-3">
+            <Form layout="vertical">
+
+              <Form.Item label="Foto Promo (800 × 400 px)" required>
+                <Upload
+                  accept="image/*"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  fileList={imageList.file.value}
+                  beforeUpload={(file) => imageValidation(file, "www.google.com", "avatar", "formHeader")}
+                >
+                  {imageList.file.value.length >= 1 ? null : uploadButton(loading)}
+                </Upload>
+              </Form.Item>
+
+              <Form.Item label="Deskripsi Promo" required>
+                <Input.TextArea 
+                  name="desc"
+                  autoSize={{ minRows: 8, maxRows: 10 }} 
+                  placeholder="Deskripsi Promo" 
+                />
+              </Form.Item>
+              
+              <Form.Item label="Syarat dan Ketentuan" required>
+                <Editor 
+                  initialValue=""
+                  setContent={() => {}} 
+                  height="200"
+                />
+              </Form.Item>
+
+            </Form>
+          </Card.Body>
+        </Card>
+      )}
 
 
 

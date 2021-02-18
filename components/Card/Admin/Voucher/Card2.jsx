@@ -36,8 +36,8 @@ const AdminCardVoucher = ({ image, idx }) => {
         ]}
       >
         <Image 
-          width={600}
-          height={328}
+          width={800}
+          height={400}
           src={image}
           alt="Tridatu Bali"
           className="img-fit radius-top-img-card"
@@ -57,10 +57,7 @@ const AdminCardVoucher = ({ image, idx }) => {
             </div>
           </div>
 
-          <Collapse
-            defaultActiveKey={['1']}
-            expandIconPosition="right"
-          >
+          <Collapse expandIconPosition="right">
             <Collapse.Panel  header="3 Kode Promo" key="1">
               <div className="promotion-code">
                 <b>Diskon 5% hingga Rp150.000</b>

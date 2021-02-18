@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Form, Input, Radio, InputNumber, Popover, Table, Tooltip, Space, Upload, DatePicker } from 'antd'
+import { Form, Input, Radio, InputNumber, Select, Table, Tooltip, Space, Upload, DatePicker } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 
 import makeid from 'lib/makeid'
@@ -139,6 +139,22 @@ const NewPromo = () => {
         </Card.Body>
         <Card.Body className="p-3">
           <Form layout="vertical">
+
+            <Form.Item label="Pilih Promo" required>
+              <Select
+                showSearch
+                placeholder="Pilih promo"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                <Option value="jack">Promo prdratih</Option>
+                <Option value="lucy">Promo Lumix 1JT</Option>
+                <Option value="tom">Promo Gratis Ongkir</Option>
+              </Select>
+            </Form.Item>
+
             <Form.Item label="Tipe Voucher" required>
               <Radio.Group value={typeVoucher} onChange={e => setTypeVoucher(e.target.value)}>
                 <Radio.Button 
@@ -156,39 +172,18 @@ const NewPromo = () => {
               </Radio.Group>
             </Form.Item>
 
-            <Form.Item label="Nama Voucher" required>
-              <Input 
-                placeholder="Nama Voucher" 
-                suffix={<CountChar>0/30</CountChar>} 
-              />
-              <small className="form-text text-left text-muted">
-                Contoh: Kejutan Promo Spesial
-              </small>
-            </Form.Item>
-            
-            <Form.Item label="Periode Klaim Voucher" required>
-              <DatePicker.RangePicker 
-                showTime 
-                inputReadOnly
-                format="DD MMM YYYY HH:mm"
-              />
-              <span className="ml-2">WITA</span>
-            </Form.Item>
-
-            <Form.Item label="Deskripsi Voucher" required>
-              <Input.TextArea 
-                name="desc"
-                autoSize={{ minRows: 8, maxRows: 10 }} 
-                placeholder="Deskripsi Voucher" 
-              />
-            </Form.Item>
-            
-            <Form.Item label="Syarat dan Ketentuan" required>
-              <Editor 
-                initialValue=""
-                setContent={() => {}} 
-                height="200"
-              />
+            <Form.Item label="Produk yang Berlaku" required className="mb-0">
+              {typeVoucher === "all" ? 
+                <p className="mb-0 mt-n3 noselect">Semua Produk</p> : 
+                <Button 
+                  with="dashed" 
+                  type="primary"
+                  icon={<PlusCircleOutlined />}
+                  onClick={typeVoucher !== "specific" ? () => {} : onShowProductHandler}
+                >
+                  Tambahkan produk
+                </Button>
+              }
             </Form.Item>
 
           </Form>
@@ -200,9 +195,6 @@ const NewPromo = () => {
       <Card className="border-0 shadow-sm card-add-product">
         <Card.Body className="p-3 border-bottom">
           <h5 className="mb-0 fs-16-s">Pengaturan Bonus</h5>
-          <small className="form-text text-left text-muted">
-            Kuota Klaim dan Minimum Transaksi bisa optional
-          </small>
         </Card.Body>
 
         <Card.Body className="p-3">
@@ -317,47 +309,6 @@ const NewPromo = () => {
 
 
 
-
-      <Card className="border-0 shadow-sm card-add-product">
-        <Card.Body className="p-3 border-bottom">
-          <h5 className="mb-0 fs-16-s">Tampilan Voucher</h5>
-        </Card.Body>
-
-        <Card.Body className="p-3">
-          <Form layout="vertical">
-            <Form.Item label="Pengaturan Tampilan Voucher" required className="mb-0">
-              <Radio.Group defaultValue="1">
-                <Radio value="1" className="noselect d-block h-30">
-                  Tampilkan di semua halaman 
-                  <Popover content={PageInfoPopover} title="">
-                    <i className="fal fa-question-circle ml-1" />
-                  </Popover>
-                </Radio>
-                <Radio value="2" className="noselect d-block h-30">
-                  Tidak Ditampilkan
-                  <small className="form-text text-left text-muted ml-4 mt-0 text-wrap">
-                    Vouchermu tidak akan ditampilkan namun kamu dapat membagikan kode voucher kepada Pembeli.
-                  </small>
-                </Radio>
-              </Radio.Group>
-            </Form.Item>
-
-            <Form.Item label="Produk yang Berlaku" required className="mb-0">
-              {typeVoucher === "all" ? 
-                <p className="mb-0 mt-n3 noselect">Semua Produk</p> : 
-                <Button 
-                  with="dashed" 
-                  type="primary"
-                  icon={<PlusCircleOutlined />}
-                  onClick={typeVoucher !== "specific" ? () => {} : onShowProductHandler}
-                >
-                  Tambahkan produk
-                </Button>
-              }
-            </Form.Item>
-          </Form>
-        </Card.Body>
-      </Card>
 
 
 

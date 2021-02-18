@@ -38,7 +38,7 @@ const VoucherCellEditable = ({ index, record, editable, onRemove, discountTypeHa
                       value={record.voucher.discount_type.value} 
                       onChange={discountTypeHandler} 
                     >
-                      <Select.Option value={NOMINAL}>Rp</Select.Option>
+                      <Select.Option value={NOMINAL}><span className="fs-12">Rp</span></Select.Option>
                       <Select.Option value={PERCENT}>%</Select.Option>
                     </Select>
                   </span>

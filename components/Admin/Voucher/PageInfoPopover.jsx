@@ -3,9 +3,9 @@ import Image from 'next/image'
 
 const PageInfoPopover = () => (
   <div className="p-4">
-    <small className="form-text text-center mb-4 text-muted">
-      Voucher akan otomatis ditampilkan di Halaman Promo, Halaman Detail Produk, <br/> dan Halaman Keranjang Belanja.
-    </small>
+    {/* <small className="form-text text-center mb-4 text-muted"> */}
+    {/*   Voucher akan otomatis ditampilkan di Halaman Promo, Halaman Detail Produk, <br/> dan Halaman Keranjang Belanja. */}
+    {/* </small> */}
     <Space align="center">
       {[...Array(3)].map((_, i) => (
         <div key={i}>

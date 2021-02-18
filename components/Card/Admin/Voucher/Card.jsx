@@ -32,8 +32,8 @@ const AdminCardVoucher = ({ image, idx }) => {
         ]}
       >
         <Image 
-          width={600}
-          height={328}
+          width={800}
+          height={400}
           src={image}
           alt="Tridatu Bali"
           className="img-fit radius-top-img-card"
