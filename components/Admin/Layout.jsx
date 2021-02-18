@@ -29,19 +29,21 @@ const routes = {
   produk: [
     {link: "/admin/products", text: "Produk Saya", icon: "far fa-shopping-bag"},
     {link: "/admin/products/new", text: "Tambah Produk", icon: "far fa-file-plus"},
-    {link: "/admin/products/promo", text: "Daftar Promo", icon: "far fa-percent"},
+    {link: "/admin/products/promo", text: "Diskon Produk", icon: "far fa-percent"},
   ],
   brand: [
     {link: "/admin/brand", text: "Brand", icon: "far fa-layer-group"},
     {link: "/admin/brand/new", text: "Tambah Brand", icon: "far fa-layer-plus"},
   ],
-  voucher: [
-    {link: "/admin/voucher", text: "Voucher", icon: "far fa-ticket-alt"},
-    {link: "/admin/voucher/new", text: "Tambah Voucher", icon: "far fa-money-check"},
+  promo: [
+    {link: "/admin/voucher", text: "Promo", icon: "far fa-ticket-alt"},
+    {link: "/admin/voucher/new-promo", text: "Tambah Promo", icon: "far fa-money-check"},
+    {link: "/admin/voucher/new-voucher", text: "Tambah Voucher", icon: "far fa-money-check"},
   ],
   administrasi: [
     {link: "/admin/review", text: "Ulasan Pembeli", icon: "far fa-smile-wink"},
     {link: "/admin/outlet", text: "Informasi Outlet", icon: "far fa-store"},
+    {link: "/admin/voucher/banner", text: "Banner Promo", icon: "far fa-money-check"},
   ],
 }
 

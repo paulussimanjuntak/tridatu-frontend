@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
-import { Typography, Space, Button, Popconfirm } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Card as CardAnt, Typography, Space, Button, Popconfirm, Collapse } from 'antd';
+import { QuestionCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,14 +8,29 @@ import Card from "react-bootstrap/Card";
 
 const Paragraph = Typography.Paragraph ;
 
-const CardPromo = ({ image }) => {
-  const router = useRouter()
-
-  const isPromoAdmin = router.pathname.startsWith('/admin')
+const AdminCardVoucher = ({ image, idx }) => {
 
   return(
     <>
-      <Card className={isPromoAdmin ? "mb-0" : "mb-4 border-0 shadow"}>
+      <CardAnt 
+        className="shadow-sm"
+        bodyStyle={{ padding: 0 }}
+        actions={[
+          <a className="text-decoration-none">
+            <EditOutlined key="edit" />
+          </a>,
+           <Popconfirm 
+            title="Hapus promo ini?"
+             onConfirm={() => {}}
+            okText="Ya"
+            cancelText="Batal"
+            placement="bottom"
+            arrowPointAtCenter
+          >
+            <DeleteOutlined key="delete" />
+          </Popconfirm>
+        ]}
+      >
         <Image 
           width={600}
           height={328}
@@ -23,12 +38,6 @@ const CardPromo = ({ image }) => {
           alt="Tridatu Bali"
           className="img-fit radius-top-img-card"
         />
-        {/* <Card.Img */}
-        {/*   variant="top" */}
-        {/*   src={image} */}
-        {/*   alt="Tridatu Bali" */}
-        {/*   className="img-fit img-fluid" */}
-        {/* /> */}
         <Card.Body className="p-3">
           <Card.Text className="text-dark truncate-2 fs-14-s">
             <Link href="/promo/belanja-diskon-serbu" as="/promo/belanja-diskon-serbu">
@@ -43,32 +52,22 @@ const CardPromo = ({ image }) => {
               <div className="promotion-box__value">10 Sep - 29 Okt 2020</div>
             </div>
           </div>
-          <div className="promotion-code">
-            <div className="promotion-code-detail">
-              <div className="promotion-box-label">Kode Promo</div>
-              <div className="promotion-box__value">
-                <Paragraph copyable className="copy-code mb-0">
-                  BRINUF4BRINUF4
-                </Paragraph>
-              </div>
-            </div>
-          </div>
+
+          <Collapse collapsible="disabled" className="collapse-no-code">
+            <Collapse.Panel showArrow={false} header="Tanpa Kode Promo">
+            </Collapse.Panel>
+          </Collapse>
+
         </Card.Body>
 
-        {isPromoAdmin && (
-          <Card.Body className="border-top py-3 text-center">
-            <Space>
-              <Button size="small" type="primary">Ubah</Button>
-              <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-                <Button size="small" type="primary" danger>Hapus</Button>
-              </Popconfirm>
-            </Space>
-          </Card.Body>
-        )}
-
-      </Card>
+      </CardAnt>
 
       <style jsx>{`
+        :global(.ant-collapse.collapse-no-code .ant-collapse-item-disabled > .ant-collapse-header, 
+                .ant-collapse.collapse-no-code .ant-collapse-item-disabled > .ant-collapse-header > .arrow){
+          color: unset;
+          cursor: auto;
+        }
         :global(.copy-code){
           color: #d63031;
         }
@@ -116,4 +115,4 @@ const CardPromo = ({ image }) => {
   )
 }
 
-export default CardPromo
+export default AdminCardVoucher
