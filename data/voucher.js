@@ -1,5 +1,8 @@
 import { Tooltip } from 'antd'
 
+import ItemInfoPromo from "components/Card/Admin/Product/Promo/ItemInfo";
+import ItemPricePromo from "components/Card/Admin/Product/Promo/ItemPrice";
+
 export const columnsVoucher = [
   {
     key: 'code',
@@ -116,4 +119,43 @@ export const columnsOngkir = [
     editable: true,
     render: () => <a><i className="fal fa-trash-alt text-center" /></a>,
   }
+]
+
+export const columnsVoucherProduct = [
+  {
+    title: "Produk",
+    dataIndex: "products",
+    key: "product",
+    width: 270,
+    ellipsis: true,
+    render: (item) => (
+      <ItemInfoPromo
+        image={item.products_image_product}
+        name={item.products_name}
+        slug={item.products_slug}
+      />
+    ),
+  },
+  {
+    title: "Harga",
+    dataIndex: "products",
+    key: "price",
+    width: 180,
+    ellipsis: true,
+    render: (item) => (
+      <ItemPricePromo
+        discount={item.variants_discount}
+        minPrice={+item.variants_min_price}
+        maxPrice={+item.variants_max_price}
+      />
+    ),
+  },
+  {
+    title: "Stok",
+    dataIndex: "products",
+    key: "stock",
+    width: 150,
+    align: "center",
+    render: (item) => <p className="mb-0">{+item.stock}</p>,
+  },
 ]

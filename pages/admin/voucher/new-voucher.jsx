@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Form, Input, Radio, InputNumber, Select, Table, Tooltip, Space, Upload, DatePicker } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 
@@ -13,6 +14,7 @@ import { columnsVoucher, columnsOngkir } from 'data/voucher'
 
 // import { productsData } from 'data/products'
 
+import * as actions from "store/actions";
 import AddStyleAdmin from 'components/Admin/addStyle'
 const Editor = dynamic(import('../../../components/Editor'), { ssr: false })
 
@@ -54,7 +56,7 @@ const NewPromo = () => {
   const [loading, setLoading] = useState(false)
   const [imageList, setImageList] = useState(formImage)
   const [showProduct, setShowProduct] = useState(false)
-  const [typeVoucher, setTypeVoucher] = useState("all")
+  const [typeVoucher, setTypeVoucher] = useState({value: "all", label: "Produk"})
   const [dataVoucher, setDataVoucher] = useState([])
   const [dataFreeShipping, setDataFreeShipping] = useState([])
 
@@ -131,6 +133,13 @@ const NewPromo = () => {
     setShowProduct(true)
   }
 
+  const selectTypeVoucherHandler = e => {
+    setTypeVoucher({
+      value: e.target.value, 
+      label: e.target.label
+    })
+  }
+
   return(
     <>
       <Card className="border-0 shadow-sm card-add-product">
@@ -156,32 +165,63 @@ const NewPromo = () => {
             </Form.Item>
 
             <Form.Item label="Tipe Voucher" required>
-              <Radio.Group value={typeVoucher} onChange={e => setTypeVoucher(e.target.value)}>
+              <Radio.Group value={typeVoucher.value} onChange={selectTypeVoucherHandler}>
                 <Radio.Button 
                   value="all" 
+                  label="Produk"
                   className="voucher-radio-button-wrapper noselect"
                 >
                   <i className="far fa-lg fa-boxes-alt mr-1" /> Semua Produk
                 </Radio.Button>
                 <Radio.Button 
-                  value="specific" 
+                  value="specific_product" 
+                  label="Produk"
                   className="voucher-radio-button-wrapper noselect"
                 >
                   <i className="far fa-lg fa-box-full mr-1" /> Spesifik Produk
                 </Radio.Button>
+                <Radio.Button 
+                  value="specific_brand" 
+                  label="Brand"
+                  className="voucher-radio-button-wrapper noselect"
+                >
+                  <i className="far fa-lg fa-layer-group mr-1" /> Spesifik Brand
+                </Radio.Button>
+                <br/>
+                <Radio.Button 
+                  value="category" 
+                  label="Kategori"
+                  className="voucher-radio-button-wrapper noselect"
+                >
+                  <i className="far fa-lg fa-sitemap mr-1" /> Kategori
+                </Radio.Button>
+                <Radio.Button 
+                  value="sub_category" 
+                  label="Sub Kategori"
+                  className="voucher-radio-button-wrapper noselect"
+                >
+                  <i className="far fa-lg fa-folder-tree mr-1" /> Sub Kategori
+                </Radio.Button>
+                <Radio.Button 
+                  value="item_sub_category" 
+                  label="Item Sub Kategori"
+                  className="voucher-radio-button-wrapper noselect"
+                >
+                  <i className="far fa-lg fa-folder mr-1" /> Item Sub Kategori
+                </Radio.Button>
               </Radio.Group>
             </Form.Item>
 
-            <Form.Item label="Produk yang Berlaku" required className="mb-0">
-              {typeVoucher === "all" ? 
+            <Form.Item label={`${typeVoucher.label} yang Berlaku`} required className="mb-0">
+              {typeVoucher.value === "all" ? 
                 <p className="mb-0 mt-n3 noselect">Semua Produk</p> : 
                 <Button 
                   with="dashed" 
                   type="primary"
                   icon={<PlusCircleOutlined />}
-                  onClick={typeVoucher !== "specific" ? () => {} : onShowProductHandler}
+                  onClick={typeVoucher.value === "all" ? () => {} : onShowProductHandler}
                 >
-                  Tambahkan produk
+                  Tambahkan {typeVoucher.label}
                 </Button>
               }
             </Form.Item>
@@ -350,6 +390,7 @@ const NewPromo = () => {
       */}
 
       <ProductModal 
+        typeVoucher={typeVoucher}
         visible={showProduct}
         onClose={() => setShowProduct(false)}
       />

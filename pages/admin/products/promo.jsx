@@ -22,7 +22,7 @@ const components = { body: { cell: EditableCell } };
 const per_page = 10
 
 const EmptyProduct = () => (
-  <div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: ".2" }} className="w-100" >
+  <div className="w-100">
     <Empty className="my-5" description={<span className="text-secondary">Tidak ada produk</span>} />
   </div>
 )
