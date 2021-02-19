@@ -37,13 +37,13 @@ const routes = {
   ],
   promo: [
     {link: "/admin/voucher", text: "Promo", icon: "far fa-ticket-alt"},
-    {link: "/admin/voucher/new-promo", text: "Tambah Promo", icon: "far fa-money-check"},
+    {link: "/admin/voucher/new-promo", text: "Tambah Promo", icon: "far fa-gift-card"},
     {link: "/admin/voucher/new-voucher", text: "Tambah Voucher", icon: "far fa-money-check"},
   ],
   administrasi: [
     {link: "/admin/review", text: "Ulasan Pembeli", icon: "far fa-smile-wink"},
     {link: "/admin/outlet", text: "Informasi Outlet", icon: "far fa-store"},
-    {link: "/admin/voucher/banner", text: "Banner Promo", icon: "far fa-money-check"},
+    {link: "/admin/voucher/banner", text: "Banner Promo", icon: "far fa-pennant"},
   ],
 }
 
