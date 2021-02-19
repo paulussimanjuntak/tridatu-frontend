@@ -33,7 +33,14 @@ export const columnsVoucher = [
   },
   {
     key: 'min_transaction',
-    title: 'Min. Transaksi',
+    title: (
+      <span>
+        Min. Transaksi
+        <Tooltip title={<small className="noselect">Minimum transaksi dapat dikosongkan</small>}>
+        <i className="fal fa-info-circle text-muted ml-1" />
+        </Tooltip>
+      </span>
+    ),
     dataIndex: 'voucher',
     type: 'minimum',
     editable: true,

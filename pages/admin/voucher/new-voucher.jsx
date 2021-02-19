@@ -32,7 +32,7 @@ const initialDataVoucher = {
   code: { value: "", isValid: true, message: null },
   claim: { value: "", isValid: true, message: null },
   nominal: { value: "", isValid: true, message: null },
-  minimum: { value: "", isValid: true, message: null },
+  minimum: { value: 0, isValid: true, message: null },
   max_discount: { value: "", isValid: true, message: null },
   discount_type: { value: NOMINAL, isValid: true, message: null },
 }
@@ -149,9 +149,9 @@ const NewPromo = () => {
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                <Option value="jack">Promo prdratih</Option>
-                <Option value="lucy">Promo Lumix 1JT</Option>
-                <Option value="tom">Promo Gratis Ongkir</Option>
+                <Select.Option value="jack">Promo prdratih</Select.Option>
+                <Select.Option value="lucy">Promo Lumix 1JT</Select.Option>
+                <Select.Option value="tom">Promo Gratis Ongkir</Select.Option>
               </Select>
             </Form.Item>
 
