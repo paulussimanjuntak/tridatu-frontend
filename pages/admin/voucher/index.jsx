@@ -1,5 +1,6 @@
 import { Row, Col, Input, Select } from 'antd'
 
+import Masonry from 'react-masonry-css'
 import ColB from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Card from "react-bootstrap/Card";
@@ -23,6 +24,13 @@ const orderList = [
   { name: "Dengan Kode Promo", value: "with_promo", },
   { name: "Promo Tidak Ditampilkan", value: "nolive_promo", }
 ]
+
+const breakpointColumnsObj = {
+  default: 3,
+  1200: 2,
+  992: 2,
+  576: 1
+};
 
 const Promo = () => {
   return(
@@ -60,22 +68,54 @@ const Promo = () => {
             </Form.Row>
           </Form>
 
-          <Row gutter={[16, 16]} className="make-columns">
-            <Col xl={8} lg={12} md={12} sm={12} xs={24}>
-              <CardPromoMemo image='/static/images/promo/2.jpeg' />
-            </Col>
-            <Col xl={8} lg={12} md={12} sm={12} xs={24}>
-              <CardPromo1 image='/static/images/promo/used.jpg' />
-            </Col>
-            <Col xl={8} lg={12} md={12} sm={12} xs={24}>
-              <CardPromo2 image='https://ecs7.tokopedia.net/img/blog/promo/2020/01/Thumbnail_600x3282.jpg' />
-            </Col>
-            <Col xl={8} lg={12} md={12} sm={12} xs={24}>
-              <CardPromo3 image='/static/images/promo/no-image.jpg' />
-            </Col>
-          </Row>
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
+            <CardPromoMemo image='/static/images/promo/2.jpeg' />
+            <CardPromo1 image='/static/images/promo/used.jpg' />
+            <CardPromo2 image='https://ecs7.tokopedia.net/img/blog/promo/2020/01/Thumbnail_600x3282.jpg' />
+            <CardPromo3 image='/static/images/promo/no-image.jpg' />
+          </Masonry>
+
+          {/*
+            <Row gutter={[16, 16]} className="make-columns">
+              <Col xl={8} lg={12} md={12} sm={12} xs={24}>
+                <CardPromoMemo image='/static/images/promo/2.jpeg' />
+              </Col>
+              <Col xl={8} lg={12} md={12} sm={12} xs={24}>
+                <CardPromo1 image='/static/images/promo/used.jpg' />
+              </Col>
+              <Col xl={8} lg={12} md={12} sm={12} xs={24}>
+                <CardPromo2 image='https://ecs7.tokopedia.net/img/blog/promo/2020/01/Thumbnail_600x3282.jpg' />
+              </Col>
+              <Col xl={8} lg={12} md={12} sm={12} xs={24}>
+                <CardPromo3 image='/static/images/promo/no-image.jpg' />
+              </Col>
+            </Row>
+          */}
         </Card.Body>
       </Card>
+
+      <style jsx global>{`
+        .my-masonry-grid {
+          display: -webkit-box; /* Not needed if autoprefixing */
+          display: -ms-flexbox; /* Not needed if autoprefixing */
+          display: flex;
+          margin-left: -16px; /* gutter size offset */
+          width: auto;
+        }
+        .my-masonry-grid_column {
+          padding-left: 16px; /* gutter size */
+          background-clip: padding-box;
+        }
+         
+        /* Style your items */
+        .my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
+          margin-bottom: 16px;
+        }
+      `}</style>
     </>
   )
 }

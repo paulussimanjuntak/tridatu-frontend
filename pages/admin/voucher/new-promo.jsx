@@ -160,13 +160,13 @@ const NewPromo = () => {
               <Radio.Group value={showPromo} onChange={e => setShowPromo(e.target.value)}>
                 <Radio value={true} className="noselect d-block h-30">
                   Tampilkan di semua halaman 
-                  <Popover content={PageInfoPopover}>
+                  <Popover placement="bottomLeft" content={PageInfoPopover}>
                     <i className="fal fa-question-circle ml-1" />
                   </Popover>
                 </Radio>
                 <Radio value={false} className="noselect d-block h-30">
                   Tidak Ditampilkan
-                  <Popover content={
+                  <Popover placement="bottomLeft" content={
                     <small className="form-text text-left text-muted mt-0 text-wrap text-center">
                       Promo tidak akan ditampilkan namun kamu dapat <br/>menambahkan kode voucher dan membagikannya kepada pembeli.
                     </small>
