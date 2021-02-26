@@ -1,34 +1,38 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Form, Input, Radio, InputNumber, Select, Table, Tooltip, Space, Upload, DatePicker } from 'antd'
+import { Form, Input, Radio, InputNumber, Select, Table, Space } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 
+import _ from 'lodash'
 import makeid from 'lib/makeid'
-import dynamic from 'next/dynamic'
 import Card from 'react-bootstrap/Card'
 import Button from "antd-button-color"
 
-import { formImage } from 'formdata/formImage'
 import { imageValidation, uploadButton } from 'lib/imageUploader'
-import { columnsVoucher, columnsOngkir } from 'data/voucher'
+import { columnsVoucher, columnsOngkir, columnsSelectedProduct, columnsSelectedBrand, columnsSelectedCategory } from 'data/voucher'
+import { columnsSelectedSubCategory, columnsSelectedItemSubCategory } from 'data/voucher'
 
 // import { productsData } from 'data/products'
 
-import * as actions from "store/actions";
+import Pagination from 'components/Pagination'
 import AddStyleAdmin from 'components/Admin/addStyle'
-const Editor = dynamic(import('../../../components/Editor'), { ssr: false })
-
 import EditableCell from 'components/Admin/Voucher/Cell'
-import PageInfoPopover from 'components/Admin/Voucher/PageInfoPopover'
+import ProductEditableCell from 'components/Admin/Voucher/ProductCell'
 
-import ProductModal from 'components/Modal/Admin/Vouchers/SetupProduct'
+import BrandVoucherModal from 'components/Modal/Admin/Vouchers/SetupVoucherBrand'
+import ProductVoucherModal from 'components/Modal/Admin/Vouchers/SetupVoucherProduct'
+import CategoryVoucherModal from 'components/Modal/Admin/Vouchers/SetupVoucherCategory'
+import SubCategoryVoucherModal from 'components/Modal/Admin/Vouchers/SetupVoucherSubCategory'
+import ItemSubCategoryVoucherModal from 'components/Modal/Admin/Vouchers/SetupVoucherItemSubCategory'
+import {useEffect} from 'react'
 
 
 const components = { body: { cell: EditableCell } };
+const productComponents = { body: { cell: ProductEditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
 const NOMINAL = "NOMINAL"
-const PERCENT = "PERCENT"
+// const PERCENT = "PERCENT"
 
 const initialDataVoucher = {
   code: { value: "", isValid: true, message: null },
@@ -52,14 +56,34 @@ const ButtonAddVoucher = ({ onClick, disabled, children }) => (
   </Button>
 )
 
+const tableProps = {
+  className: "mt-3",
+  scroll: { x:700 },
+  pagination: {
+    pageSize: 5,
+    hideOnSinglePage: true,
+  },
+  components: productComponents
+}
+
 const NewPromo = () => {
-  const [loading, setLoading] = useState(false)
-  const [imageList, setImageList] = useState(formImage)
-  const [showProduct, setShowProduct] = useState(false)
   const [typeVoucher, setTypeVoucher] = useState({value: "all", label: "Produk"})
   const [dataVoucher, setDataVoucher] = useState([])
   const [dataFreeShipping, setDataFreeShipping] = useState([])
 
+  /*MODAL VOUCHER*/
+  const [showBrandModal, setShowBrandModal] = useState(false)
+  const [showProductModal, setShowProductModal] = useState(false)
+  const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [showSubCategoryModal, setShowSubCategoryModal] = useState(false)
+  const [showItemSubCategoryModal, setShowItemSubCategoryModal] = useState(false)
+
+  const [selectedBrand, setSelectedBrand] = useState([])
+  const [selectedProduct, setSelectedProduct] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState([])
+  const [selectedSubCategory, setSelectedSubCategory] = useState([])
+  const [selectedItemSubCategory, setSelectedItemSubCategory] = useState([])
+  /*MODAL VOUCHER*/
 
   const addVoucherDiscountHandler = () => {
     const data = {
@@ -100,6 +124,30 @@ const NewPromo = () => {
     setDataVoucher(newDataVoucher)
   }
 
+  const removeItemHandler = (key, state, setState) => {
+    const newState = [...state]
+    _.remove(newState, x => x.key === key)
+    setState(newState)
+  }
+
+  const removeItemChildHandler = (key, state, setState) => {
+    if(key.toString().includes("~")){
+      const newState = [...state]
+      _.remove(newState, x => x.key === key)
+      setState(newState)
+    }
+    else{
+      const newState = [...state]
+      for(let [idx,val] of Object.entries(newState)){
+        _.remove(val.children, x => x.key === key)
+        if(val.children.length < 1){
+          newState.splice(idx, 1)
+        }
+      }
+      setState(newState)
+    }
+  }
+
   const columnsVouchers = columnsVoucher.map(col => {
     if (!col.editable) return col;
     return {
@@ -129,8 +177,91 @@ const NewPromo = () => {
     }
   })
 
-  const onShowProductHandler = () => {
-    setShowProduct(true)
+  const columnsProduct = columnsSelectedProduct.map(col => {
+    if (!col.editable) return col;
+    return {
+      ...col,
+      onCell: (record, index) => ({
+        record,
+        index: index,
+        type: col.type,
+        editable: col.editable,
+        onRemove: () => removeItemHandler(record.key, selectedProduct, setSelectedProduct)
+      })
+    }
+  })
+
+  const columnsBrand = columnsSelectedBrand.map(col => {
+    if(!col.editable) return col;
+    return {
+      ...col,
+      onCell: (record, index) => ({
+        record,
+        index: index,
+        type: col.type,
+        editable: col.editable,
+        onRemove: () => removeItemHandler(record.key, selectedBrand, setSelectedBrand)
+      })
+    }
+  })
+
+  const columnsCategory = columnsSelectedCategory.map(col => {
+    if(!col.editable) return col;
+    return {
+      ...col,
+      onCell: (record, index) => ({
+        record,
+        index: index,
+        type: col.type,
+        editable: col.editable,
+        onRemove: () => removeItemHandler(record.key, selectedCategory, setSelectedCategory)
+      })
+    }
+  })
+
+  const columnsSubCategory = columnsSelectedSubCategory.map(col => {
+    if(!col.editable) return col;
+    return {
+      ...col,
+      onCell: (record, index) => ({
+        record,
+        index: index,
+        type: col.type,
+        editable: col.editable,
+        onRemove: () => removeItemHandler(record.key, selectedSubCategory, setSelectedSubCategory)
+      })
+    }
+  })
+
+  const columnsItemSubCategory = columnsSelectedItemSubCategory.map(col => {
+    if(!col.editable) return col;
+    return {
+      ...col,
+      onCell: (record, index) => ({
+        record,
+        index: index,
+        type: col.type,
+        editable: col.editable,
+        onRemove: () => removeItemChildHandler(record.key, selectedItemSubCategory, setSelectedItemSubCategory)
+      })
+    }
+  })
+  
+  const onShowModalHandler = (type) => {
+    switch(type){
+      case 'specific_brand':
+        return setShowBrandModal(true)
+      case 'specific_product':
+        return setShowProductModal(true)
+      case 'category':
+        return setShowCategoryModal(true)
+      case 'sub_category':
+        return setShowSubCategoryModal(true)
+      case 'item_sub_category':
+        return setShowItemSubCategoryModal(true)
+      default:
+        return () => {}
+    }
   }
 
   const selectTypeVoucherHandler = e => {
@@ -139,6 +270,14 @@ const NewPromo = () => {
       label: e.target.label
     })
   }
+
+  useEffect(() => {
+    setSelectedBrand([])
+    setSelectedProduct([])
+    setSelectedCategory([])
+    setSelectedSubCategory([])
+    setSelectedItemSubCategory([])
+  }, [typeVoucher])
 
   return(
     <>
@@ -166,47 +305,23 @@ const NewPromo = () => {
 
             <Form.Item label="Tipe Voucher" required>
               <Radio.Group value={typeVoucher.value} onChange={selectTypeVoucherHandler}>
-                <Radio.Button 
-                  value="all" 
-                  label="Produk"
-                  className="voucher-radio-button-wrapper noselect"
-                >
+                <Radio.Button value="all" label="Produk" className="voucher-radio-button-wrapper noselect">
                   <i className="far fa-lg fa-boxes-alt mr-1" /> Semua Produk
                 </Radio.Button>
-                <Radio.Button 
-                  value="specific_product" 
-                  label="Produk"
-                  className="voucher-radio-button-wrapper noselect"
-                >
+                <Radio.Button value="specific_product" label="Produk" className="voucher-radio-button-wrapper noselect">
                   <i className="far fa-lg fa-box-full mr-1" /> Spesifik Produk
                 </Radio.Button>
-                <Radio.Button 
-                  value="specific_brand" 
-                  label="Brand"
-                  className="voucher-radio-button-wrapper noselect"
-                >
+                <Radio.Button value="specific_brand" label="Brand" className="voucher-radio-button-wrapper noselect">
                   <i className="far fa-lg fa-layer-group mr-1" /> Spesifik Brand
                 </Radio.Button>
                 <br/>
-                <Radio.Button 
-                  value="category" 
-                  label="Kategori"
-                  className="voucher-radio-button-wrapper noselect"
-                >
+                <Radio.Button value="category" label="Kategori" className="voucher-radio-button-wrapper noselect">
                   <i className="far fa-lg fa-sitemap mr-1" /> Kategori
                 </Radio.Button>
-                <Radio.Button 
-                  value="sub_category" 
-                  label="Sub Kategori"
-                  className="voucher-radio-button-wrapper noselect"
-                >
+                <Radio.Button value="sub_category" label="Sub Kategori" className="voucher-radio-button-wrapper noselect">
                   <i className="far fa-lg fa-folder-tree mr-1" /> Sub Kategori
                 </Radio.Button>
-                <Radio.Button 
-                  value="item_sub_category" 
-                  label="Item Sub Kategori"
-                  className="voucher-radio-button-wrapper noselect"
-                >
+                <Radio.Button value="item_sub_category" label="Item Sub Kategori" className="voucher-radio-button-wrapper noselect">
                   <i className="far fa-lg fa-folder mr-1" /> Item Sub Kategori
                 </Radio.Button>
               </Radio.Group>
@@ -215,16 +330,34 @@ const NewPromo = () => {
             <Form.Item label={`${typeVoucher.label} yang Berlaku`} required className="mb-0">
               {typeVoucher.value === "all" ? 
                 <p className="mb-0 mt-n3 noselect">Semua Produk</p> : 
-                <Button 
-                  with="dashed" 
-                  type="primary"
+                <Button with="dashed" type="primary"
                   icon={<PlusCircleOutlined />}
-                  onClick={typeVoucher.value === "all" ? () => {} : onShowProductHandler}
+                  onClick={typeVoucher.value === "all" ? () => {} : () => onShowModalHandler(typeVoucher.value)}
                 >
                   Tambahkan {typeVoucher.label}
                 </Button>
               }
             </Form.Item>
+
+            {selectedProduct.length > 0 && typeVoucher.value === "specific_product" && (
+              <Table {...tableProps} columns={columnsProduct} dataSource={selectedProduct} />
+            )}
+
+            {selectedBrand.length > 0 && typeVoucher.value === "specific_brand" && (
+              <Table {...tableProps} columns={columnsBrand} dataSource={selectedBrand} />
+            )}
+
+            {selectedCategory.length > 0 && typeVoucher.value === "category" && (
+              <Table {...tableProps} columns={columnsCategory} dataSource={selectedCategory} />
+            )}
+
+            {selectedSubCategory.length > 0 && typeVoucher.value === "sub_category" && (
+              <Table {...tableProps} columns={columnsSubCategory} dataSource={selectedSubCategory} />
+            )}
+
+            {selectedItemSubCategory.length > 0 && typeVoucher.value === "item_sub_category" && (
+              <Table {...tableProps} scroll={{ x:700, y:300 }} expandable={{ defaultExpandAllRows: true }} columns={columnsItemSubCategory} dataSource={selectedItemSubCategory} />
+            )}
 
           </Form>
         </Card.Body>
@@ -349,56 +482,54 @@ const NewPromo = () => {
 
 
 
-
-
-
-      {/*
-      <Card className="border-0 shadow-sm card-add-product">
-        <Card.Body className="p-3 border-bottom">
-          <h5 className="mb-0 fs-16-s">Pengaturan Media</h5>
-        </Card.Body>
-        <Card.Body className="p-3">
-          <Form layout="vertical">
-
-            <Form.Item label="Foto Thumbnail Card Voucher (600 × 328 px)" className="mb-2" required>
-              <Upload
-                accept="image/*"
-                listType="picture-card"
-                className="avatar-uploader"
-                fileList={imageList.file.value}
-                beforeUpload={(file) => imageValidation(file, "www.google.com", "avatar", "formHeader")}
-              >
-                {imageList.file.value.length >= 1 ? null : uploadButton(loading)}
-              </Upload>
-            </Form.Item>
-
-            <Form.Item label="Foto Detail Voucher (1275 × 320 px)" className="mb-0" required>
-              <Upload
-                accept="image/*"
-                listType="picture-card"
-                className="avatar-uploader"
-                fileList={imageList.file.value}
-                beforeUpload={(file) => imageValidation(file, "www.google.com", "avatar", "formHeader")}
-              >
-                {imageList.file.value.length >= 1 ? null : uploadButton(loading)}
-              </Upload>
-            </Form.Item>
-
-          </Form>
-        </Card.Body>
-      </Card>
-      */}
-
-      <ProductModal 
+      <ProductVoucherModal
         typeVoucher={typeVoucher}
-        visible={showProduct}
-        onClose={() => setShowProduct(false)}
+        visible={showProductModal}
+        onClose={() => setShowProductModal(false)}
+        selectedProduct={selectedProduct}
+        setSelectedProduct={setSelectedProduct}
+      />
+
+      <BrandVoucherModal
+        typeVoucher={typeVoucher}
+        visible={showBrandModal}
+        onClose={() => setShowBrandModal(false)}
+        selectedBrand={selectedBrand}
+        setSelectedBrand={setSelectedBrand}
+      />
+
+      <CategoryVoucherModal
+        typeVoucher={typeVoucher}
+        visible={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+      />
+
+      <SubCategoryVoucherModal
+        typeVoucher={typeVoucher}
+        visible={showSubCategoryModal}
+        onClose={() => setShowSubCategoryModal(false)}
+        selectedSubCategory={selectedSubCategory}
+        setSelectedSubCategory={setSelectedSubCategory}
+      />
+
+      <ItemSubCategoryVoucherModal
+        typeVoucher={typeVoucher}
+        visible={showItemSubCategoryModal}
+        onClose={() => setShowItemSubCategoryModal(false)}
+        selectedItemSubCategory={selectedItemSubCategory}
+        setSelectedItemSubCategory={setSelectedItemSubCategory}
       />
 
       <Space>
         <Button className="btn-tridatu">Simpan</Button>
         <Button>Batal</Button>
       </Space>
+
+      <div className="d-none">
+        <Pagination />
+      </div>
 
       <style jsx>{AddStyleAdmin}</style>
       <style jsx>{`

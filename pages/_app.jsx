@@ -4,7 +4,6 @@ import { Provider } from "react-redux";
 import Head from "next/head";
 import Layout from "components/Layout";
 
-import * as actions from "store/actions";
 import withReduxStore from "lib/with-redux-store";
 import whyDidYouRender from "@welldone-software/why-did-you-render";
 
@@ -132,6 +131,12 @@ const App = ({ Component, pageProps, store }) => {
         }
         .ant-checkbox-checked::after {
           border: 1px solid #ff4d4f;
+        }
+        .ant-checkbox-disabled.ant-checkbox-checked .ant-checkbox-inner::after{
+          border-color: white;
+        }
+        .ant-checkbox-checked.ant-checkbox-disabled .ant-checkbox-inner{
+           border: 1px solid #ff4d4f!important;
         }
         /*ANT CHECKBOX*/
 
@@ -744,7 +749,6 @@ const App = ({ Component, pageProps, store }) => {
 
 App.getInitialProps = async ({ Component, ctx }) => {
   const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
-  // await ctx.store.dispatch(actions.authCheckState(ctx));
   return { pageProps };
 };
 

@@ -38,11 +38,7 @@ import SlugStyle from 'components/Products/slugStyle'
 
 const CardProductMemo = React.memo(CardProduct);
 
-const Fade = {
-  initial: { opacity: 0, },
-  in: { opacity: 1, },
-  out: { opacity: 0, },
-};
+const Fade = { initial: { opacity: 0, }, in: { opacity: 1, }, out: { opacity: 0, }, };
 
 const initialShippingLocation = { 
   value: "Pilih lokasi untuk lihat ongkos kirim", 
@@ -87,8 +83,6 @@ const ProductDetail = () => {
     })
   }, [])
 
-  console.log(JSON.stringify(productData, null, 2))
-
   const { products_id, products_brand, products_category, products_condition, products_desc, products_image_product } = productData
   const { products_image_size_guide, products_love, products_name, products_recommendation, products_slug } = productData
   const { products_variant, products_visitor, products_weight, products_wholesale, products_video } = productData
@@ -102,7 +96,8 @@ const ProductDetail = () => {
   const [shippingLocation, setShippingLocation] = useState(initialShippingLocation)
   const [love, setLove] = useState(products_love)
   const [quantity, setQuantity] = useState(1)
-  const [selected, setSelected] = useState({price: 0, va1_item: "", va2_item: "", stock: 0, priceChange: false })
+  const [selected, setSelected] = useState({price: 0, va1_item: "", va2_item: "", stock: 0, discount: 0, priceChange: false })
+  const [showVideo, setShowVideo] = useState({})
 
   const showModalCartHandler = () => { setShowModalCart(true) }
 
@@ -149,7 +144,7 @@ const ProductDetail = () => {
   }
 
   const onSearchSelectHandler = (_, option) => {
-    dispatch(actions.getShippingCost({ destination: option.shipping_subdistricts_id, weight: products_weight }))
+    dispatch(actions.getShippingCost({ destination: option.shipping_subdistricts_id, weight: +products_weight }))
     setShippingLocation({ ...shippingLocation, ...option })
     setShowSearch(false)
   }
@@ -200,6 +195,7 @@ const ProductDetail = () => {
     }
     if(products_video){
       const video = {
+        original: getYoutubeThumbnail(products_video, "max"),
         thumbnail: getYoutubeThumbnail(products_video, "max"),
         embedUrl: products_video,
         renderItem: () => _renderVideo(products_video)
@@ -207,6 +203,22 @@ const ProductDetail = () => {
       videoProduct.push(video)
     }
     return list.concat(imgVariants, imgSizeGuide, videoProduct)
+  }
+
+  const stopVideos = () => {
+    const videos = document.querySelectorAll('iframe, video');
+    Array.prototype.forEach.call(videos, function (video) {
+      if (video.tagName.toLowerCase() === 'video') {
+        video.pause();
+      } else {
+        const src = video.src;
+        video.src = src;
+      }
+    });
+  };
+
+  const onSlide = () => {
+    stopVideos()
   }
 
   return(
@@ -245,6 +257,8 @@ const ProductDetail = () => {
               renderRightNav={renderRightNav}
               renderFullscreenButton={renderFullscreenButton}
               onClick={showImageModalHandler}
+              onSlide={onSlide}
+              additionalClass="product-images-container"
             />
           </Col>
           {/* POTHOS OF PRODUCTS */}
@@ -280,7 +294,7 @@ const ProductDetail = () => {
                 <div className="d-flex noselect">
                   <div className="info-item">
                     <p>Berat</p>
-                    <p>{products_weight}gr</p>
+                    <p>{+products_weight}gr</p>
                   </div>
                   <div className="info-item">
                     <p>Kondisi</p>
@@ -414,6 +428,10 @@ const ProductDetail = () => {
               </div>
             </div>
             {/* SHIPPING INFORMATION */}
+
+
+            {/* PENAWARAN LAINNYA */}
+            {/* PENAWARAN LAINNYA */}
 
             {/* ACTIONS PRODUCTS INFORMATION 
             <div className="info-product">
@@ -569,10 +587,13 @@ const ProductDetail = () => {
         centered
         footer={null}
         visible={showImageModal}
-        onCancel={() => setShowImageModal(false)}
+        onCancel={() => {
+          setShowImageModal(false)
+          onSlide()
+        }}
         title={products_name}
         closeIcon={ <i className="fas fa-times" /> }
-        width="900px"
+        width="700px"
         maskStyle={{ backgroundColor: "rgba(0, 0, 0, 0.85)" }}
       >
         <ImageGallery
@@ -586,6 +607,8 @@ const ProductDetail = () => {
           renderRightNav={renderRightNav}
           renderFullscreenButton={renderFullscreenButton}
           thumbnailPosition="right"
+          onSlide={onSlide}
+          slideDuration={250}
         />
       </Modal>
 
@@ -667,6 +690,13 @@ const ProductDetail = () => {
 
         :global(.image-gallery.fullscreen-modal){
           z-index: 3000;
+        }
+        :global(.image-gallery-thumbnails-wrapper.right .image-gallery-thumbnails){
+          overflow-y: scroll;
+        }
+        :global(.product-images-container){
+          position: sticky;
+          top: 6rem;
         }
       `}</style>
     </>

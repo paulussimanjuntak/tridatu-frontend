@@ -35,7 +35,7 @@ const OutletImageMemo = React.memo(OutletImage);
 
 import { brandSettings, bannerSettings, infoStoreSettings, infoStoreSettingsMobile } from "lib/slickSetting";
 
-let banners = ['/static/images/promo/Thumbnail-600x328.jpg', '/static/images/banner/2.jpeg', '/static/images/promo/Thumbnail-600x328.jpg', '/static/images/banner/4.jpeg', '/static/images/banner/5.jpeg', '/static/images/banner/5.jpeg']
+let banners = ['/static/images/promo/used.jpg', '/static/images/banner/0.jpg', '/static/images/promo/Thumbnail-600x328.jpg', '/static/images/banner/2.jpeg']
 
 const infoStores = [...Array(4)].map(() => '/static/images/info-store/placeholder.png')
 const emptyBrands = [...Array(5)].map(() => '/static/images/brand/placeholder.png')

@@ -24,9 +24,9 @@ const LIVE = 'live'
 const ARCHIVE = 'archive'
 
 const orderList = [
-  { name: "Terbaru", value: "newest" },
-  { name: "Harga Tertinggi", value: "high_price", },
-  { name: "Harga Terendah", value: "low_price", }
+  { label: "Terbaru", value: "newest" },
+  { label: "Harga Tertinggi", value: "high_price", },
+  { label: "Harga Terendah", value: "low_price", }
 ]
 
 const EmptyProduct = ({ loading, products }) => (
@@ -173,7 +173,7 @@ const Products = ({ searchQuery }) => {
                       onChange={onOrderChange}
                     >
                       {orderList.map((list, i) => (
-                        <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
+                        <Select.Option key={i} value={list.value}>{list.label}</Select.Option>
                       ))}
                     </Select>
                   </Form.Group>

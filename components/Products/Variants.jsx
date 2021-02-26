@@ -4,10 +4,13 @@ import { AnimatePresence } from "framer-motion"
 
 import { columnsGrosir } from 'data/products'
 
+import _ from "lodash"
 import Image from "next/image"
 import Button from "antd-button-color"
 import Notes from "components/Products/Notes";
 import formatNumber from 'lib/formatNumber'
+
+import { ongoing } from 'components/Card/Admin/Product/Promo/statusType'
 
 import SlugStyle from 'components/Products/slugStyle'
 
@@ -19,7 +22,7 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
   const [countVariation, setCountVariation] = useState(0)
   const [originalImage, setOriginalImage] = useState("")
 
-  const { products_slug, products_variant, products_wholesale, products_image_size_guide } = product
+  const { products_slug, products_discount_status, products_variant, products_wholesale, products_image_size_guide } = product
 
   if(products_image_size_guide){
     // console.log(products_image_size_guide)
@@ -30,27 +33,40 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
   useEffect(() => {
     if(products_variant){
       setVariation(products_variant)
+      let tmp_price = [], tmp_discount = []
+      console.log(JSON.stringify(products_variant, null, 2))
       const { va1_name, va2_name, va1_items } = products_variant
       if(va1_items && !va1_name && !va2_name) {
-        setSelected({ ...selected, price: va1_items[0].va1_price, stock: va1_items[0].va1_stock })
+        setSelected({ ...selected, stock: +va1_items[0].va1_stock })
         setCountVariation(0)
         setVa2Items([])
+        va1_items.forEach(x => {tmp_price.push(+x.va1_price); tmp_discount.push(x.va1_discount)})
       }
       if(va1_name && va1_items && !va2_name) {
-        const sumStock = va1_items.reduce((n, {va1_stock}) => n + va1_stock, 0)
-        setSelected({ ...selected, price: va1_items[0].va1_price, stock: sumStock })
+        const sumStock = va1_items.reduce((n, {va1_stock}) => n + +va1_stock, 0)
+        setSelected({ ...selected, stock: sumStock })
         setCountVariation(1)
         setVa2Items([])
+        va1_items.forEach(x => {tmp_price.push(+x.va1_price); tmp_discount.push(x.va1_discount)})
       }
       if(va2_name) {
         let sumStock = 0
         for(let obj of va1_items){
-          sumStock = obj.va2_items.reduce((n, {va2_stock}) => n + va2_stock, sumStock)
+          sumStock = obj.va2_items.reduce((n, {va2_stock}) => n + +va2_stock, sumStock)
         }
-        setSelected({ ...selected, price: va1_items[0].va2_items[0].va2_price, stock: sumStock })
+        setSelected({ ...selected, stock: sumStock })
         setCountVariation(2)
         setVa2Items(va1_items[0].va2_items)
+        va1_items.forEach(x => x.va2_items.forEach(c => {tmp_price.push(+c.va2_price); tmp_discount.push(c.va2_discount)}))
       }
+
+      console.log(tmp_discount)
+      tmp_price = _.uniq(tmp_price)
+      const min_price = _.min(tmp_price)
+      const max_price = _.max(tmp_price)
+
+      console.log(products_discount_status)
+      setSelected({ ...selected, price: [min_price, max_price] })
 
       setQuantity(1)
     }
@@ -70,14 +86,14 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
     if(wholesaleList.length){
       for(let obj of wholesaleList){
         if(quantity >= obj.wholesale_min_qty){
-          setSelected({ ...selected, price: obj.wholesale_price, priceChange: true })
+          setSelected({ ...selected, price: +obj.wholesale_price, priceChange: true })
         }
       }
       if(quantity < wholesaleList[0].wholesale_min_qty){
         const { va1_name, va2_name, va1_items } = products_variant
-        if(va1_items && !va1_name && !va2_name) setSelected({ ...selected, price: va1_items[0].va1_price, priceChange: false })
-        if(va1_name && va1_items && !va2_name) setSelected({ ...selected, price: va1_items[0].va1_price, priceChange: false })
-        if(va2_name) setSelected({ ...selected, price: va1_items[0].va2_items[0].va2_price, priceChange: false })
+        if(va1_items && !va1_name && !va2_name) setSelected({ ...selected, price: +va1_items[0].va1_price, priceChange: false })
+        if(va1_name && va1_items && !va2_name) setSelected({ ...selected, price: +va1_items[0].va1_price, priceChange: false })
+        if(va2_name) setSelected({ ...selected, price: +va1_items[0].va2_items[0].va2_price, priceChange: false })
       }
     }
   }, [quantity])
@@ -86,13 +102,16 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
   const closeNoteHandler = () => { setShowNote(false) }
 
   const quantityHandler = (e, val) => {
-    if(val == "input") setQuantity(e)
+    if(val == "input"){
+      if(e <= +selected.stock) setQuantity(e)
+      else return
+    }
     if(val === "min"){
-      if(quantity == 1) e.stopPropagation()
+      if(quantity <= 1) e.stopPropagation()
       else setQuantity(quantity-1)
     }
     if(val === "plus"){
-      if(quantity >= selected.stock ) e.stopPropagation()
+      if(quantity >= +selected.stock) e.stopPropagation()
       else setQuantity(quantity+1) 
     }
   }
@@ -103,13 +122,13 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
 
     console.log(value)
     if(countVariation == 1){
-      setSelected({ ...selected, price: item.va1_price, stock: item.va1_stock })
+      setSelected({ ...selected, price: item.va1_price, stock: +item.va1_stock })
     }
     if(countVariation == 2){
       if(var2){
-        setSelected({ ...selected, price: item.va2_price, stock: item.va2_stock })
+        setSelected({ ...selected, price: item.va2_price, stock: +item.va2_stock })
       } else {
-        const sumStock = item.reduce((n, {va2_stock}) => n + va2_stock, 0)
+        const sumStock = item.reduce((n, {va2_stock}) => n + +va2_stock, 0)
         setSelected({ ...selected, price: item[0].va2_price, stock: sumStock })
         setVa2Items(item)
       }
@@ -119,7 +138,7 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
   const getActiveImage = (variantImage) => {
     const element = document.getElementById("id-product-images")
     const containerSlider = element.childNodes[0].childNodes[0].childNodes[0]
-    const ImageContainer   = containerSlider.querySelector(".image-gallery-slides")
+    const ImageContainer = containerSlider.querySelector(".image-gallery-slides")
     if(ImageContainer.querySelector(".center")){
       const imgElement = ImageContainer.querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
       if(imgElement){
@@ -133,7 +152,7 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
   const getOriginalImage = () => {
     const element = document.getElementById("id-product-images")
     const containerSlider = element.childNodes[0].childNodes[0].childNodes[0]
-    const ImageContainer   = containerSlider.querySelector(".image-gallery-slides")
+    const ImageContainer = containerSlider.querySelector(".image-gallery-slides")
     if(ImageContainer.querySelector(".center")){
       const imgElement = ImageContainer.querySelector(".center").childNodes[0].getElementsByTagName("img")[0]
       if(imgElement){
@@ -151,6 +170,12 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
       className="table-striped-rows"
     />
   )
+
+  const renderPrice = () => {
+    if(selected && selected.price){
+      const { price } = selected
+    }
+  }
 
   return(
     <>
@@ -183,7 +208,7 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
                   key={item.va1_id} 
                   data={item} 
                   value={item.va1_id}
-                  disabled={item.va1_stock <= 0}
+                  disabled={+item.va1_stock <= 0}
                   onMouseEnter={item.va1_image ? () => getActiveImage(item.va1_image) : () => {}}
                   onMouseLeave={item.va1_image && getOriginalImage}
                   className={`variant-radio-button-wrapper noselect ${item.va1_image && "btn-variant"}`}
@@ -216,7 +241,7 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
             <div className="media-body info-product-body">
               <Radio.Group onChange={variantChangeHandler} defaultValue="a">
                 {variation.va1_items && variation.va1_items.map(item => {
-                  const sumStock = item.va2_items.reduce((n, {va2_stock}) => n + va2_stock, 0)
+                  const sumStock = item.va2_items.reduce((n, {va2_stock}) => n + +va2_stock, 0)
                   return (
                     <Radio.Button 
                       key={item.va1_option} 
@@ -255,7 +280,7 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
                     key={item.va2_id} 
                     data={item} 
                     value={item.va2_id}
-                    disabled={item.va2_stock <= 0}
+                    disabled={+item.va2_stock <= 0}
                     className="variant-radio-button-wrapper noselect"
                   >
                     {item.va2_option}
@@ -273,7 +298,7 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
         <h5 className="info-product-left">Jumlah</h5>
         <div className="media-body info-product-body">
           <span className="fs-14 va-super">
-            Tersedia {selected.stock} pcs
+            Tersedia {+selected.stock} pcs
           </span>
           <div className="mb-2">
             <Button 
@@ -285,12 +310,12 @@ const Variants = ({ product, selected, setSelected, quantity, setQuantity }) => 
               size="middle"
               className="m-l-5 m-r-5" 
               min={1} 
-              max={selected.stock}
+              max={+selected.stock}
               value={quantity} 
               onChange={(e) => quantityHandler(e, 'input')} 
             />
             <Button 
-              disabled={quantity == selected.stock}
+              disabled={quantity == +selected.stock}
               icon={<i className="far fa-plus" />} 
               onClick={(e) => quantityHandler(e, 'plus')} 
             />
