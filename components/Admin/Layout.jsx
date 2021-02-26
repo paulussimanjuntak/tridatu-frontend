@@ -29,21 +29,21 @@ const routes = {
   produk: [
     {link: "/admin/products", text: "Produk Saya", icon: "far fa-shopping-bag"},
     {link: "/admin/products/new", text: "Tambah Produk", icon: "far fa-file-plus"},
-    {link: "/admin/products/promo", text: "Diskon Produk", icon: "far fa-percent"},
+    {link: "/admin/products/discount", text: "Diskon Produk", icon: "far fa-percent"},
   ],
   brand: [
     {link: "/admin/brand", text: "Brand", icon: "far fa-layer-group"},
     {link: "/admin/brand/new", text: "Tambah Brand", icon: "far fa-layer-plus"},
   ],
   promo: [
-    {link: "/admin/voucher", text: "Promo", icon: "far fa-ticket-alt"},
-    {link: "/admin/voucher/new-promo", text: "Tambah Promo", icon: "far fa-gift-card"},
-    {link: "/admin/voucher/new-voucher", text: "Tambah Voucher", icon: "far fa-money-check"},
+    {link: "/admin/promo", text: "Promo", icon: "far fa-ticket-alt"},
+    {link: "/admin/promo/new-promo", text: "Tambah Promo", icon: "far fa-gift-card"},
+    {link: "/admin/promo/new-voucher", text: "Tambah Voucher", icon: "far fa-money-check"},
   ],
   administrasi: [
     {link: "/admin/review", text: "Ulasan Pembeli", icon: "far fa-smile-wink"},
     {link: "/admin/outlet", text: "Informasi Outlet", icon: "far fa-store"},
-    {link: "/admin/voucher/banner", text: "Banner Promo", icon: "far fa-pennant"},
+    {link: "/admin/promo/new-banner", text: "Banner Promo", icon: "far fa-pennant"},
   ],
 }
 

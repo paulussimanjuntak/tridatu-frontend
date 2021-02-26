@@ -22,7 +22,7 @@ import EditableCell from 'components/Card/Admin/Product/Promo/ModalCell'
 
 const components = { body: { cell: EditableCell } };
 
-const PromoModal = ({ visible, onClose, discount, productId, discountStatus }) => {
+const DiscountModal = ({ visible, onClose, discount, productId, discountStatus }) => {
   if(!visible && !discount && !products_variant) return null
 
   const { products_name, products_variant, products_discount_start, products_discount_end } = discount
@@ -457,7 +457,7 @@ const PromoModal = ({ visible, onClose, discount, productId, discountStatus }) =
               <span className="ml-2">WITA</span>
               {start.isValid ? (
                 <small className="form-text text-left text-muted">
-                  Periode Promo harus kurang dari 180 hari
+                  Periode Diskon harus kurang dari 180 hari
                 </small>
               ) : (
                 <ErrorMessage item={start} />
@@ -471,4 +471,4 @@ const PromoModal = ({ visible, onClose, discount, productId, discountStatus }) =
   )
 }
 
-export default PromoModal
+export default DiscountModal 

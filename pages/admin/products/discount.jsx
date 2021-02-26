@@ -161,7 +161,7 @@ const Discount = ({ searchQuery }) => {
     <>
       <Card className="border-0 shadow-sm card-add-product">
         <Card.Body className="p-3 border-bottom">
-          <h5 className="mb-0 fs-16-s">Daftar Promo</h5>
+          <h5 className="mb-0 fs-16-s">Daftar Diskon</h5>
         </Card.Body>
         <Card.Body className="p-3 border-bottom">
           <Form>
