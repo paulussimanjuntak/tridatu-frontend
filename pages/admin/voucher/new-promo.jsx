@@ -19,9 +19,6 @@ const Editor = dynamic(import('../../../components/Editor'), { ssr: false })
 import EditableCell from 'components/Admin/Voucher/Cell'
 import PageInfoPopover from 'components/Admin/Voucher/PageInfoPopover'
 
-import ProductModal from 'components/Modal/Admin/Vouchers/SetupProduct'
-
-
 const components = { body: { cell: EditableCell } };
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
 
