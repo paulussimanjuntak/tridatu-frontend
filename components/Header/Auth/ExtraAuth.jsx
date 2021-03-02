@@ -9,8 +9,8 @@ import Button from "react-bootstrap/Button";
 import { formEmail, formEmailIsValid } from "formdata/formEmail";
 import ErrorMessage from "components/ErrorMessage";
 
-const RESET = "reset",
-  RESEND = "resend";
+const RESET  = "reset",
+      RESEND = "resend";
 
 const ExtraAuth = ({ show, handler, close, type, t }) => {
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ const ExtraAuth = ({ show, handler, close, type, t }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (formEmailIsValid(extraAuth, setExtraAuth)) {
+    if (formEmailIsValid(extraAuth, setExtraAuth, t)) {
       setLoading(true);
       const data = { email: email.value };
 

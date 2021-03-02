@@ -26,5 +26,10 @@ export default {
   notification: "Notifikasi",
   read_all: "Baca Semua",
   cart: "Keranjang",
-  cart_see_now: "Lihat Sekarang"
+  cart_see_now: "Lihat Sekarang",
+  validation: {
+    invalid_email: "Value harus berupa alamat email",
+    empty_password: "Pastikan value memiliki 6 - 100 karakter",
+    empty_username: "Pastikan value memiliki 3 - 100 karakter",
+  }
 };

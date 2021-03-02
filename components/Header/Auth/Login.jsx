@@ -42,7 +42,7 @@ const Login = ({ show, handler, close, switchToExtraAuth, t }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (formLoginIsValid(login, setLogin)) {
+    if (formLoginIsValid(login, setLogin, t)) {
       setLoading(true);
       const data = {
         email: email.value,

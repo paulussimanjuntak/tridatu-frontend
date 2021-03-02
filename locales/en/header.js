@@ -26,5 +26,10 @@ export default {
   notification: "Notification",
   read_all: "Read All",
   cart: "Total",
-  cart_see_now: "Cart"
+  cart_see_now: "Cart",
+  validation: {
+    invalid_email: "Value is not a valid email address",
+    empty_password: "Ensure this value has 6 - 100 characters",
+    empty_username: "Ensure this value has 3 - 100 characters",
+  }
 };

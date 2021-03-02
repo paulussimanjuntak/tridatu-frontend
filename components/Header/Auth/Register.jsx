@@ -39,7 +39,7 @@ const Register = ({ show, handler, close, t }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (formRegisterIsValid(register, setRegister)) {
+    if (formRegisterIsValid(register, setRegister, t)) {
       setLoading(true);
       const data = {
         username: username.value,
