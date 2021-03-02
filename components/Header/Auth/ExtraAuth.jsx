@@ -51,13 +51,23 @@ const ExtraAuth = ({ show, handler, close, type, t }) => {
         .post(url, data)
         .then((res) => {
           setLoading(false);
-          notification.success({
-            closeIcon: <i className="far fa-times" />,
-            message: "Success",
-            description: res.data.detail,
-            placement: "bottomRight",
-          });
           closeModalHandler();
+          if(res.status >= 400 && res.status < 500){
+            notification.error({
+              closeIcon: <i className="far fa-times" />,
+              message: "Error",
+              description: res.data.detail,
+              placement: "bottomRight",
+            });
+          }
+          if(res.status >= 200 && res.status < 300){
+            notification.success({
+              closeIcon: <i className="far fa-times" />,
+              message: "Success",
+              description: res.data.detail,
+              placement: "bottomRight",
+            });
+          }
         })
         .catch((err) => {
           setLoading(false);
