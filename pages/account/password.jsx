@@ -67,7 +67,7 @@ const Password = () => {
 
   const submitHandler = (e) => {
     e.persist()
-    if (formConfigPasswordIsValid(formPassword, setFormPassword, isUpdate)) {
+    if (formConfigPasswordIsValid(formPassword, setFormPassword, isUpdate, t)) {
       setLoading(true);
       let url = "/users/add-password";
       let method = "post";
@@ -126,7 +126,7 @@ const Password = () => {
 
   const submitVerifyPassword = (e) => {
     e.persist()
-    if (formVerifyPasswordIsValid(verifyPassword, setVerifyPassword)){
+    if (formVerifyPasswordIsValid(verifyPassword, setVerifyPassword, t)){
       setLoading(true);
       const data = {
         password: verify_password.value

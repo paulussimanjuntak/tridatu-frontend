@@ -5,5 +5,8 @@ export default {
   new_password: "Password Yang Baru",
   confirm_password: "Konfirmasi Password",
   save: "Simpan",
-  confirm_password_modal_text: "Masukkan password saat ini untuk mengkonfirmasi perubahan password anda."
+  confirm_password_modal_text: "Masukkan password saat ini untuk mengkonfirmasi perubahan password anda.",
+  validation: {
+    value_length: "Pastikan value memiliki 6 - 100 karakter",
+  },
 }

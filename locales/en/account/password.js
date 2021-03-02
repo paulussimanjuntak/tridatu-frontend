@@ -5,5 +5,8 @@ export default {
   new_password: "New Password",
   confirm_password: "Confirm Password",
   save: "Save",
-  confirm_password_modal_text: "Enter your current password to confirm changing your password."
+  confirm_password_modal_text: "Enter your current password to confirm changing your password.",
+  validation: {
+    value_length: "Ensure this value has 6 - 100 characters",
+  },
 }
