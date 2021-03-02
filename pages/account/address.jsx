@@ -70,19 +70,28 @@ const Address = () => {
   }
 
   const editAddressHandler = id => {
-    console.log(id)
     axios.get(`/address/my-address/${id}`)
       .then(res => {
-        editData(res, setCurrentAddress)
-        setShowEditAddressModal(true)
+        if(res.status >= 400 && res.status < 500){
+          resNotification("error", "Error", res.data.detail)
+        }
+        if(res.status >= 200 && res.status < 300){
+          editData(res, setCurrentAddress)
+          setShowEditAddressModal(true)
+        }
       })
       .catch(err => {
         const errDetail = err.response.data.detail
         if(errDetail == signature_exp){
           axios.get(`/address/my-address/${id}`)
             .then(res => {
-              editData(res, setCurrentAddress)
-              setShowEditAddressModal(true)
+              if(res.status >= 400 && res.status < 500){
+                resNotification("error", "Error", res.data.detail)
+              }
+              if(res.status >= 200 && res.status < 300){
+                editData(res, setCurrentAddress)
+                setShowEditAddressModal(true)
+              }
             })
             .catch(() => {})
         } else if(typeof(errDetail) === "string") {
@@ -98,7 +107,12 @@ const Address = () => {
     axios.put(`/address/main-address-true/${id}`, null, jsonHeaderHandler())
       .then(res => {
         dispatch(actions.getAddress(perPage, currentPage))
-        resNotification("success", "Success", res.data.detail)
+        if(res.status >= 400 && res.status < 500){
+          resNotification("error", "Error", res.data.detail)
+        }
+        if(res.status >= 200 && res.status < 300){
+          resNotification("success", "Success", res.data.detail)
+        }
       })
       .catch(err => {
         const errDetail = err.response.data.detail
@@ -124,8 +138,13 @@ const Address = () => {
     }
     axios.delete(`/address/delete/${id}`, jsonHeaderHandler())
       .then(res => {
-        dispatch(actions.getAddress(perPage, page))
-        resNotification("success", "Success", res.data.detail)
+        if(res.status >= 400 && res.status < 500){
+          resNotification("error", "Error", res.data.detail)
+        }
+        if(res.status >= 200 && res.status < 300){
+          dispatch(actions.getAddress(perPage, page))
+          resNotification("success", "Success", res.data.detail)
+        }
       })
       .catch(err => {
         const errDetail = err.response.data.detail
