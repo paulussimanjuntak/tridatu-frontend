@@ -1,5 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
+import { setCookie } from "nookies"
 
 import Head from "next/head";
 import Layout from "components/Layout";
@@ -747,8 +748,14 @@ const App = ({ Component, pageProps, store }) => {
   );
 };
 
-App.getInitialProps = async ({ Component, ctx }) => {
+App.getInitialProps = async ({ Component, ctx, router }) => {
   const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
+  const { locale } = router
+
+  setCookie(ctx, 'NEXT_LOCALE', locale, {
+    maxAge: 30 * 24 * 60 * 60,
+    path: '/',
+  })
   return { pageProps };
 };
 

@@ -4,6 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { AnimatePresence, motion } from 'framer-motion'
 import { Select, Col, Row, Empty, Tag, Affix } from 'antd';
 
+import id from 'locales/id/products'
+import en from 'locales/en/products'
+
 import axios from 'lib/axios'
 import dynamic from 'next/dynamic'
 import Button from "antd-button-color";
@@ -49,6 +52,9 @@ const per_page = 20;
 const ProductContainer = ({ searchQuery, finalCategories }) => {
   const dispatch = useDispatch()
   const router = useRouter();
+
+  const { locale } = router
+  const t = locale === "en" ? en : id
 
   /* GLOBAL STATE */
   const products = useSelector(state => state.products.products)
@@ -419,7 +425,7 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
         <RowB>
           <ColB className="align-self-center">
             <span className="text-secondary fs-14-s">
-              Hasil pencarian dari "<span className="text-dark">{router.query.q ? router.query.q : "Semua"}</span>"
+              {t.result} "<span className="text-dark">{router.query.q ? router.query.q : t.final_result}</span>"
             </span>
           </ColB>
           <ColB className="d-none d-lg-block">
@@ -479,7 +485,7 @@ const ProductContainer = ({ searchQuery, finalCategories }) => {
           />
 
           <ColB>
-            <h4 className="mb-2 d-none d-lg-block">Produk</h4>
+            <h4 className="mb-2 d-none d-lg-block">{t.product}</h4>
             {renderActiveFilter().length > 0 && (
               <div className="mb-3 d-none d-lg-block noselect">
                 <span className="text-secondary font-weight-light">Filter aktif: </span>
