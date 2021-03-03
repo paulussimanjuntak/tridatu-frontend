@@ -112,7 +112,7 @@ const getActiveMenu = (routes, router) => {
   let lastPathrs = rsSplit[rrSplit.length - 1]
 
   if(lastPathrr.startsWith('[')){
-    if(lastPathrs && isIn(lastPathrs, ['new', 'promo'])){
+    if(lastPathrs && isIn(lastPathrs, ['new', 'discount'])){
       rsSplit.shift()
     }
   }
