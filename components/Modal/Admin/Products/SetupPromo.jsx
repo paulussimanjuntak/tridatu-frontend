@@ -175,8 +175,8 @@ const DiscountModal = ({ t, visible, onClose, discount, productId, discountStatu
     let startVal = isIn(ongoing, [discountStatus]) ? moment(products_discount_start) : dateStrings[0]
     let endVal = dateStrings[1]
 
-    // if(!isIn(ongoing, [discountStatus]) && moment(startVal) <= moment()) startVal = moment().add(15, "minute")
-    // if(moment(endVal) <= moment()) endVal = moment(startVal).add(1, "hour")
+    if(!isIn(ongoing, [discountStatus]) && moment(startVal) <= moment()) startVal = moment().add(15, "minute")
+    if(moment(endVal) <= moment()) endVal = moment(startVal).add(1, "hour")
 
     const data = {
       ...periode,
@@ -190,8 +190,8 @@ const DiscountModal = ({ t, visible, onClose, discount, productId, discountStatu
     let startVal = isIn(ongoing, [discountStatus]) ? moment(products_discount_start) : date[0] || ""
     let endVal = date[1] || ""
 
-    // if(!isIn(ongoing, [discountStatus]) && moment(startVal) <= moment()) startVal = moment().add(15, "minute")
-    // if(moment(endVal) <= moment()) endVal = moment(startVal).add(1, "hour")
+    if(!isIn(ongoing, [discountStatus]) && moment(startVal) <= moment()) startVal = moment().add(15, "minute")
+    if(moment(endVal) <= moment()) endVal = moment(startVal).add(1, "hour")
 
     const data = {
       ...periode,
@@ -220,12 +220,12 @@ const DiscountModal = ({ t, visible, onClose, discount, productId, discountStatu
   const nonActiveDiscountHandler = e => {
     let queryString = router.query
     e.preventDefault()
-    axios.delete(`/discounts/non-active/${productId}12`, jsonHeaderHandler())
+    axios.delete(`/discounts/non-active/${productId}`, jsonHeaderHandler())
       .then(res => {
         const resDetail = res.data.detail
-        const notFound = "Product not found!"
+        const notFound = ["Product not found!", "Produk tidak ditemukan!"]
 
-        if(resDetail === notFound){
+        if(isIn(resDetail, notFound)){
           resNotification("error", "Error", resDetail)
         } else {
           dispatch(actions.getDiscount({ ...queryString }))
@@ -335,8 +335,6 @@ const DiscountModal = ({ t, visible, onClose, discount, productId, discountStatu
           }
         }
       }
-
-      console.log(JSON.stringify(productVariant, null, 2))
 
       axios.post("/variants/create-ticket", productVariant, jsonHeaderHandler())
         .then(res => {
