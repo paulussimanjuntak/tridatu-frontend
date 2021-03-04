@@ -4,8 +4,8 @@ export default {
   sort_placeholder: "Sort",
   order_list: {
     newest: "Newest",
-    high_price: "High Price",
-    low_price: "Low Price"
+    high_price: "Highest Price",
+    low_price: "Lowest Price"
   },
   tabs: {
     all: "All",

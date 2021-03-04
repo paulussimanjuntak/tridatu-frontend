@@ -6,11 +6,11 @@ export const productsData = [
   "Kemeja Converse Panjang",
 ];
 
-export const sortListProduct = [
-  { value: "", label: "Paling Sesuai" }, 
-  { value: "newest", label: "Terbaru" }, 
-  { value: "high_price", label: "Harga Tertinggi" }, 
-  { value: "low_price", label: "Harga Terendah" }
+export const sortListProduct = (t) => [
+  { value: "", label: t.sort.most_suitable }, 
+  { value: "newest", label: t.sort.newest }, 
+  { value: "high_price", label: t.sort.high_price }, 
+  { value: "low_price", label: t.sort.low_price }
 ] 
 
 export const formItemLayout = {

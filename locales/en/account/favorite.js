@@ -5,7 +5,7 @@ export default {
   sort: "Sort",
   newest: "Newest",
   longest: "Longest",
-  high_price: "High Price",
-  low_price: "Low Price",
+  high_price: "Highest Price",
+  low_price: "Lowest Price",
   no_product: "Product not available",
 }
