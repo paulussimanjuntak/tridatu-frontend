@@ -28,29 +28,20 @@ const orderList = [
 ]
 
 const options = [
-  {
-    value: 'all',
-    label: 'Semua Kategori',
-  },
-  {
-    value: 'pria',
-    label: 'Pria',
+  { value: 'all', label: 'Semua Kategori', },
+  { value: 'category', label: 'Kategori',
     children: [
-      {
-        value: 'atasan',
-        label: 'Atasan',
+      { value: 'pria', label: 'Pria',
         children: [
-          {
-            value: 'kemeja',
-            label: 'Kemeja',
+          { value: 'atasan', label: 'Atasan',
+            children: [
+              { value: 'kemeja', label: 'Kemeja', },
+            ],
           },
+          { value: 'bawahan', label: 'Celana', }
         ],
       },
-      {
-        value: 'bawahan',
-        label: 'Celana',
-      }
-    ],
+    ]
   },
 ];
 
@@ -63,11 +54,16 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
   const products = useSelector(state => state.products.products)
   /* GLOBAL STATE */
 
+
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(products.page)
   const [order_by, setOrderBy] = useState(orderList[0].value)
   const [dataSourceProducts, setDataSourceProduct] = useState([])
   const [listSelected, setListSelected] = useState([])
+
+  const [isInStock, setIsInStock] = useState(true)
+  const [selectedBrand, setSelectedBrand] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState([])
 
   useEffect(() => {
     if(typeVoucher.value === "specific_product" && visible){
@@ -210,6 +206,25 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
     console.log(sortPrice)
   }
 
+  const onCategoryChange = val => {
+
+    if(val[0] === "category" && val.length === 1){
+      setSelectedCategory(["all"])
+    }
+    else{
+      setSelectedCategory(val)
+    }
+
+  }
+
+  const onResetAllFilter = e => {
+    e.preventDefault()
+    setSearch("")
+    setSelectedBrand([])
+    setSelectedCategory([])
+    setIsInStock(true)
+  }
+
   return(
     <>
       <Modal centered width={1000} 
@@ -237,13 +252,26 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
           <Row gutter={[16, 8]}>
             <Col xl={8} lg={8} md={8} sm={24} xs={24}>
               <Form.Item label="Kategori" className="mb-0">
-                <Cascader options={options} placeholder="Pilih kategori" />
+                <Cascader 
+                  changeOnSelect 
+                  options={options} 
+                  expandTrigger="hover" 
+                  placeholder="Pilih kategori" 
+                  value={selectedCategory}
+                  onChange={onCategoryChange}
+                />
               </Form.Item>
             </Col>
             <Col xl={8} lg={8} md={8} sm={24} xs={24}>
               <Form.Item label="Brand" className="mb-0">
-                <Select mode="multiple" placeholder="Pilih brand" className="select-brand w-100">
-                  {['Adidas', 'Bilabong', 'Converse'].map(x => (
+                <Select 
+                  mode="multiple" 
+                  placeholder="Pilih brand" 
+                  className="select-brand w-100"
+                  value={selectedBrand}
+                  onChange={val => setSelectedBrand(val)}
+                >
+                  {['Adidas', 'Bilabong', 'Converse', 'Deus', 'Gap', 'Giordano', 'Nike'].map(x => (
                     <Select.Option key={x}>{x}</Select.Option>
                   ))}
                 </Select>
@@ -251,16 +279,27 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
             </Col>
             <Col xl={8} lg={8} md={8} sm={24} xs={24}>
               <Form.Item label="Cari produk" className="mb-2">
-                <Input placeholder="Cari berdasarkan nama produk" className="h-35" />
+                <Input 
+                  value={search} 
+                  className="h-35" 
+                  onChange={onSearchChange}
+                  placeholder="Cari berdasarkan nama produk" 
+                />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={[16, 16]} justify="space-between" align="middle">
             <Col xs={{ order: 2, span: 24 }} sm={{ order: 1, span: 8 }}>
-              <Button className="btn-tridatu">Atur ulang</Button>
+              <Button className="btn-tridatu" onClick={onResetAllFilter}>Atur ulang</Button>
             </Col>
             <Col xs={{ order: 1, span: 24 }} sm={{ order: 2, span: 16 }}>
-              <Checkbox defaultChecked={true} className="noselect float-right-md">Hanya menampilkan produk yang tersedia</Checkbox>
+              <Checkbox 
+                checked={isInStock} 
+                className="noselect float-right-md"
+                onChange={e => setIsInStock(e.target.checked)}
+              >
+                Hanya menampilkan produk yang tersedia
+              </Checkbox>
             </Col>
           </Row>
         </Form>

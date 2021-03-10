@@ -43,6 +43,7 @@ const routes = (t) => {
       {link: "/admin/promo", text: t.promo.promo, icon: "far fa-ticket-alt"},
       {link: "/admin/promo/new-promo", text: t.promo.add_promo, icon: "far fa-gift-card"},
       {link: "/admin/promo/new-voucher", text: t.promo.add_voucher, icon: "far fa-money-check"},
+      {link: "/admin/promo/update-voucher", text: "Update Voucher", icon: "far fa-money-check"},
     ],
     [t.administration.title]: [
       {link: "/admin/review", text: t.administration.buyer_reviews, icon: "far fa-smile-wink"},
