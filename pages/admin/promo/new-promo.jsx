@@ -190,7 +190,7 @@ const NewPromo = () => {
           <Card.Body className="p-3">
             <Form layout="vertical">
 
-              <Form.Item label="Foto Promo (800 × 400 px)" required>
+              <Form.Item label="Foto Promo (800 × 400 px)">
                 <Upload
                   accept="image/*"
                   listType="picture-card"
@@ -202,7 +202,7 @@ const NewPromo = () => {
                 </Upload>
               </Form.Item>
 
-              <Form.Item label="Deskripsi Promo" required>
+              <Form.Item label="Deskripsi Promo">
                 <Input.TextArea 
                   name="desc"
                   autoSize={{ minRows: 8, maxRows: 10 }} 
@@ -210,7 +210,7 @@ const NewPromo = () => {
                 />
               </Form.Item>
               
-              <Form.Item label="Syarat dan Ketentuan" required>
+              <Form.Item label="Syarat dan Ketentuan">
                 <Editor 
                   initialValue=""
                   setContent={() => {}} 

@@ -144,6 +144,8 @@ export const columnsVoucherProduct = [
     key: "price",
     width: 180,
     ellipsis: true,
+    sorter: true,
+    // sorter: (a, b) => +a.products.variants_max_price - +b.products.variants_max_price,
     render: (item) => (
       <ItemPricePromo
         discount={item.variants_discount}

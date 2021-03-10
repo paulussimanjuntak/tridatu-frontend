@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Table, Modal, Empty, Space } from 'antd'
+import { Table, Modal, Empty, Space, Input } from 'antd'
 
 import * as actions from "store/actions";
 
@@ -9,6 +9,8 @@ import { columnsVoucherBrand } from 'data/voucher'
 import _ from 'lodash'
 import isIn from 'validator/lib/isIn'
 import Button from 'antd-button-color'
+import ColB from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
 
 const EmptyBrand = () => (
   <div className="w-100">
@@ -95,6 +97,18 @@ const SetupVoucherBrand = ({ typeVoucher, visible, onClose, selectedBrand, setSe
           </Space>
         ]}
       >
+        <Form>
+          <Form.Row>
+            <Form.Group as={ColB} sm={12}>
+              <Input 
+                name="q"
+                placeholder="Cari brand" 
+                prefix={<i className="far fa-search" />}
+                className="h-35"
+              />
+            </Form.Group>
+          </Form.Row>
+        </Form>
 
         <Table 
           pagination={false} 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Table, Modal, Input, Select, Empty, Space } from 'antd'
+import { Table, Modal, Input, Select, Empty, Space, Form, Cascader, Row, Col, Checkbox } from 'antd'
 
 import * as actions from "store/actions";
 
@@ -11,7 +11,7 @@ import Button from 'antd-button-color'
 import isIn from 'validator/lib/isIn'
 import ColB from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
-import Form from 'react-bootstrap/Form'
+// import Form from 'react-bootstrap/Form'
 import isEmpty from 'validator/lib/isEmpty';
 import Pagination from "components/Pagination";
 
@@ -26,6 +26,33 @@ const orderList = [
   { label: "Harga Tertinggi", value: "high_price", },
   { label: "Harga Terendah", value: "low_price", }
 ]
+
+const options = [
+  {
+    value: 'all',
+    label: 'Semua Kategori',
+  },
+  {
+    value: 'pria',
+    label: 'Pria',
+    children: [
+      {
+        value: 'atasan',
+        label: 'Atasan',
+        children: [
+          {
+            value: 'kemeja',
+            label: 'Kemeja',
+          },
+        ],
+      },
+      {
+        value: 'bawahan',
+        label: 'Celana',
+      }
+    ],
+  },
+];
 
 const per_page = 10
 const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, setSelectedProduct }) => {
@@ -172,6 +199,17 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
     setPage(1)
   }
 
+  const onTableChange = (pagination, filters, sorter) => {
+    const { order } = sorter
+    let sortPrice = ""
+    if(order === "ascend") sortPrice = "low_price"
+    if(order === "descend") sortPrice = "high_price"
+
+    setOrderBy(sortPrice)
+    setPage(1)
+    console.log(sortPrice)
+  }
+
   return(
     <>
       <Modal centered width={1000} 
@@ -194,6 +232,40 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
           </Space>
         ]}
       >
+
+        <Form layout="vertical">
+          <Row gutter={[16, 8]}>
+            <Col xl={8} lg={8} md={8} sm={24} xs={24}>
+              <Form.Item label="Kategori" className="mb-0">
+                <Cascader options={options} placeholder="Pilih kategori" />
+              </Form.Item>
+            </Col>
+            <Col xl={8} lg={8} md={8} sm={24} xs={24}>
+              <Form.Item label="Brand" className="mb-0">
+                <Select mode="multiple" placeholder="Pilih brand" className="select-brand w-100">
+                  {['Adidas', 'Bilabong', 'Converse'].map(x => (
+                    <Select.Option key={x}>{x}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xl={8} lg={8} md={8} sm={24} xs={24}>
+              <Form.Item label="Cari produk" className="mb-2">
+                <Input placeholder="Cari berdasarkan nama produk" className="h-35" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={[16, 16]} justify="space-between" align="middle">
+            <Col xs={{ order: 2, span: 24 }} sm={{ order: 1, span: 8 }}>
+              <Button className="btn-tridatu">Atur ulang</Button>
+            </Col>
+            <Col xs={{ order: 1, span: 24 }} sm={{ order: 2, span: 16 }}>
+              <Checkbox defaultChecked={true} className="noselect float-right-md">Hanya menampilkan produk yang tersedia</Checkbox>
+            </Col>
+          </Row>
+        </Form>
+
+        {/*
         <Form>
           <Form.Row>
             <Form.Group as={ColB} lg={8} md={6}>
@@ -222,15 +294,17 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
             </Form.Group>
           </Form.Row>
         </Form>
+        */}
 
         <Table 
           pagination={false} 
+          onChange={onTableChange}
           rowSelection={rowSelection}
           scroll={{ x: 850, y: 400 }}
           columns={columnsVoucherProduct} 
           dataSource={dataSourceProducts}
-          rowClassName={record => isIn(record.key, _.map(selectedProduct, o => o.key)) ? "disabled-row" : "modif-row"}
           locale={{ emptyText: <EmptyProduct /> }}
+          rowClassName={record => isIn(record.key, _.map(selectedProduct, o => o.key)) ? "disabled-row" : "modif-row"}
         />
 
         <Card.Body className="text-right pb-0">
@@ -262,6 +336,21 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
       }
       :global(.idx-3010){
         z-index: 3010;
+      }
+      :global(.select-brand .ant-select-selector){
+        height: 35px;
+        border-radius: 0.25rem !important;
+      }
+      :global(.ant-table-column-sorter-up.active, .ant-table-column-sorter-down.active){
+        color: #ff4d4e;
+      }
+      :global(.ant-cascader-menus, .ant-select-dropdown){
+        z-index: 3010;
+      }
+      @media screen and (min-width: 576px) {
+        :global(.float-right-md){
+          float: right;
+        }
       }
       `}</style>
     </>

@@ -83,7 +83,12 @@ const App = ({ Component, pageProps, store }) => {
           color: #d63031;
           background-color: #d6303130;
         }
-        /*BADGE BOOTSTRAP*/
+
+        /*BADGE ANT*/
+        .badge-green-processing > .ant-badge-status-processing::after{
+          border: 1px solid #53c519;
+        }
+
 
         /*ANT RATE*/
         .ant-rate {
@@ -742,6 +747,10 @@ const App = ({ Component, pageProps, store }) => {
         .product-search .ant-input-affix-wrapper {
           background-color: #fff;
           box-shadow: 0rem 0.3rem 0.8rem 0rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .shadow-1 {
+          box-shadow: rgb(49 53 59 / 16%) 0px 1px 6px 0px !important;
         }
       `}</style>
     </>

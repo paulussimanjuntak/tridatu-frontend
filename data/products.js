@@ -55,13 +55,13 @@ export const initialColumn = [
 
 export const columnsGrosir = [
   {
-    title: "Beli",
+    title: "Jumlah",
     dataIndex: "wholesale_min_qty",
     key: "sell",
     render: (item) => <span className="fs-12">≥ {item}</span>,
   },
   {
-    title: "Harga/pcs",
+    title: "Harga Satuan",
     dataIndex: "wholesale_price",
     key: "price",
     render: (item) => <span className="fs-12">Rp.{formatNumber(item)}</span>,

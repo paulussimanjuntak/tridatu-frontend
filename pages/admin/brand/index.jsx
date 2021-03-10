@@ -1,13 +1,15 @@
 import { withAuth } from 'lib/withAuth'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from "react-redux";
-import { Row, Col, Empty } from 'antd'
+import { Row, Col, Empty, Input } from 'antd'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import id from 'locales/id/admin/brand'
 import en from 'locales/en/admin/brand'
 
+import ColB from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
+import Form from 'react-bootstrap/Form'
 
 import axios, { jsonHeaderHandler, resNotification, signature_exp } from 'lib/axios'
 import * as actions from "store/actions";
@@ -48,6 +50,20 @@ const Brand = () => {
           <h5 className="mb-0 fs-16-s">{t.manage_brand}</h5>
         </Card.Body>
         <Card.Body className="p-3">
+          <Form>
+            <Form.Row>
+              <Form.Group as={ColB} lg={12}>
+                <Input 
+                  // value={search}
+                  // onChange={e => setSearch(e.target.value)}
+                  placeholder="Cari brand"
+                  className="account-search h-100"
+                  prefix={<i className="far fa-search" />}
+                />
+              </Form.Group>
+            </Form.Row>
+          </Form>
+
           {brands && brands.length > 0 ? (
             <Row gutter={[10, 10]}>
               <AnimatePresence>

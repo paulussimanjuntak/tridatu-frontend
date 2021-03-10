@@ -19,10 +19,17 @@ import { promos } from "data/promoData";
 const CardPromoMemo = React.memo(CardPromo);
 
 const orderList = [
-  { name: "Semua", value: "all" },
+  { name: "Semua Promo", value: "all" },
   { name: "Tanpa Kode Promo", value: "without_promo", },
   { name: "Dengan Kode Promo", value: "with_promo", },
   { name: "Promo Tidak Ditampilkan", value: "nolive_promo", }
+]
+
+const orderListStatus = [
+  { label: "Semua Status", value: "" },
+  { label: "Akan Datang", value: "with_promo", },
+  { label: "Sedang Berjalan", value: "nolive_promo", },
+  { label: "Telah Berakhir", value: "have_ended", }
 ]
 
 const breakpointColumnsObj = {
@@ -42,7 +49,7 @@ const Promo = () => {
         <Card.Body className="p-3">
           <Form>
             <Form.Row>
-              <Form.Group as={ColB} lg={8} md={6}>
+              <Form.Group as={ColB} lg={4} md={12}>
                 <Input 
                   className="h-35"
                   placeholder="Cari berdasarkan nama" 
@@ -51,7 +58,7 @@ const Promo = () => {
                   // onChange={onSearchChange}
                 />
               </Form.Group>
-              <Form.Group as={ColB} lg={4} md={6}>
+              <Form.Group as={ColB} lg={4} md={12}>
                 <Select 
                   placeholder="Urutkan" 
                   style={{ width: "100%"}}
@@ -62,6 +69,18 @@ const Promo = () => {
                 >
                   {orderList.map((list, i) => (
                     <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Group>
+              <Form.Group as={ColB} lg={4} md={12}>
+                <Select 
+                  placeholder="Status" 
+                  style={{ width: "100%"}}
+                  className="product-search-select"
+                  defaultValue=""
+                >
+                  {orderListStatus.map((list, i) => (
+                    <Select.Option key={i} value={list.value}>{list.label}</Select.Option>
                   ))}
                 </Select>
               </Form.Group>
