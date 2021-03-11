@@ -11,7 +11,7 @@ import ErrorMessage from "components/ErrorMessage";
 import axios, { jsonHeaderHandler, signature_exp } from 'lib/axios'
 
 const CommentContainer = ({ 
-  children, head, body, content, avatar_url, username, created_at, reply_id, comment_id, commentable_id, commentable_type, role, 
+  children, head, body, content, avatar_url, username, created_at, reply_id, comment_id, commentable_type, role, 
   can_delete, onSubmitReplies
 }) => {
   const dispatch = useDispatch()
@@ -33,7 +33,7 @@ const CommentContainer = ({
     axios.delete(url, jsonHeaderHandler())
       .then(res => {
         console.log(res.data)
-        dispatch(actions.getAllComments({ commentable_id: commentable_id, commentable_type: commentable_type }))
+        dispatch(actions.getAllComments({ commentable_id: comment_id, commentable_type: commentable_type }))
       })
       .catch(err => console.log(err.response.data.detail))
   }

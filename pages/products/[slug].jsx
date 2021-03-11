@@ -292,12 +292,9 @@ const ProductDetail = () => {
     return res.data
   }
 
-  // useEffect(() => {
-  //   const list_comments_id = comments && comments.data && comments.data.map(x => x.comments_id)
-  //   if(list_comments_id){
-  //     getAllReplies(list_comments_id.join("-"))
-  //   }
-  // }, [comments])
+  useEffect(() => {
+    dispatch(actions.getAllComments({ page: page, commentable_id: products_id, commentable_type: "product" }))
+  }, [page])
 
   useEffect(() => {
     setCommentList(comments)
@@ -329,11 +326,6 @@ const ProductDetail = () => {
       setCommentList(comments)
     }
   }, [comments])
-
-  useEffect(() => {
-    dispatch(actions.getAllComments({ page: page, commentable_id: products_id, commentable_type: "product" }))
-  }, [page])
-
 
   const onSubmitComment = e => {
     e.preventDefault()
@@ -386,7 +378,10 @@ const ProductDetail = () => {
     e.preventDefault()
     if(formCommentIsValid(formState, setFormState)){
       const { message } = formState
-      const data = { message: message.value, comment_id: comment_id }
+      const data = { 
+        message: message.value, 
+        comment_id: comment_id 
+      }
       setLoading(true)
       axios.post('/replies/create', data, jsonHeaderHandler())
         .then(async () => {
@@ -826,6 +821,7 @@ const ProductDetail = () => {
                   <section className="diskusi-section mb-0" key={comment.comments_id}>
                     <CommentContainer 
                       head body="message"
+                      commentable_type="product"
                       comment_id={comment.comments_id}
                       username={comment.users_username}
                       content={comment.comments_message}
@@ -848,12 +844,14 @@ const ProductDetail = () => {
                        comment.comments_replies.length && comment.comments_replies.map(reply => (
                         <CommentContainer 
                           body="message" 
+                          commentable_type="product"
                           key={reply.replies_id}
                           role={reply.users_role}
                           reply_id={reply.replies_id}
                           username={reply.users_username}
                           content={reply.replies_message}
                           user_id={reply.replies_user_id}
+                          comment_id={comment.comments_id}
                           created_at={reply.replies_created_at}
                           can_delete={user && reply.replies_user_id === user.id}
                           avatar_url={`${process.env.NEXT_PUBLIC_API_URL}/static/avatars/${reply.users_avatar}`}
@@ -1036,15 +1034,17 @@ ProductDetail.getInitialProps = async ctx => {
       commentable_id: res.data.products_id
     }
     let resComments = await axios.get(`/comments/all-comments`, { params: params })
-    // console.log("ASS ".repeat(90))
-    // console.log(JSON.stringify(resComments.data, null, 2))
-    // console.log("ASS ".repeat(90))
-    const list_comments_id = resComments && resComments.data && resComments.data.data.map(x => x.comments_id)
-    if(list_comments_id.length){
+    const list_comments_with_replies = await resComments && resComments.data && resComments.data.data.filter(x => x.total_replies > 0)
+    const list_comments_id = list_comments_with_replies.map(x => x.comments_id)
+
+    if(list_comments_id && list_comments_id.length){
       const resReplies = await axios.get(`/replies/comments/${list_comments_id.join("-")}`)
-      const dataReplies = resReplies.data.filter(x => x.comments_replies.length > 0)
-      if(dataReplies && dataReplies.length && dataReplies.length > 0){
-        for(let val of dataReplies){
+
+      let finalResReplies = resReplies.data
+      if(typeof resReplies.data.length === "undefined") finalResReplies = new Array(resReplies.data)
+
+      if(finalResReplies.length > 0){
+        for(let val of finalResReplies){
           if(resComments && resComments.data && resComments.data.data.length){
             for(let [key, obj] of Object.entries(resComments.data.data)){
               if(val.comments_id === obj.comments_id){
@@ -1057,9 +1057,6 @@ ProductDetail.getInitialProps = async ctx => {
           }
         }
         ctx.store.dispatch(actions.getAllCommentsSuccess(resComments.data))
-        // console.log("~+".repeat(90))
-        // console.log(JSON.stringify(resComments.data, null, 2))
-        // console.log("~+".repeat(90))
       }
       else{
         ctx.store.dispatch(actions.getAllCommentsSuccess(resComments.data))
@@ -1067,9 +1064,6 @@ ProductDetail.getInitialProps = async ctx => {
     } 
     else {
       ctx.store.dispatch(actions.getAllCommentsSuccess(resComments.data))
-      // console.log("@#".repeat(90))
-      // console.log(JSON.stringify(resComments.data, null, 2))
-      // console.log("@#".repeat(90))
     }
     
     ctx.store.dispatch(actions.getProductSlugSuccess(res.data))
