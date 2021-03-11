@@ -136,11 +136,6 @@ const CardProductAdmin = ({ data, aliveArchive, deleteProduct, t }) => {
               <div className="mb-0 product-meta-item"><i className="fal fa-eye" />
                 <span className="text-truncate">1000</span>
               </div>
-              <div className="mb-0 product-meta-item product-meta-like">
-                <span>
-                  <i className="fal fa-heart" /> <span className="text-truncate">30</span>
-                </span>
-              </div>
               <div className="mb-0 product-meta-item product-meta-sales">
                 <span>Terjual</span>
                 <span className="text-truncate">1K</span>
