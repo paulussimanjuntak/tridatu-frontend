@@ -69,7 +69,7 @@ const _renderImage = (item) => {
   )
 }
 
-const per_page = 10;
+const per_page = 4;
 const ProductDetail = () => {
   const dispatch = useDispatch()
   const router = useRouter()
@@ -126,6 +126,7 @@ const ProductDetail = () => {
   useEffect(() => {
     setProduct(productData)
     setLove(products_love)
+    getInitialComments()
   }, [productData])
 
   useEffect(() => {
@@ -252,7 +253,6 @@ const ProductDetail = () => {
         .then(async res => {
           const commentState = JSON.parse(JSON.stringify(commentList))
           if(res.data.length){
-            console.log("masuk 1")
             const dataReplies = await res.data.filter(x => x.comments_replies.length > 0)
             if(dataReplies && dataReplies.length && dataReplies.length > 0){
               for(let val of dataReplies){
@@ -292,12 +292,52 @@ const ProductDetail = () => {
     return res.data
   }
 
+  const getInitialComments = async () => {
+    const params = { page: page, per_page: per_page, commentable_type: "product", commentable_id: products_id }
+    let resComments = await axios.get(`/comments/all-comments`, { params: params })
+    const list_comments_with_replies = await resComments && resComments.data && resComments.data.data.filter(x => x.total_replies > 0)
+    const list_comments_id = list_comments_with_replies.map(x => x.comments_id)
+
+    if(list_comments_id && list_comments_id.length){
+      const resReplies = await axios.get(`/replies/comments/${list_comments_id.join("-")}`)
+
+      let finalResReplies = resReplies.data
+      if(typeof resReplies.data.length === "undefined") finalResReplies = new Array(resReplies.data)
+
+      if(finalResReplies.length > 0){
+        for(let val of finalResReplies){
+          if(resComments && resComments.data && resComments.data.data.length){
+            for(let [key, obj] of Object.entries(resComments.data.data)){
+              if(val.comments_id === obj.comments_id){
+                resComments.data.data[key] = {
+                  ...resComments.data.data[key],
+                  comments_replies: val.comments_replies
+                }
+              }
+            }
+          }
+        }
+        dispatch(actions.getAllCommentsSuccess(resComments.data))
+      }
+      else{
+        dispatch(actions.getAllCommentsSuccess(resComments.data))
+      }
+    } 
+    else {
+      dispatch(actions.getAllCommentsSuccess(resComments.data))
+    }
+  }
+
   useEffect(() => {
-    dispatch(actions.getAllComments({ page: page, commentable_id: products_id, commentable_type: "product" }))
+    getInitialComments()
   }, [page])
 
   useEffect(() => {
+    getInitialComments()
     setCommentList(comments)
+    return () => {
+      dispatch(actions.getAllCommentsSuccess([]))
+    }
   }, [])
 
   useEffect(() => {
@@ -307,7 +347,7 @@ const ProductDetail = () => {
       ({ comments_id: id1 }) => dupCommentList && dupCommentList.data && !dupCommentList.data.some(({ comments_id: id2 }) => id2 === id1)
     );
 
-    if(newComments && newComments.length){
+    if(newComments && newComments.length && dupCommentList.page === page){
       for(let diff of newComments){
         const idx = dupCommentRedux.data.findIndex(x => x.comments_id === diff.comments_id)
         dupCommentList.data.splice(idx, 0, diff)
@@ -374,7 +414,6 @@ const ProductDetail = () => {
   }
 
   const onSubmitReplies = (e, formState, setFormState, comment_id, setLoading) => {
-    console.log("di klik")
     e.preventDefault()
     if(formCommentIsValid(formState, setFormState)){
       const { message } = formState
@@ -390,7 +429,6 @@ const ProductDetail = () => {
           const dataReplies = await getDataReplies(comment_id)
           const commentState = JSON.parse(JSON.stringify(commentList))
           const idx = commentState.data.findIndex(c => c.comments_id == comment_id)
-          console.log(JSON.stringify(dataReplies, null, 2))
           if(commentState.data.comments_replies){
             commentState.data[idx]["total_replies"] = dataReplies.comments_replies.length
             commentState.data[idx].comments_replies.push(dataReplies.comments_replies[dataReplies.comments_replies.length - 1])
@@ -408,8 +446,6 @@ const ProductDetail = () => {
           setCommentList(commentState)
         })
         .catch(async err => {
-          console.log("masuk err aja", err)
-          console.log("masuk err", err.response)
           setLoading(false)
           if(err.response){
             const errDetail = err.response && err.response.data && err.response.data.detail
@@ -443,6 +479,50 @@ const ProductDetail = () => {
           }
         })
     }
+  }
+
+  const deleteCommentOrReply = (head, id, comment_id) => {
+    let url = `/replies/delete/${id}`
+    if(head){
+      url = `/comments/delete/${id}`
+    }
+
+    axios.delete(url, jsonHeaderHandler())
+      .then(async res => {
+        if(res.status === 200 || res.status === 404){
+          if(head){
+            const commentState = JSON.parse(JSON.stringify(commentList))
+            commentState.data = commentState.data.filter(x => x.comments_id !== id)
+            commentState.total = commentState.total - 1
+            setCommentList(commentState)
+          }
+          else{
+            const commentState = JSON.parse(JSON.stringify(commentList))
+            const idx = commentState.data.findIndex(c => c.comments_id == comment_id)
+            commentState.data[idx].comments_replies = commentState.data[idx].comments_replies.filter(x => x.replies_id !== id)
+            commentState.data[idx].total_replies = commentState.data[idx].total_replies - 1
+            setCommentList(commentState)
+          }
+        }
+      })
+      .catch(err => {
+        const errDetail = err.response && err.response.data && err.response.data.detail
+        if(errDetail == signature_exp){
+          if(head){
+            const commentState = JSON.parse(JSON.stringify(commentList))
+            commentState.data = commentState.data.filter(x => x.comments_id !== id)
+            commentState.total = commentState.total - 1
+            setCommentList(commentState)
+          }
+          else{
+            const commentState = JSON.parse(JSON.stringify(commentList))
+            const idx = commentState.data.findIndex(c => c.comments_id == comment_id)
+            commentState.data[idx].comments_replies = commentState.data[idx].comments_replies.filter(x => x.replies_id !== id)
+            commentState.data[idx].total_replies = commentState.data[idx].total_replies - 1
+            setCommentList(commentState)
+          }
+        }
+      })
   }
 
   return(
@@ -823,31 +903,34 @@ const ProductDetail = () => {
                       head body="message"
                       commentable_type="product"
                       comment_id={comment.comments_id}
-                      username={comment.users_username}
+                      username={comment.users_username + comment.comments_id}
                       content={comment.comments_message}
                       created_at={comment.comments_created_at}
                       can_delete={user && comment.comments_user_id === user.id}
                       avatar_url={`${process.env.NEXT_PUBLIC_API_URL}/static/avatars/${comment.users_avatar}`}
+                      onDeleteCommentOrReply={() => deleteCommentOrReply(true, comment.comments_id, comment.comments_id)}
                     >
-                      {comment.total_replies > 2 && comment.comments_replies && 
-                       ((comment.total_replies - comment.comments_replies.length) > 0) && (
+                      {/* <span>{comment.total_replies} - <pre>{JSON.stringify(comment.comments_replies, null, 2)}</pre></span> */}
+                      {/* {comment.total_replies > 2 && comment.comments_replies && */} 
+                      {/*  ((comment.total_replies - comment.comments_replies.length) > 0) && ( */}
+                      {comment.total_replies !== 0 && comment.comments_replies && 
+                      ((comment.total_replies > comment.comments_replies.length) > 0) && (
                         <a 
                           className="pb-1 fw-500 d-block" 
                           style={{color:"rgba(0, 0, 0, 0.54)"}}
                           onClick={() => getAllReplies(comment.comments_id)}
                         >
                           <i className="fal fa-comment-alt-dots m-r-3" />
-                          Lihat {comment.total_replies - comment.comments_replies.length} jawaban lainnya
+                          Lihat {comment.total_replies - comment.comments_replies.length < 0 ? comment.total_replies : comment.total_replies - comment.comments_replies.length} jawaban lainnya
                         </a>
                       )}
+
                       {comment.comments_replies && 
-                       comment.comments_replies.length && comment.comments_replies.map(reply => (
+                       Boolean(comment.comments_replies.length) && comment.comments_replies.length && comment.comments_replies.map(reply => (
                         <CommentContainer 
                           body="message" 
-                          commentable_type="product"
                           key={reply.replies_id}
                           role={reply.users_role}
-                          reply_id={reply.replies_id}
                           username={reply.users_username}
                           content={reply.replies_message}
                           user_id={reply.replies_user_id}
@@ -855,12 +938,12 @@ const ProductDetail = () => {
                           created_at={reply.replies_created_at}
                           can_delete={user && reply.replies_user_id === user.id}
                           avatar_url={`${process.env.NEXT_PUBLIC_API_URL}/static/avatars/${reply.users_avatar}`}
+                          onDeleteCommentOrReply={() => deleteCommentOrReply(false, reply.replies_id, comment.comments_id)}
                         />
                       ))}
                       {/* IF USER LOGIN */}
                       {user && (
                         <CommentContainer body="reply" 
-                          commentable_type="product"
                           commentable_id={products_id}
                           comment_id={comment.comments_id}
                           onSubmitReplies={onSubmitReplies}
@@ -1029,7 +1112,7 @@ ProductDetail.getInitialProps = async ctx => {
   try{
     const res = await axios.get(`/products/${slug}?recommendation=true`)
     const params = {
-      page: 1, per_page: 10,
+      page: 1, per_page: per_page,
       commentable_type: "product",
       commentable_id: res.data.products_id
     }
