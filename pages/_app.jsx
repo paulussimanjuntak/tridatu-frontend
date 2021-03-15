@@ -591,6 +591,9 @@ const App = ({ Component, pageProps, store }) => {
         .va-top{
           vertical-align: top !important;
         }
+        .va-middle{
+          vertical-align: middle !important;
+        }
         .ws-preline{
           white-space: pre-line;
         }
