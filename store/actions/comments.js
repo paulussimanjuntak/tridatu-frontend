@@ -1,7 +1,7 @@
 import axios, { signature_exp } from "lib/axios";
 import * as actionType from "./actionTypes";
 
-const getAllCommentsStart = () => {
+export const getAllCommentsStart = () => {
   return { type: actionType.GET_ALLCOMMENTS_START }
 }
 

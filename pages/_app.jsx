@@ -663,6 +663,10 @@ const App = ({ Component, pageProps, store }) => {
           border-top: 5px solid rgb(243, 244, 245);
         }
 
+        .h-26{
+          height: 30px;
+        }
+
         .h-30{
           height: 30px;
         }
