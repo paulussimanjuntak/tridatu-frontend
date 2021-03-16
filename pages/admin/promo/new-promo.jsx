@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Form, Input, Radio, InputNumber, Popover, Table, Tooltip, Space, Upload, DatePicker } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 
-import makeid from 'lib/makeid'
 import dynamic from 'next/dynamic'
 import Card from 'react-bootstrap/Card'
 import Button from "antd-button-color"
@@ -16,118 +15,15 @@ import { columnsVoucher, columnsOngkir } from 'data/voucher'
 import AddStyleAdmin from 'components/Admin/addStyle'
 const Editor = dynamic(import('../../../components/Editor'), { ssr: false })
 
-import EditableCell from 'components/Admin/Voucher/Cell'
 import PageInfoPopover from 'components/Admin/Voucher/PageInfoPopover'
 
-const components = { body: { cell: EditableCell } };
+const maxPromoName = 30
 const CountChar = ({children}) => <span className="text-muted noselect border-left pl-2 fs-12">{children}</span>
-
-const NOMINAL = "NOMINAL"
-const PERCENT = "PERCENT"
-
-const initialDataVoucher = {
-  code: { value: "", isValid: true, message: null },
-  claim: { value: "", isValid: true, message: null },
-  nominal: { value: "", isValid: true, message: null },
-  minimum: { value: "", isValid: true, message: null },
-  max_discount: { value: "", isValid: true, message: null },
-  discount_type: { value: NOMINAL, isValid: true, message: null },
-}
-
-const ButtonAddVoucher = ({ onClick, disabled, children }) => (
-  <Button
-    block with="dashed" 
-    type="primary" 
-    className="h-35" 
-    icon={<PlusCircleOutlined />} 
-    onClick={disabled ? () => {} : onClick}
-    disabled={disabled}
-  >
-    {children}
-  </Button>
-)
 
 const NewPromo = () => {
   const [loading, setLoading] = useState(false)
   const [imageList, setImageList] = useState(formImage)
-  const [showProduct, setShowProduct] = useState(false)
-  const [typeVoucher, setTypeVoucher] = useState("all")
   const [showPromo, setShowPromo] = useState(true)
-  const [dataVoucher, setDataVoucher] = useState([])
-  const [dataFreeShipping, setDataFreeShipping] = useState([])
-
-
-  const addVoucherDiscountHandler = () => {
-    const data = {
-      key: makeid(5),
-      voucher : initialDataVoucher
-    }
-    setDataVoucher([...dataVoucher, data])
-  }
-
-  const removeVoucherDiscountHandler = (index) => {
-    setDataVoucher(dataVoucher.filter((_, i) => i !== index))
-  }
-
-  const addFreeShippingHandler = () => {
-    const data = {
-      key: makeid(5),
-      voucher : initialDataVoucher
-    }
-    setDataFreeShipping([...dataFreeShipping, data])
-  }
-
-  const removeFreeShippingHandler = (index) => {
-    setDataFreeShipping(dataFreeShipping.filter((_, i) => i !== index))
-  }
-
-  const discountTypeHandler = (val, index) => {
-    const newDataVoucher = [...dataVoucher]
-    newDataVoucher[index] = {
-      ...newDataVoucher[index], 
-      voucher: {
-        ...newDataVoucher[index].voucher, 
-        discount_type: {
-          ...newDataVoucher[index].voucher.discount_type,
-          value: val 
-        }
-      }
-    }
-    setDataVoucher(newDataVoucher)
-  }
-
-  const columnsVouchers = columnsVoucher.map(col => {
-    if (!col.editable) return col;
-    return {
-      ...col,
-      onCell: (record, index) => ({
-        record,
-        index: index,
-        type: col.type,
-        editable: col.editable,
-        onRemove: () => removeVoucherDiscountHandler(index),
-        discountTypeHandler: val => discountTypeHandler(val, index),
-      })
-    }
-  })
-
-  const columnsShipping = columnsOngkir.map(col => {
-    if (!col.editable) return col;
-    return {
-      ...col,
-      onCell: (record, index) => ({
-        record,
-        index: index,
-        type: col.type,
-        editable: col.editable,
-        onRemove: () => removeFreeShippingHandler(index)
-      })
-    }
-  })
-
-  const onShowProductHandler = () => {
-    setShowProduct(true)
-  }
 
   return(
     <>
@@ -140,7 +36,8 @@ const NewPromo = () => {
             <Form.Item label="Nama Promo" required>
               <Input 
                 placeholder="Nama Promo" 
-                suffix={<CountChar>0/30</CountChar>} 
+                maxLength={maxPromoName}
+                suffix={<CountChar>0/{maxPromoName}</CountChar>} 
               />
               <small className="form-text text-left text-muted">
                 Contoh: Kejutan Promo Spesial
@@ -222,7 +119,6 @@ const NewPromo = () => {
           </Card.Body>
         </Card>
       )}
-
 
 
       <Space>

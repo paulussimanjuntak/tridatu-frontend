@@ -278,6 +278,9 @@ const App = ({ Component, pageProps, store }) => {
           border-color: #8c8c8c;
           // box-shadow: 0 0 0 2px rgb(151 151 151 / 21%);
         }
+        .ant-select-item-option-selected:not(.ant-select-item-option-disabled) .ant-select-item-option-state{
+          color: #6c757d;
+        }
         /*ANT SELECT*/
 
         /*ANT TABS*/
