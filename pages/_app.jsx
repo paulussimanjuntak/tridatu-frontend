@@ -697,6 +697,9 @@ const App = ({ Component, pageProps, store }) => {
         .w-min-content {
           width: min-content;
         }
+        .w-fit-content {
+          width: fit-content;
+        }
         .w-340px{
           width: 340px !important;
         }

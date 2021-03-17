@@ -1,5 +1,6 @@
 import { Switch, InputNumber } from "antd";
 
+import kFormatter from "lib/kFormatter";
 import formatNumber from "lib/formatNumber";
 
 import ItemInfoPromo from "components/Card/Admin/Product/Promo/ItemInfo";
@@ -54,7 +55,7 @@ export const columns = (t) => [
     width: 100,
     ellipsis: true,
     className: "p-l-8",
-    render: () => <span>30</span>,
+    render: (item) => <span>{kFormatter(+item.variants_total_stock, 'k')}</span>,
   },
   {
     title: t.periode,
