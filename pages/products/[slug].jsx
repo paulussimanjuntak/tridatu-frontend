@@ -1239,7 +1239,6 @@ ProductDetail.getInitialProps = async ctx => {
       ctx.store.dispatch(actions.getAllCommentsSuccess(resComments.data))
     }
     
-    ctx.store.dispatch(actions.getProductSlugSuccess(res.data))
     if(res.hasOwnProperty("status") && res.status == 404){
       process.browser
         ? Router.replace("/products", "/products") //Redirec from Client Side
@@ -1247,11 +1246,13 @@ ProductDetail.getInitialProps = async ctx => {
       !process.browser && ctx.res.end()
       ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
     }
-    ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
+    ctx.store.dispatch(actions.getProductSlugSuccess(res.data))
+    console.log("=".repeat(50))
+    console.log(res)
+    console.log("=".repeat(50))
   }
   catch (err) {
     const res = await axios.get(`/products/${slug}?recommendation=true`)
-    ctx.store.dispatch(actions.getProductSlugSuccess(res.data))
     if(res.hasOwnProperty("status") && res.status == 404){
       process.browser
         ? Router.replace("/products", "/products") //Redirec from Client Side
@@ -1259,7 +1260,7 @@ ProductDetail.getInitialProps = async ctx => {
       !process.browser && ctx.res.end()
       ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
     }
-    ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
+    ctx.store.dispatch(actions.getProductSlugSuccess(res.data))
   }
 }
 
