@@ -49,7 +49,7 @@ const Promo = () => {
         <Card.Body className="p-3">
           <Form>
             <Form.Row>
-              <Form.Group as={ColB} lg={4} md={12}>
+              <Form.Group as={ColB} lg={8} md={12}>
                 <Input 
                   className="h-35"
                   placeholder="Cari berdasarkan nama" 
@@ -57,20 +57,6 @@ const Promo = () => {
                   // value={search}
                   // onChange={onSearchChange}
                 />
-              </Form.Group>
-              <Form.Group as={ColB} lg={4} md={12}>
-                <Select 
-                  placeholder="Urutkan" 
-                  style={{ width: "100%"}}
-                  className="product-search-select"
-                  defaultValue="all"
-                  // value={order_by}
-                  // onChange={onOrderChange}
-                >
-                  {orderList.map((list, i) => (
-                    <Select.Option key={i} value={list.value}>{list.name}</Select.Option>
-                  ))}
-                </Select>
               </Form.Group>
               <Form.Group as={ColB} lg={4} md={12}>
                 <Select 
