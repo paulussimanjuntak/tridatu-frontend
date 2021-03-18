@@ -1247,9 +1247,6 @@ ProductDetail.getInitialProps = async ctx => {
       ctx.store.dispatch(actions.getProductSlugFail("something was wrong"))
     }
     ctx.store.dispatch(actions.getProductSlugSuccess(res.data))
-    console.log("=".repeat(50))
-    console.log(res)
-    console.log("=".repeat(50))
   }
   catch (err) {
     const res = await axios.get(`/products/${slug}?recommendation=true`)
