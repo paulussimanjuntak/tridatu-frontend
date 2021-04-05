@@ -10,7 +10,6 @@ import _ from 'lodash'
 import Button from 'antd-button-color'
 import isIn from 'validator/lib/isIn'
 import Card from 'react-bootstrap/Card'
-// import Form from 'react-bootstrap/Form'
 import isEmpty from 'validator/lib/isEmpty';
 import Pagination from "components/Pagination";
 import renameCategory from 'lib/renameCategory'
@@ -54,9 +53,9 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
       let tmp = []
       for(let val of products.data){
         if(isIn(val.products_id, _.map(selectedProduct, o => o.key))){
-          tmp.push({ key: val.products_id, disabled: true, products: { ...val, stock: 30 }})
+          tmp.push({ key: val.products_id, disabled: true, products: { ...val }})
         } else {
-          tmp.push({ key: val.products_id, products: { ...val, stock: 30 }})
+          tmp.push({ key: val.products_id, products: { ...val }})
         }
       }
       setDataSourceProduct(tmp)
@@ -262,6 +261,7 @@ const SetupVoucherProduct = ({ typeVoucher, visible, onClose, selectedProduct, s
         zIndex={3000} visible={visible}
         title={`Pilih ${typeVoucher.label}`} closable={false}
         maskClosable={false}
+        bodyStyle={{ height: '80vh' }}
         footer={[
           <Space key="action-btn">
             {listSelected.length > 0 && <small key="info"><span className="text-tridatu">{listSelected.length} </span>Item terpilih</small>}

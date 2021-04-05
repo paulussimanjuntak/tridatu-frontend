@@ -1,3 +1,4 @@
+import { withAuth } from 'lib/withAuth'
 import { Row, Col, Input, Select } from 'antd'
 
 import Masonry from 'react-masonry-css'
@@ -125,4 +126,4 @@ const Promo = () => {
   )
 }
 
-export default Promo
+export default withAuth(Promo)

@@ -1,5 +1,6 @@
 import { Tooltip } from 'antd'
 
+import kFormatter from "lib/kFormatter";
 import ItemInfoPromo from "components/Card/Admin/Product/Promo/ItemInfo";
 import ItemPricePromo from "components/Card/Admin/Product/Promo/ItemPrice";
 
@@ -22,7 +23,7 @@ export const columnsVoucher = [
     // width: 250,
   },
   {
-    key: 'kuota',
+    key: 'quota',
     title: (
       <span>
         Kuota Klaim
@@ -32,7 +33,7 @@ export const columnsVoucher = [
       </span>
     ),
     dataIndex: 'voucher',
-    type: 'kuota',
+    type: 'quota',
     editable: true,
     // width: 250,
   },
@@ -47,15 +48,15 @@ export const columnsVoucher = [
       </span>
     ),
     dataIndex: 'voucher',
-    type: 'minimum',
+    type: 'min_transaction',
     editable: true,
     // width: 250,
   },
   {
-    key: 'nominal',
+    key: 'nominal-percent',
     title: 'Nominal/Persentase',
     dataIndex: 'voucher',
-    type: 'nominal',
+    type: 'nominal-percent',
     editable: true,
     // width: 250,
   },
@@ -157,7 +158,7 @@ export const columnsOngkir = [
     editable: true,
   },
   {
-    key: 'kuota',
+    key: 'quota',
     title: (
       <span>
         Kuota Klaim
@@ -167,14 +168,14 @@ export const columnsOngkir = [
       </span>
     ),
     dataIndex: 'voucher',
-    type: 'kuota',
+    type: 'quota',
     editable: true,
   },
   {
     key: 'min_transaction',
     title: 'Min. Transaksi',
     dataIndex: 'voucher',
-    type: 'minimum',
+    type: 'min_transaction',
     editable: true,
   },
   {
@@ -224,7 +225,7 @@ export const columnsVoucherProduct = [
     key: "stock",
     width: 150,
     align: "center",
-    render: (item) => <p className="mb-0">{+item.stock}</p>,
+    render: (item) => <span>{kFormatter(+item.variants_total_stock, 'k')}</span>,
   },
 ]
 
@@ -263,7 +264,7 @@ export const columnsSelectedProduct = [
     key: "stock",
     width: "20%",
     align: "center",
-    render: (item) => <p className="mb-0">{+item.stock}</p>,
+    render: (item) => <span>{kFormatter(+item.variants_total_stock, 'k')}</span>,
   },
   {
     key: 'action',

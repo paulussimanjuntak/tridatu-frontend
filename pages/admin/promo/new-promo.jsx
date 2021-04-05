@@ -1,3 +1,4 @@
+import { withAuth } from 'lib/withAuth'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { Form, Input, Radio, Popover, Space, Upload, DatePicker } from 'antd'
@@ -290,7 +291,7 @@ const NewPromo = () => {
           </Card.Body>
           <Card.Body className="p-3">
             <Form layout="vertical">
-              <Form.Item label={`${t.information_settings.promo_photos} (800 × 400 px)`} className="mb-0">
+              <Form.Item label={`${t.information_settings.promo_photos} (600 × 328 px)`} className="mb-0">
                 <Upload
                   accept="image/*"
                   listType="picture-card"
@@ -390,4 +391,4 @@ const NewPromo = () => {
   )
 }
 
-export default NewPromo
+export default withAuth(NewPromo)

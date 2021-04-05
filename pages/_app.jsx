@@ -733,6 +733,12 @@ const App = ({ Component, pageProps, store }) => {
           padding-left: 15px;
         }
 
+        blockquote {
+          padding: 0 0 0 .6em;
+          border-left: 4px solid hsla(0,0%,39.2%,.2);
+          opacity: .85;
+        }
+
         @media only screen and (max-width: 767.98px) {
           .custom-gutters {
             margin-right: -5px;
