@@ -2,7 +2,7 @@ import { withAuth } from 'lib/withAuth'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { Input, Select } from 'antd'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { AnimatePresence } from 'framer-motion'
 
 import * as actions from 'store/actions'
@@ -41,6 +41,7 @@ const breakpointColumnsObj = {
 const per_page = 9
 const Promo = ({ searchQuery }) => {
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const promos = useSelector(state => state.promo.promos)
 
@@ -145,29 +146,33 @@ const Promo = ({ searchQuery }) => {
             </Form.Row>
           </Form>
 
-            <AnimatePresence>
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
-          >
+          <AnimatePresence>
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="my-masonry-grid"
+              columnClassName="my-masonry-grid_column"
+            >
               {promos && promos.data && promos.data.length > 0 && promos.data.map(promo => (
-                <CardPromoMemo data={promo} key={promo.promos_id}/>
-              ))}
-          </Masonry>
-            </AnimatePresence>
-
-            {showPagination && (
-              <Card.Body className="text-center">
-                <Pagination 
-                  total={promos.total} 
-                  goTo={val => setPage(val)} 
-                  current={page} 
-                  hideOnSinglePage 
-                  pageSize={per_page}
+                <CardPromoMemo 
+                  key={promo.promos_id}
+                  data={promo} 
+                  deletePromo={(id) => dispatch(actions.deletePromo(id, {...router.query, per_page: per_page}))}
                 />
-              </Card.Body>
-            )}
+              ))}
+            </Masonry>
+          </AnimatePresence>
+
+          {showPagination && (
+            <Card.Body className="text-center">
+              <Pagination 
+                total={promos.total} 
+                goTo={val => setPage(val)} 
+                current={page} 
+                hideOnSinglePage 
+                pageSize={per_page}
+              />
+            </Card.Body>
+          )}
 
         </Card.Body>
       </Card>

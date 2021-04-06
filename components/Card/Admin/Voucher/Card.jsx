@@ -1,4 +1,5 @@
-import { Card as CardAnt, Typography, Popconfirm, Collapse, Badge } from 'antd';
+import { useState } from 'react'
+import { Card as CardAnt, Typography, Collapse, Badge, Modal, Space, Button } from 'antd';
 import { SettingOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion'
 
@@ -10,9 +11,11 @@ import Card from 'react-bootstrap/Card'
 
 const Paragraph = Typography.Paragraph;
 
-const AdminCardVoucher = ({ data }) => {
-  const { promos_name, promos_image } = data
+const AdminCardVoucher = ({ data, deletePromo }) => {
+  const { promos_id, promos_name, promos_image } = data
   const { promos_period_start, promos_period_end, promos_period_status, promos_code } = data
+
+  const [showModal, setShowModal] = useState(false)
 
   const renderStatus = () => {
     switch(promos_period_status){
@@ -76,6 +79,11 @@ const AdminCardVoucher = ({ data }) => {
     }
   }
 
+  const onDeletePromo = () =>{
+    deletePromo(promos_id)
+    setShowModal(false)
+  }
+
   return(
     <>
       <motion.div 
@@ -84,61 +92,75 @@ const AdminCardVoucher = ({ data }) => {
         exit={{ opacity: 0 }}
         transition={{ duration: ".2" }}
       >
-      <CardAnt 
-        className="shadow-sm"
-        bodyStyle={{ padding: 0 }}
-        actions={[
-          <a className="text-decoration-none">
-            <EditOutlined key="edit" />
-          </a>,
-           <Popconfirm 
-            title="Hapus promo ini?"
-             onConfirm={() => {}}
-            okText="Ya"
-            cancelText="Batal"
-            placement="bottom"
-            arrowPointAtCenter
-          >
-            <DeleteOutlined key="delete" />
-          </Popconfirm>
-        ]}
+        <CardAnt 
+          className="shadow-sm"
+          bodyStyle={{ padding: 0 }}
+          actions={[
+            <a className="text-decoration-none" key="edit">
+              <EditOutlined />
+            </a>,
+            <a className="text-decoration-none" key="delete" onClick={() => setShowModal(true)}>
+              <DeleteOutlined key="delete" />
+            </a>,
+          ]}
+        >
+          <Image 
+            width={800}
+            height={400}
+            src={promos_image ? `${process.env.NEXT_PUBLIC_API_URL}/static/promos/${promos_image}` : '/static/images/promo/no-image.jpg'}
+            alt="Tridatu Bali"
+            className="img-fit radius-top-img-card"
+          />
+          <Card.Body className="p-3">
+            <Card.Text className="text-dark truncate-2 fs-14-s">
+              <Link href="/promo/belanja-diskon-serbu" as="/promo/belanja-diskon-serbu">
+                <a className="text-reset">{promos_name}</a>
+              </Link>
+            </Card.Text>
+            <div className="promotion-date">
+              <div className="promotion-date-detail">
+                <div className="promotion-box-label">Periode Promo</div>
+                <div className="promotion-box__value mb-1">
+                  {moment(promos_period_start).format('d MMM')} - {moment(promos_period_end).format('d MMM YYYY')}
+                </div>
+              </div>
+            </div>
+            <div className="promotion-date">
+              <div className="promotion-date-detail">
+                <div className="promotion-box-label">Status Promo</div>
+                <div className="promotion-box__value">
+                  {renderStatus()}
+                </div>
+              </div>
+            </div>
+
+            {renderPromoCode()}
+
+          </Card.Body>
+
+        </CardAnt>
+      </motion.div>
+
+      <Modal
+        centered
+        visible={showModal}
+        zIndex={3000}
+        width={416}
+        closable={false}
+        footer={null}
+        className="modal-rad-10 text-center"
       >
-        <Image 
-          width={800}
-          height={400}
-          src={promos_image ? `${process.env.NEXT_PUBLIC_API_URL}/static/promos/${promos_image}` : '/static/images/promo/no-image.jpg'}
-          alt="Tridatu Bali"
-          className="img-fit radius-top-img-card"
-        />
-        <Card.Body className="p-3">
-          <Card.Text className="text-dark truncate-2 fs-14-s">
-            <Link href="/promo/belanja-diskon-serbu" as="/promo/belanja-diskon-serbu">
-              <a className="text-reset">{promos_name}</a>
-            </Link>
-          </Card.Text>
-          <div className="promotion-date">
-            <div className="promotion-date-detail">
-              <div className="promotion-box-label">Periode Promo</div>
-              <div className="promotion-box__value mb-1">
-                {moment(promos_period_start).format('d MMM')} - {moment(promos_period_end).format('d MMM YYYY')}
-              </div>
-            </div>
-          </div>
-          <div className="promotion-date">
-            <div className="promotion-date-detail">
-              <div className="promotion-box-label">Status Promo</div>
-              <div className="promotion-box__value">
-                {renderStatus()}
-              </div>
-            </div>
-          </div>
+        <div className="text-dark">
+          <h5 className="mb-3">Hapus promo</h5>
+          <p className="text-black-50 fs-14">{promos_name}</p>
+          <p className="text-black-50 mb-4">Penghapusan promo tidak dapat dibatalkan</p>
 
-          {renderPromoCode()}
-
-        </Card.Body>
-
-      </CardAnt>
-        </motion.div>
+          <Space>
+            <Button onClick={() => setShowModal(false)}>Batal</Button>
+            <Button type="primary" className="btn-tridatu" onClick={onDeletePromo}>Hapus</Button>
+          </Space>
+        </div>
+      </Modal>
   
       <style jsx>{`
         :global(.ant-collapse.collapse-no-code .ant-collapse-item-disabled > .ant-collapse-header, 
