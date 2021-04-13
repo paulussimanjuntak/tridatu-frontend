@@ -11,7 +11,7 @@ import Card from 'react-bootstrap/Card'
 
 const Paragraph = Typography.Paragraph;
 
-const AdminCardVoucher = ({ data, deletePromo }) => {
+const AdminCardVoucher = ({ t, data, deletePromo }) => {
   const { promos_id, promos_name, promos_image } = data
   const { promos_period_start, promos_period_end, promos_period_status, promos_code } = data
 
@@ -20,24 +20,24 @@ const AdminCardVoucher = ({ data, deletePromo }) => {
   const renderStatus = () => {
     switch(promos_period_status){
       case 'ongoing':
-        return <Badge className="badge-green-processing" status="processing" color="green" text="Sedang Berjalan" />
+        return <Badge className="badge-green-processing" status="processing" color="green" text={t.status_type.ongoing} />
       case 'will_come':
-        return <Badge color="yellow" text="Akan Datang" />
+        return <Badge color="yellow" text={t.status_type.will_come} />
       case 'have_ended':
-        return <Badge color="orange" text="Telah Berakhir" />
+        return <Badge color="orange" text={t.status_type.have_ended} />
       default:
-        return <Badge color="orange" text="Telah Berakhir" />
+        return <Badge color="orange" text={t.status_type.have_ended} />
     }
   }
 
   const renderTitleCode = (promo) => {
     switch(promo.promo_codes_kind){
       case 'discount_up_to':
-        return <>Diskon {promo.promo_codes_percent}% hingga Rp.{formatNumber(promo.promo_codes_max_discount)}</>
+        return <>{t.card.discount} {promo.promo_codes_percent}% {t.card.up_to} Rp.{formatNumber(promo.promo_codes_max_discount)}</>
       case 'discount':
-        return <>Diskon Rp.{formatNumber(promo.promo_codes_nominal)}</>
+        return <>{t.card.discount} Rp.{formatNumber(promo.promo_codes_nominal)}</>
       case 'ongkir':
-        return <>Gratis ongkir</>
+        return <>{t.card.free_shipping}</>
       default: 
         return ""
     }
@@ -49,15 +49,15 @@ const AdminCardVoucher = ({ data, deletePromo }) => {
         <Collapse expandIconPosition="left">
           <Collapse.Panel 
             key="1" 
-            header={`${promos_code.length} Kode Promo`} 
+            header={`${promos_code.length} ${t.card.promo_code}`} 
             extra={<SettingOutlined onClick={e => e.stopPropagation()} />}
           >
             {promos_code.map(promo => (
               <div className="promotion-code" key={promo.promo_codes_id}>
                 <b>{renderTitleCode(promo)}</b>
                 {promo.promo_codes_min_transaction ? 
-                  <p className="fs-12 text-muted mb-0">Minimum transaksi Rp.{formatNumber(promo.promo_codes_min_transaction)}</p> :
-                  <p className="fs-12 text-muted mb-0">Tanpa minimum transaksi</p>
+                  <p className="fs-12 text-muted mb-0">{t.card.min_transaction} Rp.{formatNumber(promo.promo_codes_min_transaction)}</p> :
+                  <p className="fs-12 text-muted mb-0">{t.card.no_min_transaction}</p>
                 }
                 <div className="promotion-box__value d-flex align-items-center">
                   <Paragraph className="copy-code mb-0">
@@ -73,7 +73,7 @@ const AdminCardVoucher = ({ data, deletePromo }) => {
     else{
       return(
         <Collapse collapsible="disabled" className="collapse-no-code">
-          <Collapse.Panel showArrow={false} header="Tanpa Kode Promo" />
+          <Collapse.Panel showArrow={false} header={t.card.no_promo_code} />
         </Collapse>
       )
     }
@@ -119,7 +119,7 @@ const AdminCardVoucher = ({ data, deletePromo }) => {
             </Card.Text>
             <div className="promotion-date">
               <div className="promotion-date-detail">
-                <div className="promotion-box-label">Periode Promo</div>
+                <div className="promotion-box-label">{t.card.promo_period}</div>
                 <div className="promotion-box__value mb-1">
                   {moment(promos_period_start).format('d MMM')} - {moment(promos_period_end).format('d MMM YYYY')}
                 </div>
@@ -127,7 +127,7 @@ const AdminCardVoucher = ({ data, deletePromo }) => {
             </div>
             <div className="promotion-date">
               <div className="promotion-date-detail">
-                <div className="promotion-box-label">Status Promo</div>
+                <div className="promotion-box-label">{t.card.promo_status}</div>
                 <div className="promotion-box__value">
                   {renderStatus()}
                 </div>
@@ -137,9 +137,9 @@ const AdminCardVoucher = ({ data, deletePromo }) => {
             {renderPromoCode()}
 
           </Card.Body>
-
         </CardAnt>
       </motion.div>
+
 
       <Modal
         centered
