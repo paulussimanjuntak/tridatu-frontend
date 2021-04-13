@@ -151,13 +151,13 @@ const AdminCardVoucher = ({ t, data, deletePromo }) => {
         className="modal-rad-10 text-center"
       >
         <div className="text-dark">
-          <h5 className="mb-3">Hapus promo</h5>
+          <h5 className="mb-3">{t.modal.title}</h5>
           <p className="text-black-50 fs-14">{promos_name}</p>
-          <p className="text-black-50 mb-4">Penghapusan promo tidak dapat dibatalkan</p>
+          <p className="text-black-50 mb-4">{t.modal.sub}</p>
 
           <Space>
-            <Button onClick={() => setShowModal(false)}>Batal</Button>
-            <Button type="primary" className="btn-tridatu" onClick={onDeletePromo}>Hapus</Button>
+            <Button onClick={() => setShowModal(false)}>{t.modal.cancel}</Button>
+            <Button type="primary" className="btn-tridatu" onClick={onDeletePromo}>{t.modal.delete_promo}</Button>
           </Space>
         </div>
       </Modal>

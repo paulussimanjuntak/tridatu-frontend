@@ -23,6 +23,6 @@ export default {
     title: "Delete promo?",
     sub: "Promo deletion cannot be undone",
     cancel: "Cancel",
-    delete_product: "Delete"
+    delete_promo: "Delete"
   }
 }

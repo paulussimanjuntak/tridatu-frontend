@@ -23,6 +23,6 @@ export default {
     title: "Hapus promo?",
     sub: "Penghapusan promo tidak dapat dibatalkan",
     cancel: "Batal",
-    delete_product: "Hapus"
+    delete_promo: "Hapus"
   }
 }

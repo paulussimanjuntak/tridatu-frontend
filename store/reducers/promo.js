@@ -52,6 +52,7 @@ const getPromoFail = (state, action) => {
 
 const deletePromoStart = (state, _) => {
   return updateObject(state, {
+    error: null,
     loading: false,
   });
 }
