@@ -288,7 +288,7 @@ export const searchName = q => {
 export const deleteProduct = (id, router) => {
   return dispatch => {
     dispatch(deleteProductStart())
-    axios.delete(`/products/delete/${id}3232434324`, jsonHeaderHandler())
+    axios.delete(`/products/delete/${id}`, jsonHeaderHandler())
       .then(res => {
         const resDetail = res.data.detail
         const notFound = ["Product not found!", "Produk tidak ditemukan!"]
