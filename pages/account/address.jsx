@@ -129,11 +129,8 @@ const Address = () => {
 
   const deleteAddressHanler = id => {
     let page = currentPage;
-    if(addresses.data.length === 1 && page > 1){
+    if(addresses.data.length == 1 && page > 1 && addresses.total > 1){
       page = currentPage - 1
-      setCurrentPage(page)
-    } else {
-      page = 1
       setCurrentPage(page)
     }
     axios.delete(`/address/delete/${id}`, jsonHeaderHandler())
@@ -246,6 +243,8 @@ const Address = () => {
           </Card.Body>
         )}
       </Card>
+
+      <pre className="fs-12">{JSON.stringify(addresses, null, 2)}</pre>
 
       <AddAddressModal
         t={t}

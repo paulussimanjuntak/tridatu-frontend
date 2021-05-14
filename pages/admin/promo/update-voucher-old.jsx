@@ -10,7 +10,7 @@ import Card from 'react-bootstrap/Card'
 import Button from "antd-button-color"
 
 import { imageValidation, uploadButton } from 'lib/imageUploader'
-import { columnsVoucher, columnsVoucherUpdate, columnsOngkir, columnsOngkirUpdate, columnsSelectedProduct, columnsSelectedBrand, columnsSelectedCategory } from 'data/voucher'
+import { columnsVoucher, columnsVoucherUpdateOld, columnsOngkir, columnsOngkirUpdateOld, columnsSelectedProduct, columnsSelectedBrand, columnsSelectedCategory } from 'data/voucher'
 import { columnsSelectedSubCategory, columnsSelectedItemSubCategory } from 'data/voucher'
 
 // import { productsData } from 'data/products'
@@ -337,7 +337,7 @@ const UpdateVoucher = () => {
     }
   }
 
-  const columnsVouchers = columnsVoucherUpdate.map(col => {
+  const columnsVouchers = columnsVoucherUpdateOld.map(col => {
     if (!col.editable) return col;
     return {
       ...col,
@@ -352,7 +352,7 @@ const UpdateVoucher = () => {
     }
   })
 
-  const columnsShipping = columnsOngkirUpdate.map(col => {
+  const columnsShipping = columnsOngkirUpdateOld.map(col => {
     if (!col.editable) return col;
     return {
       ...col,

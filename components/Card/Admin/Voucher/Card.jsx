@@ -12,7 +12,7 @@ import Card from 'react-bootstrap/Card'
 const Paragraph = Typography.Paragraph;
 
 const AdminCardVoucher = ({ t, data, deletePromo }) => {
-  const { promos_id, promos_name, promos_image } = data
+  const { promos_id, promos_name, promos_image, promos_slug } = data
   const { promos_period_start, promos_period_end, promos_period_status, promos_code } = data
 
   const [showModal, setShowModal] = useState(false)
@@ -50,7 +50,13 @@ const AdminCardVoucher = ({ t, data, deletePromo }) => {
           <Collapse.Panel 
             key="1" 
             header={`${promos_code.length} ${t.card.promo_code}`} 
-            extra={<SettingOutlined onClick={e => e.stopPropagation()} />}
+            extra={
+              <Link href="promo/update-voucher/[slug]" as={`promo/update-voucher/${promos_slug}`}>
+                <a className="text-reset" onClick={e => e.stopPropagation()}>
+                  <SettingOutlined />
+                </a>
+              </Link>
+            }
           >
             {promos_code.map(promo => (
               <div className="promotion-code" key={promo.promo_codes_id}>
@@ -96,11 +102,12 @@ const AdminCardVoucher = ({ t, data, deletePromo }) => {
           className="shadow-sm"
           bodyStyle={{ padding: 0 }}
           actions={[
-            <a className="text-decoration-none" key="edit">
-              <EditOutlined />
-            </a>,
+            <Link href="promo/update-promo/[slug]" as={`promo/update-promo/${promos_slug}`}>
+              <a className="text-decoration-none" key="edit"> <EditOutlined />
+              </a>
+            </Link>,
             <a className="text-decoration-none" key="delete" onClick={() => setShowModal(true)}>
-              <DeleteOutlined key="delete" />
+              <DeleteOutlined />
             </a>,
           ]}
         >
@@ -121,7 +128,7 @@ const AdminCardVoucher = ({ t, data, deletePromo }) => {
               <div className="promotion-date-detail">
                 <div className="promotion-box-label">{t.card.promo_period}</div>
                 <div className="promotion-box__value mb-1">
-                  {moment(promos_period_start).format('d MMM')} - {moment(promos_period_end).format('d MMM YYYY')}
+                  {moment(promos_period_start).format('DD MMM')} - {moment(promos_period_end).format('DD MMM YYYY')}
                 </div>
               </div>
             </div>

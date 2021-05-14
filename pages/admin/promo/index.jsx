@@ -25,7 +25,7 @@ const breakpointColumnsObj = {
   992: 2, 576: 1
 }
 
-const per_page = 9
+const per_page = 6
 const Promo = ({ searchQuery }) => {
   const router = useRouter()
   const dispatch = useDispatch()
@@ -64,6 +64,9 @@ const Promo = ({ searchQuery }) => {
     }
     if(promos && router.query.hasOwnProperty("page")){
       setPage(+router.query.page)
+    }
+    if(promos && promos.data && promos.data.length < 1 && promos.page > 1 && promos.total > 1){
+      setPage(promos.page - 1)
     }
   }, [promos])
 
@@ -211,7 +214,6 @@ const Promo = ({ searchQuery }) => {
 Promo.getInitialProps = async ctx => {
   const searchQuery = ctx.query
   await ctx.store.dispatch(actions.getPromos({ ...searchQuery, per_page: per_page }))
-  console.log(searchQuery)
   return { searchQuery: searchQuery }
 }
 

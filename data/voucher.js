@@ -1,9 +1,9 @@
 import { Tooltip } from 'antd'
 
 import kFormatter from "lib/kFormatter";
+import formatNumber from "lib/formatNumber";
 import ItemInfoPromo from "components/Card/Admin/Product/Promo/ItemInfo";
 import ItemPricePromo from "components/Card/Admin/Product/Promo/ItemPrice";
-
 import ItemBrandInfo from "components/Card/Admin/Brands/ItemInfo";
 
 export const columnsVoucher = (t) => [
@@ -78,7 +78,123 @@ export const columnsVoucher = (t) => [
   }
 ]
 
-export const columnsVoucherUpdate = [
+export const columnsVoucherUpdate = (t) => [
+  {
+    key: 'code',
+    title: (
+      <span>
+        {t.bonus_settings.voucher_code}
+        <Tooltip title={<small className="noselect">{t.bonus_settings.tooltip.voucher_code}</small>}>
+        <i className="fal fa-info-circle text-muted ml-1" />
+        </Tooltip>
+      </span>
+    ),
+    dataIndex: 'voucher',
+    type: 'code',
+    editable: true,
+    // width: 250,
+  },
+  {
+    key: 'quota',
+    title: (
+      <span>
+        {t.bonus_settings.claim_quota}
+        <Tooltip title={<small className="noselect">{t.bonus_settings.tooltip.claim_quota}</small>}>
+        <i className="fal fa-info-circle text-muted ml-1" />
+        </Tooltip>
+      </span>
+    ),
+    dataIndex: 'voucher',
+    type: 'quota',
+    editable: true,
+    // width: 250,
+  },
+  {
+    key: 'min_transaction',
+    title: (
+      <span>
+        {t.bonus_settings.min_transaction}
+        <Tooltip title={<small className="noselect">{t.bonus_settings.tooltip.min_transaction}</small>}>
+        <i className="fal fa-info-circle text-muted ml-1" />
+        </Tooltip>
+      </span>
+    ),
+    dataIndex: 'voucher',
+    type: 'min_transaction',
+    editable: true,
+    // width: 250,
+  },
+  {
+    key: 'nominal-percent',
+    title: t.bonus_settings.nominal_percent,
+    dataIndex: 'voucher',
+    type: 'nominal-percent',
+    editable: true,
+    // width: 250,
+  },
+  {
+    key: 'max_discount',
+    title: t.bonus_settings.max_discount,
+    dataIndex: 'voucher',
+    type: 'max_discount',
+    editable: true,
+    // width: 250,
+  }
+]
+
+export const columnsPromoCode = (t) => [
+  {
+    key: 'code',
+    dataIndex: 'voucher',
+    title: t.bonus_settings.voucher_code,
+    render: item => <span>{item.code.value}</span>
+  },
+  {
+    key: 'kuota',
+    dataIndex: 'voucher',
+    title: t.bonus_settings.claim_quota,
+    render: (item) => <span>{item.quota.value}</span>
+  },
+  {
+    key: 'min_transaction',
+    dataIndex: 'voucher',
+    title: t.bonus_settings.min_transaction,
+    render: (item) => <span>Rp.{formatNumber(item.min_transaction.value)}</span>
+  },
+  {
+    key: 'kind',
+    dataIndex: 'voucher',
+    title: t.bonus_settings.kind,
+    render: (item) => <span>{item.kind.value === "ongkir" ? t.bonus_settings.ongkir : t.bonus_settings.discount}</span>
+  },
+  {
+    key: 'applicable_promo',
+    dataIndex: 'voucher',
+    title: t.bonus_settings.applicable_promo,
+    render: (item) => (
+      <span>
+        {
+          (item.applicable_promo.value === "all" && t.basic_details.all_product) || 
+          (item.applicable_promo.value === "specific_product" && t.basic_details.specific_product) ||
+          (item.applicable_promo.value === "specific_brand" && t.basic_details.specific_brand) || 
+          (item.applicable_promo.value === "category" && t.basic_details.category) ||
+          (item.applicable_promo.value === "sub_category" && t.basic_details.sub_category) || 
+          (item.applicable_promo.value === "item_sub_category" && t.basic_details.item_sub_category)
+        }
+      </span>
+    )
+  },
+  {
+    key: 'actions',
+    dataIndex: 'voucher',
+    title: t.bonus_settings.action,
+    align: 'center',
+    type: 'action',
+    editable: true,
+  }
+]
+
+export const columnsVoucherUpdateOld = [
   {
     key: 'code',
     title: (
@@ -142,7 +258,7 @@ export const columnsVoucherUpdate = [
   }
 ]
 
-export const columnsOngkirUpdate = [
+export const columnsOngkirUpdateOld = [
   {
     key: 'code',
     title: (
@@ -234,6 +350,44 @@ export const columnsOngkir = (t) => [
   }
 ]
 
+export const columnsOngkirUpdate = (t) => [
+  {
+    key: 'code',
+    title: (
+      <span>
+        {t.bonus_settings.voucher_code}
+        <Tooltip title={<small className="noselect">{t.bonus_settings.tooltip.voucher_code}</small>}>
+        <i className="fal fa-info-circle text-muted ml-1" />
+        </Tooltip>
+      </span>
+    ),
+    dataIndex: 'voucher',
+    type: 'code',
+    editable: true,
+  },
+  {
+    key: 'quota',
+    title: (
+      <span>
+        {t.bonus_settings.claim_quota}
+        <Tooltip title={<small className="noselect">{t.bonus_settings.tooltip.claim_quota}</small>}>
+        <i className="fal fa-info-circle text-muted ml-1" />
+        </Tooltip>
+      </span>
+    ),
+    dataIndex: 'voucher',
+    type: 'quota',
+    editable: true,
+  },
+  {
+    key: 'min_transaction',
+    title: t.bonus_settings.min_transaction,
+    dataIndex: 'voucher',
+    type: 'min_transaction',
+    editable: true,
+  }
+]
+
 export const columnsVoucherProduct = (t) => [
   {
     title: t.basic_details.product,
@@ -275,9 +429,9 @@ export const columnsVoucherProduct = (t) => [
   },
 ]
 
-export const columnsSelectedProduct = [
+export const columnsSelectedProduct = (t) => [
   {
-    title: "Produk",
+    title: t.basic_details.product,
     dataIndex: "products",
     key: "product",
     width: "40%",
@@ -291,7 +445,7 @@ export const columnsSelectedProduct = [
     ),
   },
   {
-    title: "Harga",
+    title: t.basic_details.price,
     dataIndex: "products",
     key: "price",
     width: "20%",
@@ -305,7 +459,7 @@ export const columnsSelectedProduct = [
     ),
   },
   {
-    title: "Stok",
+    title: t.basic_details.stock,
     dataIndex: "products",
     key: "stock",
     width: "20%",
@@ -315,11 +469,11 @@ export const columnsSelectedProduct = [
   {
     key: 'action',
     title: 'Aksi',
+    title: t.bonus_settings.action,
     align: 'center',
     type: 'action',
     width: "20%",
     editable: true,
-    render: () => <a><i className="fal fa-trash-alt text-center" /></a>,
   }
 ]
 
@@ -334,9 +488,9 @@ export const columnsVoucherBrand = (t) => [
   },
 ]
 
-export const columnsSelectedBrand = [
+export const columnsSelectedBrand = (t) => [
   {
-    title: "Brand",
+    title: t.basic_details.brand,
     dataIndex: "brand",
     key: "brand",
     ellipsis: true,
@@ -345,12 +499,11 @@ export const columnsSelectedBrand = [
   },
   {
     key: 'action',
-    title: 'Aksi',
+    title: t.bonus_settings.action,
     align: 'center',
     type: 'action',
     width: "20%",
-    editable: true,
-    render: () => <a><i className="fal fa-trash-alt text-center" /></a>,
+    editable: true
   }
 ]
 
@@ -363,9 +516,9 @@ export const columnsVoucherCategory = (t) => [
   },
 ]
 
-export const columnsSelectedCategory = [
+export const columnsSelectedCategory = (t) => [
   {
-    title: "Kategori",
+    title: t.basic_details.category,
     dataIndex: "category",
     key: "category",
     ellipsis: true,
@@ -374,12 +527,11 @@ export const columnsSelectedCategory = [
   },
   {
     key: 'action',
-    title: 'Aksi',
+    title: t.bonus_settings.action,
     align: 'center',
     type: 'action',
     editable: true,
     width: "20%",
-    render: () => <a><i className="fal fa-trash-alt text-center" /></a>,
   }
 ]
 
@@ -394,9 +546,9 @@ export const columnsVoucherSubCategory = (t) => [
   },
 ]
 
-export const columnsSelectedSubCategory = [
+export const columnsSelectedSubCategory = (t) => [
   {
-    title: "Sub Kategori",
+    title: t.basic_details.sub_category,
     dataIndex: "category",
     key: "category",
     ellipsis: true,
@@ -407,12 +559,11 @@ export const columnsSelectedSubCategory = [
   },
   {
     key: 'action',
-    title: 'Aksi',
+    title: t.bonus_settings.action,
     align: 'center',
     type: 'action',
     width: "20%",
     editable: true,
-    render: () => <a><i className="fal fa-trash-alt text-center" /></a>,
   }
 ]
 
@@ -425,9 +576,9 @@ export const columnsVoucherItemSubCategory = (t) => [
   },
 ]
 
-export const columnsSelectedItemSubCategory = [
+export const columnsSelectedItemSubCategory = (t) => [
   {
-    title: "Item Sub Kategori",
+    title: t.basic_details.item_sub_category,
     dataIndex: "category",
     key: "category",
     ellipsis: true,
@@ -436,11 +587,10 @@ export const columnsSelectedItemSubCategory = [
   },
   {
     key: 'action',
-    title: 'Aksi',
+    title: t.bonus_settings.action,
     align: 'center',
     type: 'action',
     width: "20%",
     editable: true,
-    render: () => <a><i className="fal fa-trash-alt text-center" /></a>,
   }
 ]

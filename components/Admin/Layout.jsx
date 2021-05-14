@@ -24,7 +24,7 @@ const routes = (t) => {
       {link: "/", text: t.general.home, icon: "far fa-door-open"},
     ],
     [t.order.title]: [
-      {link: "/admin/sale?type=all", text: t.order.my_order, icon: "far fa-clipboard-list"},
+      {link: "/admin/sale", text: t.order.my_order, icon: "far fa-clipboard-list"},
     ],
     [t.category.title]: [
       {link: "/admin/category", text: t.category.category, icon: "far fa-sitemap"},
@@ -43,7 +43,7 @@ const routes = (t) => {
       {link: "/admin/promo", text: t.promo.promo, icon: "far fa-ticket-alt"},
       {link: "/admin/promo/new-promo", text: t.promo.add_promo, icon: "far fa-gift-card"},
       {link: "/admin/promo/new-voucher", text: t.promo.add_voucher, icon: "far fa-money-check"},
-      {link: "/admin/promo/update-voucher", text: "Update Voucher", icon: "far fa-money-check"},
+      {link: "/admin/promo/update-voucher-old", text: "Update Voucher", icon: "far fa-money-check"},
     ],
     [t.administration.title]: [
       {link: "/admin/review", text: t.administration.buyer_reviews, icon: "far fa-smile-wink"},
@@ -101,48 +101,22 @@ const notificationMenu = (
   </Menu>
 );
 
-const isEmptyObject = obj => {
-  return Object.keys(obj).length !== 0
-}
-
 const getActiveMenu = (routes, router) => {
-  let rsSplit = routes.split('/')
-  let rrSplit = router.split('/')
-
-  let lastPathrr = rrSplit[rrSplit.length - 1]
-  let lastPathrs = rsSplit[rsSplit.length - 1]
-
-  if(lastPathrr.startsWith('[')){
-    if(lastPathrs && isIn(lastPathrs, ['new', 'discount', 'promo'])){
-      rsSplit.shift()
+  let routerSplit = router.split("/")
+  if(routerSplit[routerSplit.length - 1].startsWith("[")){
+    if(isIn("promo", routerSplit)){
+      let newRouterSplit = router.split("/")
+      newRouterSplit.splice(-2, 2)
+      return routes === newRouterSplit.join("/")
+    }
+    else{
+      let newRouterSplit = router.split("/")
+      newRouterSplit.splice(-1, 1)
+      console.log(routes, newRouterSplit.join("/"))
+      return routes === newRouterSplit.join("/")
     }
   }
-
-  let getRoutes = rsSplit[2]
-  let getRouter = rrSplit[2]
-
-  if(getRoutes && getRoutes === "promo") {
-    if(lastPathrr.startsWith('[slu')){
-      rsSplit.pop()
-      rrSplit.splice(- 2, 2)
-      return rsSplit.join("/") === rrSplit.join("/")
-    } else {
-      return rsSplit.join("/") === rrSplit.join("/")
-    }
-  }
-
-  if(getRoutes && getRoutes === "products") {
-    if(lastPathrr.startsWith('[slu')){
-      rrSplit.pop()
-      return rsSplit.join("/"), rrSplit.join("/")
-    } else {
-      return rsSplit.join("/") === rrSplit.join("/")
-    }
-  }
-
-  if(getRoutes && getRoutes !== "products") {
-    return getRoutes.startsWith(getRouter)
-  }
+  return routes === router
 }
 
 const AdminLayout = ({ children }) => {
@@ -268,7 +242,7 @@ const AdminLayout = ({ children }) => {
                     text={key}
                     key={route.link} 
                     icon={<i className={`${route.icon} menu-item-icon`} />}
-                    className={isEmptyObject(router.query) && getActiveMenu(route.link, router.pathname) ? "text-left user-select-none ant-menu-item-selected" : "text-left user-select-none"}
+                    className={getActiveMenu(route.link, router.pathname) ? "text-left user-select-none ant-menu-item-selected" : "text-left user-select-none"}
                   >
                     {!collapsed && <>{route.text}</>}
                   </Menu.Item>
@@ -370,7 +344,6 @@ const AdminLayout = ({ children }) => {
       </Layout>
 
       <style jsx>{`
-
         :global(.site-layout .site-layout-header) {
           top: 0;
           right: 0;

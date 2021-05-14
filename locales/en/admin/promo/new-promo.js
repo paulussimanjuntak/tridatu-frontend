@@ -20,6 +20,7 @@ export default {
     terms_conditions: "Terms and Conditions"
   },
   success_response: "Successfully add a new promo.",
+  success_update: "Successfully update the promo.",
   cancel: "Cancel",
   save: "Save",
   validation: {

@@ -25,6 +25,7 @@ const CardProductMemo = React.memo(CardProductAdmin);
 const ALL = 'all'
 const LIVE = 'live'
 const ARCHIVE = 'archive'
+const per_page = 18;
 
 const orderList = (t) => [
   { label: t.order_list.newest, value: "newest" },
@@ -56,14 +57,13 @@ const ProductComponent = ({ products, dispatch, router, t }) => (
           t={t}
           data={product} 
           aliveArchive={(id) => dispatch(actions.aliveArchiveProduct(id))}
-          deleteProduct={(id) => dispatch(actions.deleteProduct(id, router.query))}
+          deleteProduct={(id) => dispatch(actions.deleteProduct(id, {per_page: per_page, ...router.query}))}
         />
       </Col>
     ))}
   </>
 )
 
-const per_page = 18;
 const Products = ({ searchQuery }) => {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -140,8 +140,11 @@ const Products = ({ searchQuery }) => {
     if(products && router.query.hasOwnProperty("page")){
       setPage(+router.query.page)
     }
-    if(products && router.query.hasOwnProperty("order_by") && (router.query.hasOwnProperty("order_by") !== order_by)) {
+    if(products && router.query.hasOwnProperty("order_by") && (router.query.hasOwnProperty("order_by") !== order_by)){
       setOrderBy(order_by)
+    }
+    if(products && products.data && products.data.length < 1 && products.page > 1 && products.total > 1){
+      setPage(products.page - 1)
     }
   }, [products])
 

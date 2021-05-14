@@ -126,6 +126,55 @@ export const getProductSlugFail = (error) => {
 }
 
 
+const getMultipleProductStart = () => {
+  return { type: actionType.GET_MULTIPLE_PRODUCT_START }
+}
+
+export const getMultipleProductSuccess = (payload) => {
+  return {
+    type: actionType.GET_MULTIPLE_PRODUCT_SUCCESS,
+    payload: payload
+  }
+}
+
+const getMultipleProductFail = (error) => {
+  return {
+    type: actionType.GET_MULTIPLE_PRODUCT_FAIL,
+    error: error
+  }
+}
+
+
+export const getMultipleProduct = ({ list_id = [] }) => {
+  return dispatch => {
+    dispatch(getMultipleProductStart())
+    const data = { list_id: list_id }
+    axios.post(`/products/get-multiple-product`, data, jsonHeaderHandler())
+      .then(res => {
+        dispatch(getMultipleProductSuccess(res.data))
+      })
+      .catch(err => {
+        const errDetail = err.response.data.detail;
+        if(errDetail === signature_exp){
+          axios.get(`/products/get-multiple-product`, data, jsonHeaderHandler())
+            .then(res => {
+              dispatch(getMultipleProductSuccess(res.data))
+            })
+            .catch(() => {})
+        } else {
+          if(typeof(errDetail) === "string" && errDetail !== signature_exp) {
+            resNotification("error", "Error", errDetail)
+            dispatch(getMultipleProductFail(errDetail))
+          } else {
+            resNotification("error", "Error", errDetail[0].msg)
+            dispatch(getMultipleProductFail(errDetail[0].msg))
+          }
+        }
+      })
+  }
+}
+
+
 export const getProducts = ({ 
   page = 1, per_page = 10, q, live, order_by = "visitor", p_min, p_max, item_sub_cat, brand, pre_order, condition, wholesale, is_discount
 }) => {

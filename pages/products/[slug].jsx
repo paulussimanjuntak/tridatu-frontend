@@ -354,6 +354,12 @@ const ProductDetail = () => {
   }, [])
 
   useEffect(() => {
+    if(commentList && commentList.data && commentList.data.length < 1 && commentList.page > 1 && commentList.total > 1){
+      setPage(commentList.page - 1)
+    }
+  }, [commentList])
+
+  useEffect(() => {
     const dupCommentList = JSON.parse(JSON.stringify(commentList))
     const dupCommentRedux = JSON.parse(JSON.stringify(comments))
     const newComments = dupCommentRedux && dupCommentRedux.data && dupCommentRedux.data.filter(
@@ -395,6 +401,7 @@ const ProductDetail = () => {
           setCommentMessage(formComment)
           setSendCommentLoading(false)
           dispatch(actions.getAllComments({ commentable_id: products_id, commentable_type: "product" }))
+          setPage(1)
         })
         .catch(err => {
           setSendCommentLoading(false)
@@ -409,6 +416,7 @@ const ProductDetail = () => {
           if(errDetail == signature_exp){
             setCommentMessage(formComment)
             dispatch(actions.getAllComments({ commentable_id: products_id, commentable_type: "product" }))
+            setPage(1)
           } 
           if(typeof errDetail !== "string" && err.response.status == 422){
             const state = JSON.parse(JSON.stringify(commentMessage));
@@ -1069,6 +1077,7 @@ const ProductDetail = () => {
           </RowAntd>
         </section>
       </Container>
+
 
       <Modal
         centered

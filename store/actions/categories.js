@@ -78,6 +78,65 @@ const getAllCategoriesFail = (error) => {
   }
 }
 
+
+/* MULTIPLE DATA */
+const getMultipleCategoriesStart = () => {
+  return { type: actionType.GET_MULTIPLE_CATEGORIES_START }
+}
+
+export const getMultipleCategoriesSuccess = (payload) => {
+  return {
+    type: actionType.GET_MULTIPLE_CATEGORIES_SUCCESS,
+    payload: payload
+  }
+}
+
+const getMultipleCategoriesFail = (error) => {
+  return {
+    type: actionType.GET_MULTIPLE_CATEGORIES_FAIL,
+    error: error
+  }
+}
+
+
+const getMultipleSubCategoriesStart = () => {
+  return { type: actionType.GET_MULTIPLE_SUBCATEGORIES_START }
+}
+
+export const getMultipleSubCategoriesSuccess = (payload) => {
+  return {
+    type: actionType.GET_MULTIPLE_SUBCATEGORIES_SUCCESS,
+    payload: payload
+  }
+}
+
+const getMultipleSubCategoriesFail = (error) => {
+  return {
+    type: actionType.GET_MULTIPLE_SUBCATEGORIES_FAIL,
+    error: error
+  }
+}
+
+
+const getMultipleItemSubCategoriesStart = () => {
+  return { type: actionType.GET_MULTIPLE_ITEMSUBCATEGORIES_START }
+}
+
+export const getMultipleItemSubCategoriesSuccess = (payload) => {
+  return {
+    type: actionType.GET_MULTIPLE_ITEMSUBCATEGORIES_SUCCESS,
+    payload: payload
+  }
+}
+
+const getMultipleItemSubCategoriesFail = (error) => {
+  return {
+    type: actionType.GET_MULTIPLE_ITEMSUBCATEGORIES_FAIL,
+    error: error
+  }
+}
+
+
 export const getCategories = (with_sub, q) => {
   return dispatch => {
     dispatch(getCategoriesStart())
@@ -147,5 +206,92 @@ export const getAllCategories = (q) => {
           dispatch(getAllCategoriesFail(err.response))
         })
     }
+  }
+}
+
+export const getMultipleCategories = ({ list_id = [] }) => {
+  return dispatch => {
+    dispatch(getMultipleCategoriesStart())
+    const data = { list_id: list_id }
+    axios.post(`/categories/get-multiple-category`, data)
+      .then(res => {
+        dispatch(getMultipleCategoriesSuccess(res.data))
+      })
+      .catch(err => {
+        const errDetail = err.response.data.detail;
+        if(errDetail === signature_exp){
+          axios.post(`/categories/get-multiple-category`, data)
+            .then(res => {
+              dispatch(getMultipleCategoriesSuccess(res.data))
+            })
+            .catch(() => {})
+        } else {
+          if(typeof(errDetail) === "string" && errDetail !== signature_exp) {
+            resNotification("error", "Error", errDetail)
+            dispatch(getMultipleCategoriesFail(errDetail))
+          } else {
+            resNotification("error", "Error", errDetail[0].msg)
+            dispatch(getMultipleCategoriesFail(errDetail[0].msg))
+          }
+        }
+      })
+  }
+}
+
+export const getMultipleSubCategories = ({ list_id = [] }) => {
+  return dispatch => {
+    dispatch(getMultipleSubCategoriesStart())
+    const data = { list_id: list_id }
+    axios.post(`/sub-categories/get-multiple-sub-category`, data)
+      .then(res => {
+        dispatch(getMultipleSubCategoriesSuccess(res.data))
+      })
+      .catch(err => {
+        const errDetail = err.response.data.detail;
+        if(errDetail === signature_exp){
+          axios.post(`/sub-categories/get-multiple-sub-category`, data)
+            .then(res => {
+              dispatch(getMultipleSubCategoriesSuccess(res.data))
+            })
+            .catch(() => {})
+        } else {
+          if(typeof(errDetail) === "string" && errDetail !== signature_exp) {
+            resNotification("error", "Error", errDetail)
+            dispatch(getMultipleSubCategoriesFail(errDetail))
+          } else {
+            resNotification("error", "Error", errDetail[0].msg)
+            dispatch(getMultipleSubCategoriesFail(errDetail[0].msg))
+          }
+        }
+      })
+  }
+}
+
+export const getMultipleItemSubCategories = ({ list_id = [] }) => {
+  return dispatch => {
+    dispatch(getMultipleItemSubCategoriesStart())
+    const data = { list_id: list_id }
+    axios.post(`/item-sub-categories/get-multiple-item-sub-category`, data)
+      .then(res => {
+        dispatch(getMultipleItemSubCategoriesSuccess(res.data))
+      })
+      .catch(err => {
+        const errDetail = err.response.data.detail;
+        if(errDetail === signature_exp){
+          axios.post(`/item-sub-categories/get-multiple-item-sub-category`, data)
+            .then(res => {
+              dispatch(getMultipleItemSubCategoriesSuccess(res.data))
+            })
+            .catch(() => {})
+        } else {
+          if(typeof(errDetail) === "string" && errDetail !== signature_exp) {
+            resNotification("error", "Error", errDetail)
+            dispatch(getMultipleItemSubCategoriesFail(errDetail))
+          } else {
+            resNotification("error", "Error", errDetail[0].msg)
+            dispatch(getMultipleItemSubCategoriesFail(errDetail[0].msg))
+          }
+        }
+      })
   }
 }

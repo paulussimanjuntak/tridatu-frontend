@@ -20,6 +20,7 @@ export default {
     terms_conditions: "Syarat dan Ketentuan"
   },
   success_response: "Berhasil menambahkan promo baru.",
+  success_update: "Berhasil memperbarui promo.",
   cancel: "Batal",
   save: "Simpan",
   validation: {

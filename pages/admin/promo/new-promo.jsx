@@ -9,6 +9,7 @@ import en from 'locales/en/admin/promo/new-promo'
 
 import _ from 'lodash'
 import moment from 'moment'
+import axios from 'lib/axios'
 import dynamic from 'next/dynamic'
 import isIn from 'validator/lib/isIn'
 import isEmpty from 'validator/lib/isEmpty'
@@ -21,13 +22,13 @@ import { formImage, formImageIsValid } from 'formdata/formImage'
 import { columnsVoucher, columnsOngkir } from 'data/voucher'
 import { imageValidation, uploadButton } from 'lib/imageUploader'
 import { dateTimeFormat, disabledDate, disabledRangeSameTime } from 'lib/utility'
-import axios, { formHeaderHandler, resNotification, signature_exp } from 'lib/axios'
 import { formPromo, formTermsCondition, formPromoIsValid } from 'formdata/formPromo'
-
-import AddStyleAdmin from 'components/Admin/addStyle'
-const Editor = dynamic(import('../../../components/Editor'), { ssr: false })
+import { formHeaderHandler, resNotification, signature_exp, formErrorMessage } from 'lib/axios'
 
 import PageInfoPopover from 'components/Admin/Voucher/PageInfoPopover'
+import AddStyleAdmin from 'components/Admin/addStyle'
+
+const Editor = dynamic(import('components/Editor'), { ssr: false })
 
 const NewPromo = () => {
   const router = useRouter()
@@ -76,12 +77,14 @@ const NewPromo = () => {
     let endVal = dateStrings[1]
 
     if(moment(startVal) <= moment()) startVal = moment().add(15, "minute")
-    if(!moment(endVal).diff(moment(startVal), 'days')) endVal = moment(startVal).add(1, "days")
+    if(startVal){
+      if(!moment(endVal).diff(moment(startVal), 'days')) endVal = moment(startVal).add(1, "days")
+    }
 
     const data = {
       ...promo,
       period_start: { value: startVal, isValid: true, message: null },
-      period_end: { value: moment(startVal).add(1, "days").format(dateTimeFormat), isValid: true, message: null },
+      period_end: { value: endVal, isValid: true, message: null },
     }
     setPromo(data)
   }
@@ -91,7 +94,9 @@ const NewPromo = () => {
     let endVal = date[1] || ""
 
     if(moment(startVal) <= moment()) startVal = moment().add(15, "minute")
-    if(!moment(endVal).diff(moment(startVal), 'days')) endVal = moment(startVal).add(1, "days")
+    if(startVal){
+      if(!moment(endVal).diff(moment(startVal), 'days')) endVal = moment(startVal).add(1, "days")
+    } 
 
     const data = {
       ...promo,
@@ -168,40 +173,58 @@ const NewPromo = () => {
           resNotification("success", "Success", res.data.detail)
         })
         .catch(err => {
+          const state = JSON.parse(JSON.stringify(promo));
+          const termsConditionState = JSON.parse(JSON.stringify(termsCondition))
+
           const errDetail = err.response.data.detail;
           const errName = ["The name has already been taken.", "Nama sudah dipakai."]
+          const errDesc = ["Please fill desc field.", "Harap isi inputan desc."]
+          const errTerm = ["Please fill terms_condition field.", "Harap isi inputan terms_condition."]
+          const errPeriod = ["Time data 'Invalid date' does not match format '%d %b %Y %H:%M'", "Data waktu 'Invalid date' tidak cocok dengan format '%d %b %Y %H:%M'"]
+
           setLoading(false)
           if(errDetail == signature_exp){
             resetAllHandler()
             resNotification("success", "Success", t.success_response)
           }
           else if(typeof(errDetail) === "string" && isIn(errDetail, errName)){
-            const state = JSON.parse(JSON.stringify(promo));
             state.name.value = state.name.value
             state.name.isValid = false
             state.name.message = errDetail
-            setPromo(state)
           }
-          else if(typeof(errDetail) === "string" && !isIn(errDetail, errName)){
-            resNotification("error", "Error", errDetail)
+          else if(typeof(errDetail) === "string" && isIn(errDetail, errDesc)){
+            state.desc.value = state.desc.value
+            state.desc.isValid = false
+            state.desc.message = errDetail
+          }
+          else if(typeof(errDetail) === "string" && isIn(errDetail, errTerm)){
+            termsConditionState.terms_condition.value = termsConditionState.terms_condition.value
+            termsConditionState.terms_condition.isValid = false
+            termsConditionState.terms_condition.message = errDetail
+          }
+          else if(typeof(errDetail) === "string" && isIn(errDetail, errPeriod)){
+            state.period_end.value = state.period_end.value
+            state.period_end.isValid = false
+            state.period_end.message = errDetail
+          }
+          else if(typeof(errDetail) === "string" && !isIn(errDetail, [...errName, ...errDesc, ...errTerm, ...errPeriod])){
+            formErrorMessage(errDetail)
           }
           else{
-            const promoState = JSON.parse(JSON.stringify(promo))
-            const termsConditionState = JSON.parse(JSON.stringify(termsCondition))
             errDetail.map((data) => {
               const key = data.loc[data.loc.length - 1];
-              if(promoState[key]){
-                promoState[key].isValid = false
-                promoState[key].message = data.msg
+              if(state[key]){
+                state[key].isValid = false
+                state[key].message = data.msg
               }
               if(termsConditionState[key]){
                 termsConditionState[key].isValid = false
                 termsConditionState[key].message = data.msg
               }
-              setPromo(promoState)
-              setTermsCondition(termsConditionState)
             });
           }
+          setPromo(state)
+          setTermsCondition(termsConditionState)
         })
     }
   }
@@ -241,15 +264,15 @@ const NewPromo = () => {
               <DatePicker.RangePicker 
                 showTime 
                 inputReadOnly
-                onChange={dateChange}
                 onOk={onOkDateChange}
+                onChange={dateChange}
                 format={dateTimeFormat}
                 disabledDate={(current, start) => disabledDate(current, start)}
                 disabledTime={(current, type) => disabledRangeSameTime(current, type, moment(period_start.value))}
                 value={[period_start.value !== "" && moment(period_start.value), period_end.value !== "" && moment(period_end.value)]}
               />
               <span className="ml-2">WITA</span>
-              <ErrorMessage item={period_start || period_end} />
+              <ErrorMessage item={!period_start.isValid && period_start || !period_end.isValid && period_end} />
             </Form.Item>
 
             <Form.Item 

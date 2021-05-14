@@ -5,6 +5,9 @@ const initialState = {
   categories: [],
   subcategories: [],
   itemsubcategories: [],
+  multipleCategoriesData: [],
+  multipleSubCategoriesData: [],
+  multipleItemSubCategoriesData: [],
   allCategories: [],
   loading: false,
   error: null,
@@ -98,6 +101,73 @@ const getAllCategoriesFail = (state, action) => {
   });
 };
 
+
+const getMultipleCategoriesStart = (state, _) => {
+  return updateObject(state, {
+    loading: true,
+    error: null
+  })
+}
+
+const getMultipleCategoriesSuccess = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    multipleCategoriesData: action.payload
+  })
+}
+
+const getMultipleCategoriesFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error
+  })
+}
+
+
+const getMultipleSubCategoriesStart = (state, _) => {
+  return updateObject(state, {
+    loading: true,
+    error: null
+  })
+}
+
+const getMultipleSubCategoriesSuccess = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    multipleSubCategoriesData: action.payload
+  })
+}
+
+const getMultipleSubCategoriesFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error
+  })
+}
+
+
+const getMultipleItemSubCategoriesStart = (state, _) => {
+  return updateObject(state, {
+    loading: true,
+    error: null
+  })
+}
+
+const getMultipleItemSubCategoriesSuccess = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    multipleItemSubCategoriesData: action.payload
+  })
+}
+
+const getMultipleItemSubCategoriesFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error
+  })
+}
+
+
 const reducer = (state = initialState, action) => {
   switch(action.type){
     /* CATEGORIES */
@@ -131,6 +201,29 @@ const reducer = (state = initialState, action) => {
       return getAllCategoriesSuccess(state, action)
     case actionType.GET_ALLCATEGORIES_FAIL:
       return getAllCategoriesFail(state, action)
+
+
+    /* MULTIPLE DATA */
+    case actionType.GET_MULTIPLE_CATEGORIES_START:
+      return getMultipleCategoriesStart(state, action)
+    case actionType.GET_MULTIPLE_CATEGORIES_SUCCESS:
+      return getMultipleCategoriesSuccess(state, action)
+    case actionType.GET_MULTIPLE_CATEGORIES_FAIL:
+      return getMultipleCategoriesFail(state, action)
+
+    case actionType.GET_MULTIPLE_SUBCATEGORIES_START:
+      return getMultipleSubCategoriesStart(state, action)
+    case actionType.GET_MULTIPLE_SUBCATEGORIES_SUCCESS:
+      return getMultipleSubCategoriesSuccess(state, action)
+    case actionType.GET_MULTIPLE_SUBCATEGORIES_FAIL:
+      return getMultipleSubCategoriesFail(state, action)
+
+    case actionType.GET_MULTIPLE_ITEMSUBCATEGORIES_START:
+      return getMultipleItemSubCategoriesStart(state, action)
+    case actionType.GET_MULTIPLE_ITEMSUBCATEGORIES_SUCCESS:
+      return getMultipleItemSubCategoriesSuccess(state, action)
+    case actionType.GET_MULTIPLE_ITEMSUBCATEGORIES_FAIL:
+      return getMultipleItemSubCategoriesFail(state, action)
 
     default:
       return state

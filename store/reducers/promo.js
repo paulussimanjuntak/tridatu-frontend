@@ -4,6 +4,8 @@ import { updateObject } from "lib/utility";
 const initialState = {
   promos: [],
   listPromoName: [],
+  promoSlug: {},
+  applicablePromo: {},
   loading: false,
   error: null,
 };
@@ -70,6 +72,48 @@ const deletePromoFail = (state, action) => {
   })
 }
 
+const getPromoSlugStart = (state, _) => {
+  return updateObject(state, {
+    error: null,
+    loading: true
+  })
+}
+
+const getPromoSlugSuccess = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    promoSlug: action.payload
+  })
+}
+
+const getPromoSlugFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error,
+  })
+}
+
+const getPromoCodeApplyStart = (state, _) => {
+  return updateObject(state, {
+    error: null,
+    loading: true
+  })
+}
+
+const getPromoCodeApplySuccess = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    applicablePromo: action.payload
+  })
+}
+
+const getPromoCodeApplyFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error,
+  })
+}
+
 const reducer = (state = initialState, action) => {
   switch(action.type){
     case actionType.SEARCH_PROMO_NAME_START:
@@ -92,6 +136,20 @@ const reducer = (state = initialState, action) => {
       return deletePromoSuccess(state, action)
     case actionType.DELETE_PROMO_FAIL:
       return deletePromoFail(state, action)
+      
+    case actionType.GET_PROMO_SLUG_START:
+      return getPromoSlugStart(state, action)
+    case actionType.GET_PROMO_SLUG_SUCCESS:
+      return getPromoSlugSuccess(state, action)
+    case actionType.GET_PROMO_SLUG_FAIL:
+      return getPromoSlugFail(state, action)
+
+    case actionType.GET_PROMO_CODE_APPLY_START:
+      return getPromoCodeApplyStart(state, action)
+    case actionType.GET_PROMO_CODE_APPLY_SUCCESS:
+      return getPromoCodeApplySuccess(state, action)
+    case actionType.GET_PROMO_CODE_APPLY_FAIL:
+      return getPromoCodeApplyFail(state, action)
 
     default:
       return state

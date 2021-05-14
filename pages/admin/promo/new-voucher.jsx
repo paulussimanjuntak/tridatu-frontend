@@ -198,6 +198,9 @@ const NewPromo = () => {
         [item]: {
           ...newDataVoucher[index].voucher[item],
           value: "", isValid: true, message: null
+        },
+        max_discount: {
+          value: "", isValid: true, message: null
         }
       }
     }
@@ -398,7 +401,7 @@ const NewPromo = () => {
     }
   })
 
-  const columnsProduct = columnsSelectedProduct.map(col => {
+  const columnsProduct = columnsSelectedProduct(t).map(col => {
     if (!col.editable) return col;
     return {
       ...col,
@@ -412,7 +415,7 @@ const NewPromo = () => {
     }
   })
 
-  const columnsBrand = columnsSelectedBrand.map(col => {
+  const columnsBrand = columnsSelectedBrand(t).map(col => {
     if(!col.editable) return col;
     return {
       ...col,
@@ -426,7 +429,7 @@ const NewPromo = () => {
     }
   })
 
-  const columnsCategory = columnsSelectedCategory.map(col => {
+  const columnsCategory = columnsSelectedCategory(t).map(col => {
     if(!col.editable) return col;
     return {
       ...col,
@@ -440,7 +443,7 @@ const NewPromo = () => {
     }
   })
 
-  const columnsSubCategory = columnsSelectedSubCategory.map(col => {
+  const columnsSubCategory = columnsSelectedSubCategory(t).map(col => {
     if(!col.editable) return col;
     return {
       ...col,
@@ -454,7 +457,7 @@ const NewPromo = () => {
     }
   })
 
-  const columnsItemSubCategory = columnsSelectedItemSubCategory.map(col => {
+  const columnsItemSubCategory = columnsSelectedItemSubCategory(t).map(col => {
     if(!col.editable) return col;
     return {
       ...col,
@@ -682,7 +685,7 @@ const NewPromo = () => {
           const errDetail = err.response.data.detail
           if(errDetail == signature_exp){
             resetAllData()
-            resNotification("success", "Success", "Successfully add a new promo-code.")
+            resNotification("success", "Success", t.success_add)
           }
           if(typeof errDetail === "string" && errDetail !== signature_exp){
             formErrorMessage(errDetail)
@@ -984,7 +987,7 @@ const NewPromo = () => {
         <Button className="btn-tridatu" onClick={onSubmitHandler} style={{ width: 80 }} disabled={loading}>
           {loading ? <LoadingOutlined /> : t.save}
         </Button>
-        <Button onClick={resetAllData}>t.cancel</Button>
+        <Button onClick={resetAllData}>{t.cancel}</Button>
       </Space>
 
       <style jsx>{AddStyleAdmin}</style>

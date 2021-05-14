@@ -32,7 +32,8 @@ export default {
     no_brand: "No brand",
     no_category: "No category",
     no_sub_category: "No sub category",
-    no_item_sub_category: "No item sub category"
+    no_item_sub_category: "No item sub category",
+    promo_code_list: "Promo Code List"
   },
   bonus_settings: {
     title: "Bonus Settings",
@@ -49,6 +50,10 @@ export default {
     percent_discount: "Percentage Discount",
     max_discount: "Max. Discount",
     action: "Action",
+    kind: "Kind",
+    ongkir: "Free Shipping",
+    discount: "Discount",
+    applicable_promo: "Applicable Promo",
     tooltip: {
       voucher_code: "Voucher code contains Alphabet (A-Z) and Numbers (0-9)",
       claim_quota: "The number of vouchers can be claimed by the user",
@@ -62,6 +67,10 @@ export default {
     empty_column: "Columns can't be empty",
     empty_voucher: "Make sure this value has at least 1 item",
   },
+  success_add: "Successfully add a new promo-code.",
+  success_update: "Successfully update the promo-code.",
+  edit: "Edit",
+  delete: "Delete",
   cancel: "Cancel",
   save: "Save"
 }

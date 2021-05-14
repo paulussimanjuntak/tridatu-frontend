@@ -33,6 +33,7 @@ export default {
     no_category: "Tidak ada kategori",
     no_sub_category: "Tidak ada sub kategori",
     no_item_sub_category: "Tidak ada item sub kategori",
+    promo_code_list: "Daftar Kode Promo"
   },
   bonus_settings: {
     title: "Pengaturan Bonus",
@@ -49,6 +50,10 @@ export default {
     percent_discount: "Persentase Diskon",
     max_discount: "Max. Diskon",
     action: "Aksi",
+    kind: "Jenis",
+    ongkir: "Free Ongkir",
+    discount: "Diskon",
+    applicable_promo: "Promo Berlaku",
     tooltip: {
       voucher_code: "Kode voucher mengandung Alfabet (A-Z) dan Angka (0-9)",
       claim_quota: "Jumlah voucher dapat diklaim pengguna",
@@ -62,6 +67,10 @@ export default {
     empty_column: "Kolom tidak boleh kosong",
     empty_voucher: "Pastikan nilai ini memiliki setidaknya 1 item",
   },
+  success_add: "Berhasil menambahkan kode promo baru.",
+  success_update: "Berhasil memperbarui kode promo.",
+  edit: "Ubah",
+  delete: "Hapus",
   cancel: "Batal",
   save: "Simpan"
 }

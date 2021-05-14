@@ -6,6 +6,7 @@ const initialState = {
   searchName: [],
   loading: false,
   productSlug: {},
+  multipleProductData: [],
   aliveArchiving: true,
   error: null,
 };
@@ -116,6 +117,28 @@ const getProductSlugFail = (state, action) => {
   })
 }
 
+
+const getMultipleProductStart = (state, _) => {
+  return updateObject(state, {
+    loading: true,
+    error: null
+  })
+}
+
+const getMultipleProductSuccess = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    multipleProductData: action.payload
+  })
+}
+
+const getMultipleProductFail = (state, action) => {
+  return updateObject(state, {
+    loading: false,
+    error: action.error
+  })
+}
+
 const reducer = (state = initialState, action) => {
   switch(action.type){
     case actionType.GET_ALLPRODUCTS_START:
@@ -152,6 +175,13 @@ const reducer = (state = initialState, action) => {
       return getProductSlugSuccess(state, action)
     case actionType.GET_PRODUCT_SLUG_FAIL:
       return getProductSlugFail(state, action)
+
+    case actionType.GET_MULTIPLE_PRODUCT_START:
+      return getMultipleProductStart(state, action)
+    case actionType.GET_MULTIPLE_PRODUCT_SUCCESS:
+      return getMultipleProductSuccess(state, action)
+    case actionType.GET_MULTIPLE_PRODUCT_FAIL:
+      return getMultipleProductFail(state, action)
 
     default:
       return state;
